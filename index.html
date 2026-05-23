@@ -206,6 +206,9 @@ const SMONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','
 
 function setHeader(){
   const d=new Date();
+  const hr=d.getHours();
+  const greeting=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  document.getElementById('mh-title').textContent=greeting+', Alex.';
   document.getElementById('mh-date').textContent=DAYS[d.getDay()]+', '+MONTHS[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
   document.getElementById('last-updated').textContent='Updated '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
 }
