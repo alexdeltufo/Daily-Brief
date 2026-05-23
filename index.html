@@ -243,7 +243,12 @@ function updateProgress(checked){
   document.getElementById('progress-bar').style.width=Math.round(done/total*100)+'%';
   document.getElementById('progress-label').textContent=done+' of '+total;
   document.getElementById('routine-badge').textContent=done+' / '+total;
-  document.getElementById('all-done').style.display=done===total?'block':'none';
+  if(done===total){
+  document.getElementById('all-done').style.display='block';
+  launchConfetti();
+} else {
+  document.getElementById('all-done').style.display='none';
+}
 }
 function toggleItem(id){
   const s=loadState();s.checked[id]=!s.checked[id];saveState(s);
@@ -393,7 +398,20 @@ async function loadTasks(){
     container.insertAdjacentHTML('afterbegin',`<div class="err">Could not load tasks — check CLICKUP_API_KEY in Vercel.</div>`);
   }
 }
-
+function launchConfetti(){
+  const colors=['#A0644A','#6B8C6B','#D4A574','#8B6914','#C4956A','#7A9E7A'];
+  for(let i=0;i<120;i++){
+    const el=document.createElement('div');
+    el.style.cssText=`position:fixed;top:-10px;left:${Math.random()*100}vw;width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'2px'};opacity:1;z-index:9999;pointer-events:none;`;
+    document.body.appendChild(el);
+    const duration=1500+Math.random()*1500;
+    const drift=(Math.random()-0.5)*200;
+    el.animate([
+      {transform:`translate(0,0) rotate(0deg)`,opacity:1},
+      {transform:`translate(${drift}px,100vh) rotate(${Math.random()*720}deg)`,opacity:0}
+    ],{duration,easing:'cubic-bezier(0.25,0.46,0.45,0.94)'}).onfinish=()=>el.remove();
+  }
+}
 // ── INIT ─────────────────────────────────────────────
 setHeader();
 buildRoutine();
