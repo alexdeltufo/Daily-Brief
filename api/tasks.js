@@ -11,12 +11,12 @@ export default async function handler(req, res) {
     const teamId = teamData.teams?.[0]?.id;
     if (!teamId) return res.status(500).json({ error: 'No workspace found' });
 
-    const priRes = await fetch(
-      `https://api.clickup.com/api/v2/team/${teamId}/user/180041229/priorities`,
+    const taskRes = await fetch(
+      `https://api.clickup.com/api/v2/team/${teamId}/task?assignees[]=180041229&order_by=due_date&reverse=false&include_closed=false`,
       { headers: { Authorization: apiKey } }
     );
-    const priData = await priRes.json();
-    res.status(200).json(priData.tasks || priData || []);
+    const taskData = await taskRes.json();
+    res.status(200).json((taskData.tasks || []).slice(0, 10));
   } catch(e) {
     res.status(500).json({ error: e.message });
   }
