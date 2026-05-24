@@ -89,6 +89,20 @@
   .connect-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--ac); color: white; border-radius: 20px; padding: 7px 16px; font-size: 11px; text-decoration: none; font-family: 'DM Mono', monospace; letter-spacing: .05em; white-space: nowrap; }
   .connect-btn:hover { background: #7a5c10; }
   .connect-note { font-size: 12px; color: var(--im); font-family: 'EB Garamond', serif; font-style: italic; }
+
+  /* ── HABIT TRACKER ── */
+  .habit-section { border-top: 0.5px solid var(--ru); padding: 1rem 1.5rem 1.1rem; background: var(--p); }
+  .habit-section-label { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: var(--if); margin-bottom: .85rem; }
+  .habit-row { display: flex; align-items: center; gap: 10px; margin-bottom: .6rem; }
+  .habit-row:last-child { margin-bottom: 0; }
+  .habit-name { font-size: 12px; color: var(--im); flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .habit-dots { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+  .habit-dot { width: 11px; height: 11px; border-radius: 50%; border: 1.5px solid var(--ru); background: var(--p); cursor: pointer; transition: background .15s, border-color .15s; flex-shrink: 0; }
+  .habit-dot.filled { border-color: var(--ac); background: var(--ac); }
+  .habit-streak { font-size: 10px; color: var(--if); min-width: 28px; text-align: right; font-variant-numeric: tabular-nums; }
+  .habit-week-label { font-size: 9px; color: var(--if); text-align: center; margin-bottom: .4rem; letter-spacing: .04em; }
+  .habit-day-labels { display: flex; gap: 5px; justify-content: flex-end; padding-right: 0; margin-bottom: .35rem; }
+  .habit-day-lbl { width: 11px; font-size: 8px; color: var(--if); text-align: center; flex-shrink: 0; }
   @keyframes pulse { 0%,100%{opacity:.35}50%{opacity:1} }
   .dot { display: inline-block; animation: pulse 1.2s infinite; }
   ::-webkit-scrollbar { width: 6px; }
@@ -188,6 +202,11 @@
     </div>
     <div id="routine-items"></div>
     <div class="all-done-banner" id="all-done">All done for today — well earned. ✦</div>
+    <div class="habit-section" id="habit-section">
+      <div class="habit-section-label">Weekly Goals</div>
+      <div class="habit-day-labels" id="habit-day-labels"></div>
+      <div id="habit-rows"></div>
+    </div>
   </div>
 </div>
 
@@ -451,6 +470,94 @@ function launchConfetti(){
   }
 }
 
+
+// ── HABIT TRACKER ─────────────────────────────────────
+const HABITS = [
+  { id: 'cook',    label: 'Cook full meals',                   goal: 4 },
+  { id: 'clients', label: 'Reach out to new clients',          goal: 3 },
+  { id: 'hobby',   label: 'Hobby time — pottery or writing',   goal: 2 },
+  { id: 'clean',   label: 'Weekly house clean',                goal: 1 },
+];
+const HKEY = 'dailybrief_habits';
+const DAY_ABBR = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+function getWeekKey() {
+  const d = new Date();
+  const day = d.getDay();
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+  return monday.getFullYear() + '-' + String(monday.getMonth()+1).padStart(2,'0') + '-' + String(monday.getDate()).padStart(2,'0');
+}
+
+function getWeekDays() {
+  const d = new Date();
+  const day = d.getDay();
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+  return Array.from({length: 7}, (_, i) => {
+    const dd = new Date(monday);
+    dd.setDate(monday.getDate() + i);
+    return dd;
+  });
+}
+
+function loadHabits() {
+  try {
+    const r = localStorage.getItem(HKEY);
+    if (!r) return { week: getWeekKey(), data: {} };
+    const s = JSON.parse(r);
+    if (s.week !== getWeekKey()) return { week: getWeekKey(), data: {} };
+    return s;
+  } catch(e) { return { week: getWeekKey(), data: {} }; }
+}
+
+function saveHabits(s) { try { localStorage.setItem(HKEY, JSON.stringify(s)); } catch(e) {} }
+
+function toggleHabitDay(habitId, dayIdx) {
+  const s = loadHabits();
+  if (!s.data[habitId]) s.data[habitId] = [];
+  const idx = s.data[habitId].indexOf(dayIdx);
+  if (idx === -1) s.data[habitId].push(dayIdx);
+  else s.data[habitId].splice(idx, 1);
+  saveHabits(s);
+  buildHabits();
+}
+
+function buildHabits() {
+  const s = loadHabits();
+  const days = getWeekDays();
+  const today = new Date();
+
+  // Day labels
+  const lblContainer = document.getElementById('habit-day-labels');
+  const todayDots = days.map((d,i) => {
+    const isToday = d.toDateString() === today.toDateString();
+    return `<div class="habit-day-lbl" style="${isToday ? 'color:var(--ac);font-weight:500' : ''}">${DAY_ABBR[d.getDay()]}</div>`;
+  }).join('');
+  lblContainer.innerHTML = '<div style="flex:1;min-width:0"></div>' + todayDots + '<div style="min-width:36px"></div>';
+
+  // Habit rows
+  const container = document.getElementById('habit-rows');
+  container.innerHTML = '';
+  HABITS.forEach(h => {
+    const checked = s.data[h.id] || [];
+    const count = checked.length;
+    const done = count >= h.goal;
+    const dots = days.map((d, i) => {
+      const isPast = d <= today;
+      const filled = checked.includes(i);
+      const opacity = !isPast && !filled ? 'opacity:0.4;' : '';
+      return `<div class="habit-dot${filled ? ' filled' : ''}" style="${opacity}" onclick="toggleHabitDay('${h.id}', ${i})" title="${DAY_ABBR[d.getDay()]}"></div>`;
+    }).join('');
+    const streakColor = done ? 'color:var(--ac)' : 'color:var(--if)';
+    container.innerHTML += `<div class="habit-row">
+      <div class="habit-name" style="${done ? 'color:var(--ink)' : ''}">${h.label}</div>
+      <div class="habit-dots">${dots}</div>
+      <div class="habit-streak" style="${streakColor};min-width:36px;text-align:right">${count}/${h.goal}</div>
+    </div>`;
+  });
+}
+
 // ── INIT ─────────────────────────────────────────────
 setHeader();
 buildRoutine();
@@ -458,6 +565,7 @@ loadCalendar();
 loadTasks();
 updateNow();
 setInterval(updateNow, 1000);
+buildHabits();
 </script>
 </body>
 </html>
