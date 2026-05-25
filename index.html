@@ -413,20 +413,32 @@ async function loadCalendar(){
     if(!res.ok)throw new Error('HTTP '+res.status);
     const events=await res.json();
     document.getElementById('cal-loading')?.remove();
-    if(!events.length){container.insertAdjacentHTML('afterbegin','<div class="loading">No events this week.</div>');document.getElementById('cal-badge').textContent='0';return;}
+    const todayStart=new Date();todayStart.setHours(0,0,0,0);
+    if(!events.length){
+      container.insertAdjacentHTML('afterbegin','<div class="loading">No events this week.</div>');
+      document.getElementById('cal-badge').textContent='0';
+      return;
+    }
     const groups={};
     events.forEach(ev=>{const k=getDateKey(ev);if(!groups[k])groups[k]=[];groups[k].push(ev);});
     const footHtml=`<div class="foot-row"><a class="ql" href="https://calendar.google.com" target="_blank" style="padding:4px 12px;font-size:10px;"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Open Google Calendar</a></div>`;
     let html='',count=0;
-    Object.keys(groups).sort().forEach(k=>{
+    const allDays=[];
+    for(let i=0;i<7;i++){const d=new Date(todayStart);d.setDate(d.getDate()+i);allDays.push(d.toISOString().slice(0,10));}
+    allDays.forEach(k=>{
       const{label,today}=dayLabel(k);
       html+=`<div class="day-hdr${today?' today':''}">${label}${today?' — Today':''}</div>`;
+      if(!groups[k]||!groups[k].length){
+        html+=`<div class="erow"><span style="width:8px;height:8px;border-radius:50%;background:var(--if);display:inline-block;flex-shrink:0;margin-top:4px"></span><div class="erow-main"><div class="erow-label" style="color:var(--if);font-style:italic">Nothing scheduled</div></div></div>`;
+        return;
+      }
       groups[k].forEach(ev=>{
         count++;
         const allDay=!ev.start?.dateTime;
         const timeStr=allDay?'All day':fmtTime(ev.start.dateTime)+' – '+fmtTime(ev.end.dateTime);
         const loc=ev.location?`<br><span style="color:var(--if);font-size:10px">📍 ${ev.location}</span>`:'';
-        html+=`<div class="erow"><svg viewBox="0 0 24 24" style="stroke:var(--ac)"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><div class="erow-main"><div class="erow-label">${ev.summary||'(No title)'}</div><div class="erow-sub">${timeStr}${loc}</div></div><div class="erow-right"><span class="pill ${allDay?'p-alld':'p-ev'}">${allDay?'All day':'Event'}</span>${ev.htmlLink?`<a class="tlink" href="${ev.htmlLink}" target="_blank">Open ↗</a>`:''}</div></div>`;
+        const dot=`<span style="width:8px;height:8px;border-radius:50%;background:${ev._calColor||'var(--ac)'};display:inline-block;flex-shrink:0;margin-top:4px"></span>`;
+        html+=`<div class="erow">${dot}<div class="erow-main"><div class="erow-label">${ev.summary||'(No title)'}</div><div class="erow-sub">${timeStr}${loc}</div></div><div class="erow-right"><span class="pill ${allDay?'p-alld':'p-ev'}">${allDay?'All day':'Event'}</span>${ev.htmlLink?`<a class="tlink" href="${ev.htmlLink}" target="_blank">Open ↗</a>`:''}</div></div>`;
       });
     });
     container.insertAdjacentHTML('afterbegin',html);
@@ -437,7 +449,6 @@ async function loadCalendar(){
     container.insertAdjacentHTML('afterbegin',`<div class="err">Could not load calendar — try refreshing.</div>`);
   }
 }
-
 // ── CLICKUP ──────────────────────────────────────────
 function pillClass(priority,status){if(status==='in progress')return 'p-ip';if(priority==='low')return 'p-lo';return 'p-td';}
 function pillLabel(priority,status){if(status==='in progress')return 'In Progress';if(priority==='urgent'||priority==='high')return priority.charAt(0).toUpperCase()+priority.slice(1);if(priority==='low')return 'Low';return 'To Do';}
