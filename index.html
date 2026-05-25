@@ -35,6 +35,7 @@
   .ql { display: inline-flex; align-items: center; gap: 6px; background: var(--p); border: 0.5px solid var(--ru); border-radius: 20px; padding: 6px 14px; font-size: 11px; letter-spacing: .05em; color: var(--im); text-decoration: none; transition: background .15s, color .15s; font-family: 'DM Mono', monospace; }
   .ql:hover { background: var(--pd); color: var(--ink); }
   .ql svg { width: 13px; height: 13px; stroke: var(--ac); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .sec { scroll-margin-top: 1rem; }
   .sec { background: var(--p); border: 0.5px solid var(--ru); border-radius: 13px; margin-bottom: .9rem; overflow: hidden; }
   .sec-header { display: flex; align-items: center; gap: 10px; padding: .9rem 1.5rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); cursor: pointer; user-select: none; }
   .sec-header:hover { background: var(--pdd); }
@@ -154,21 +155,25 @@
 </div>
 
 <div class="quicklinks">
-  <a class="ql" href="https://calendar.google.com" target="_blank">
-    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    Google Calendar
-  </a>
-  <a class="ql" href="https://app.clickup.com/home" target="_blank">
+  <a class="ql" href="#sec-1">
     <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    ClickUp
+    Routine
   </a>
-  <a class="ql" href="https://www.notion.so" target="_blank">
+  <a class="ql" href="#sec-2">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Calendar
+  </a>
+  <a class="ql" href="#sec-3">
+    <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Tasks
+  </a>
+  <a class="ql" href="#sec-4">
     <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>
     Notion
   </a>
-  <a class="ql" href="https://mail.google.com" target="_blank">
-    <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-    Gmail
+  <a class="ql" href="#sec-5">
+    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    Notes
   </a>
 </div>
 
