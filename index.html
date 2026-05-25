@@ -539,32 +539,27 @@ function renderTasks(tasks, by){
   tasks.forEach(t=>{
     const due=fmtDue(t.due_date);
     const sub=[t.list?.name,due].filter(Boolean).join(' · ');
-    let pillText, pillClass;
+    const inProgress=t.status?.status==='in progress';
+    let pillHtml;
     if(by==='status'){
-  const statusColors={'in progress':'#f8ae00','pending client':'#e16b16','to do':'#8B8B8B'};
-  const s=t.status?.status||'';
-  const color=statusColors[s]||'#8B8B8B';
-  pillText=s.charAt(0).toUpperCase()+s.slice(1)||'—';
-  pillClass='';
-  html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${s==='in progress'?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div><div class="erow-sub">${sub||'&nbsp;'}</div></div><div class="erow-right"><span class="pill" style="background:${color}22;color:${color}">${pillText}</span><a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
-  return;
-}
+      const colors={'in progress':'#f8ae00','pending client':'#e16b16'};
+      const s=t.status?.status||'';
+      const color=colors[s]||'#9B9B9B';
+      const label=s.charAt(0).toUpperCase()+s.slice(1)||'—';
+      pillHtml=`<span class="pill" style="background:${color}22;color:${color}">${label}</span>`;
     } else if(by==='priority'){
-  const priorityColors={'urgent':'#ff4444','high':'#ff8800','normal':'#6fddff','low':'#d8d8d8'};
-  const p=t.priority?.priority||'';
-  const color=priorityColors[p]||'#d8d8d8';
-  pillText=p?p.charAt(0).toUpperCase()+p.slice(1):'—';
-  html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${t.status?.status==='in progress'?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div><div class="erow-sub">${sub||'&nbsp;'}</div></div><div class="erow-right"><span class="pill" style="background:${color}22;color:${color}">${pillText}</span><a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
-  return;
-}
+      const colors={'urgent':'#ff4444','high':'#ff8800','normal':'#378ADD','low':'#9B9B9B'};
+      const p=t.priority?.priority||'';
+      const color=colors[p]||'#9B9B9B';
+      const label=p?p.charAt(0).toUpperCase()+p.slice(1):'—';
+      pillHtml=`<span class="pill" style="background:${color}22;color:${color}">${label}</span>`;
     } else if(by==='project'){
-      pillText=t.list?.name||'—';
-      pillClass='p-td';
-    } else if(by==='due'){
-      pillText=due||'No due date';
-      pillClass=due==='Due today'?'p-ip':'p-td';
+      pillHtml=`<span class="pill p-td">${t.list?.name||'—'}</span>`;
+    } else {
+      const color=due==='Due today'?'#ff4444':due==='Due tomorrow'?'#ff8800':'#9B9B9B';
+      pillHtml=`<span class="pill" style="background:${color}22;color:${color}">${due||'No due date'}</span>`;
     }
-    html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${t.status?.status==='in progress'?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div><div class="erow-sub">${sub||'&nbsp;'}</div></div><div class="erow-right"><span class="pill ${pillClass}">${pillText}</span><a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
+    html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${inProgress?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div><div class="erow-sub">${sub||'&nbsp;'}</div></div><div class="erow-right">${pillHtml}<a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
   });
   let taskList=document.getElementById('task-list');
   if(!taskList){taskList=document.createElement('div');taskList.id='task-list';container.appendChild(taskList);}
