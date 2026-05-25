@@ -132,6 +132,9 @@
   .now-next { display: flex; align-items: center; gap: 6px; background: var(--pd); border-radius: 8px; padding: 0.45rem 0.875rem; margin-top: 0.85rem; font-size: 11px; color: var(--im); }
   .now-next strong { color: var(--ink); font-weight: 500; }
   .now-clock { font-size: 10px; color: var(--if); text-align: right; margin-top: 0.2rem; font-variant-numeric: tabular-nums; }
+  .sort-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--im); background: none; border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 10px; cursor: pointer; font-family: 'Geist Mono', monospace; transition: all .15s; }
+  .sort-btn:hover { background: var(--pdd); color: var(--ink); }
+  .sort-btn.active { background: var(--ink); color: var(--p); border-color: var(--ink); }
 </style>
 </head>
 <body>
@@ -507,6 +510,41 @@ async function loadCalendar(){
 function pillClass(priority,status){if(status==='in progress')return 'p-ip';if(priority==='low')return 'p-lo';return 'p-td';}
 function pillLabel(priority,status){if(status==='in progress')return 'In Progress';if(priority==='urgent'||priority==='high')return priority.charAt(0).toUpperCase()+priority.slice(1);if(priority==='low')return 'Low';return 'To Do';}
 function fmtDue(ms){if(!ms)return null;const d=new Date(parseInt(ms));const today=new Date();if(d.toDateString()===today.toDateString())return'Due today';const tom=new Date(today);tom.setDate(today.getDate()+1);if(d.toDateString()===tom.toDateString())return'Due tomorrow';return'Due '+SMONS[d.getMonth()]+' '+d.getDate();}
+let ALL_TASKS=[];
+function sortTasks(by){
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('active',b.dataset.sort===by));
+  let sorted=[...ALL_TASKS];
+  if(by==='status'){
+    const order={'in progress':0,'to do':1,'low':2};
+    sorted.sort((a,b)=>(order[a.status?.status]??9)-(order[b.status?.status]??9));
+  }else if(by==='priority'){
+    const order={'urgent':0,'high':1,'normal':2,'low':3};
+    sorted.sort((a,b)=>(order[a.priority?.priority]??9)-(order[b.priority?.priority]??9));
+  }else if(by==='project'){
+    sorted.sort((a,b)=>(a.list?.name||'').localeCompare(b.list?.name||''));
+  }else if(by==='due'){
+    sorted.sort((a,b)=>{
+      if(!a.due_date&&!b.due_date)return 0;
+      if(!a.due_date)return 1;
+      if(!b.due_date)return -1;
+      return parseInt(a.due_date)-parseInt(b.due_date);
+    });
+  }
+  renderTasks(sorted);
+}
+function renderTasks(tasks){
+  const container=document.getElementById('body-sec-3');
+  const footer=`<div class="foot-row"><a class="ql" href="https://app.clickup.com/home" target="_blank" style="padding:4px 12px;font-size:10px;"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>All tasks in ClickUp</a></div>`;
+  let html='';
+  tasks.forEach(t=>{
+    const due=fmtDue(t.due_date);
+    const sub=[t.list?.name,due].filter(Boolean).join(' · ');
+    const pc=pillClass(t.priority?.priority,t.status?.status);
+    const pl=pillLabel(t.priority?.priority,t.status?.status);
+    html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${t.status?.status==='in progress'?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div>${sub?`<div class="erow-sub">${sub}</div>`:''}</div><div class="erow-right"><span class="pill ${pc}">${pl}</span><a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
+  });
+  container.innerHTML=html+footer;
+}
 async function loadTasks(){
   const container=document.getElementById('body-sec-3');
   try{
@@ -515,16 +553,15 @@ async function loadTasks(){
     const tasks=await res.json();
     document.getElementById('task-loading')?.remove();
     if(!tasks.length){container.innerHTML='<div class="loading">No open tasks.</div>';document.getElementById('task-badge').textContent='0';return;}
-    let html='';
-    tasks.forEach(t=>{
-      const due=fmtDue(t.due_date);
-      const sub=[t.list?.name,due].filter(Boolean).join(' · ');
-      const pc=pillClass(t.priority?.priority,t.status?.status);
-      const pl=pillLabel(t.priority?.priority,t.status?.status);
-      html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${t.status?.status==='in progress'?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div>${sub?`<div class="erow-sub">${sub}</div>`:''}</div><div class="erow-right"><span class="pill ${pc}">${pl}</span><a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
-    });
-    html+=`<div class="foot-row"><a class="ql" href="https://app.clickup.com/home" target="_blank" style="padding:4px 12px;font-size:10px;"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>All tasks in ClickUp</a></div>`;
-    container.innerHTML=html;
+    ALL_TASKS=tasks;
+    const sortBar=`<div style="display:flex;gap:6px;padding:.5rem 1.5rem;border-bottom:0.5px solid var(--ru);background:var(--pd);flex-wrap:wrap;">
+      <button class="sort-btn active" data-sort="status" onclick="sortTasks('status')">Status</button>
+      <button class="sort-btn" data-sort="priority" onclick="sortTasks('priority')">Priority</button>
+      <button class="sort-btn" data-sort="project" onclick="sortTasks('project')">Project</button>
+      <button class="sort-btn" data-sort="due" onclick="sortTasks('due')">Due Date</button>
+    </div>`;
+    container.innerHTML=sortBar;
+    sortTasks('status');
     document.getElementById('task-badge').textContent=tasks.length;
   }catch(e){
     document.getElementById('task-loading').textContent='';
