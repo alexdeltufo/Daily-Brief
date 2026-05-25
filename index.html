@@ -349,7 +349,7 @@ function buildRoutine(){
 const NOW_BLOCKS=[
   {label:'Asleep',                  desc:"Rest up. You've got a full day ahead.",                                          start:0,    end:7.5,  color:'#7F77DD'},
   {label:'Wake up',                 desc:'Take your time waking up. No screens yet — ease into the day.',                 start:7.5,  end:7.75, color:'#EF9F27'},
-  {label:'Coffee & screen-free',    desc:'Brew something good, sit with it. No scrolling, no pings.',                     start:7.75, end:8.25, color:'#EF9F27'},
+  {label:'Coffee & screen-free',    desc:'Brew coffee, sit with it. No scrolling.',                     start:7.75, end:8.25, color:'#EF9F27'},
   {label:'Morning yoga',            desc:'30 minutes on the mat. Move, breathe, set your intention.',                     start:8.25, end:8.75, color:'#1D9E75'},
   {label:'Morning work block',      desc:'Deep focus time. Tackle your most important work while your energy is fresh.',   start:8.75, end:12.0, color:'#378ADD'},
   {label:'Midday check-in',         desc:'Take stock of the morning. Triage messages, update ClickUp, plan the PM.',      start:12.0, end:12.5, color:'#D85A30'},
@@ -359,8 +359,8 @@ const NOW_BLOCKS=[
   {label:'Workout',                 desc:'Sweat it out. Move hard, clear your head.',                                     start:18.0, end:19.0, color:'#1D9E75'},
   {label:'Cook dinner',             desc:'Offline and in the kitchen. A good meal to close the workday.',                 start:19.0, end:20.0, color:'#EF9F27'},
   {label:'TV & evening relax',      desc:'Decompress. No work thoughts — just rest and enjoy the evening.',               start:20.0, end:22.0, color:'#7F77DD'},
-  {label:'Reading before bed',      desc:'Wind down with a book. Give your brain a rest from screens before sleep.',      start:22.0, end:23.0, color:'#7F77DD'},
-  {label:'Sleep',                   desc:'Lights out by 11. Good night.',                                                 start:23.0, end:24.0, color:'#7F77DD'},
+  {label:'Reading before bed',      desc:'Wind down with a book.',      start:22.0, end:23.0, color:'#7F77DD'},
+  {label:'Sleep',                   desc:'Lights out by 11. Good night!',                                                 start:23.0, end:24.0, color:'#7F77DD'},
 ];
 function nowFmt(h){
   const w=Math.floor(h),m=Math.round((h-w)*60),ampm=w<12?'am':'pm',h12=w%12===0?12:w%12;
