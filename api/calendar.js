@@ -39,7 +39,10 @@ export default async function handler(req, res) {
     );
     const calList = await calListRes.json();
     const calendarMap = {};
-(calList.items || []).forEach(c => { calendarMap[c.id] = c.backgroundColor || '#8A9A5B'; });
+(calList.items || []).forEach(c => { 
+  calendarMap[c.id] = c.backgroundColor || '#8A9A5B';
+  calendarMap[c.id+'_name'] = c.summary || '';
+});
 const calendarIds = Object.keys(calendarMap);
     
     // Fetch events from all calendars
