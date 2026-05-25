@@ -38,8 +38,10 @@ export default async function handler(req, res) {
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
     const calList = await calListRes.json();
-    const calendarIds = (calList.items || []).map(c => c.id);
-
+    const calendarMap = {};
+(calList.items || []).forEach(c => { calendarMap[c.id] = c.backgroundColor || '#8A9A5B'; });
+const calendarIds = Object.keys(calendarMap);
+    
     // Fetch events from all calendars
     const allEvents = await Promise.all(
       calendarIds.map(id =>
