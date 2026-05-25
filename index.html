@@ -46,6 +46,8 @@
   .sec-body { padding: 0; }
   .sec-body.closed { display: none; }
   .sec-header.closed .sec-chev { transform: rotate(-90deg); }
+  #sec-notes-mobile { display: block; }
+@media (min-width: 1160px) { #sec-notes-mobile { display: none; } }
   .routine-progress { padding: .65rem 1.5rem; background: #F0EAE0; border-bottom: 0.5px solid var(--ru); display: flex; align-items: center; gap: 12px; }
   .progress-bar-wrap { flex: 1; height: 4px; background: var(--ru); border-radius: 2px; overflow: hidden; }
   .progress-bar { height: 100%; background: var(--ac); border-radius: 2px; transition: width .4s ease; }
@@ -714,23 +716,44 @@ function buildHabits() {
 }
 // ── NOTES ─────────────────────────────────────────────
 let notesTimer=null;
+let notesTimer=null;
 async function loadNotes(){
   try{
     const r=await fetch('/api/notes');
     const d=await r.json();
-    document.getElementById('notes-area').value=d.text||'';
-    document.getElementById('notes-status').textContent='Saved';
+    const text=d.text||'';
+    const desktop=document.getElementById('notes-area');
+    const mobile=document.getElementById('notes-area-mobile');
+    if(desktop)desktop.value=text;
+    if(mobile)mobile.value=text;
+    setNotesStatus('Saved');
   }catch(e){}
 }
+function setNotesStatus(msg){
+  const ds=document.getElementById('notes-status');
+  const ms=document.getElementById('notes-status-mobile');
+  if(ds)ds.textContent=msg;
+  if(ms)ms.textContent=msg;
+}
 async function saveNotes(){
-  const text=document.getElementById('notes-area').value;
+  const desktop=document.getElementById('notes-area');
+  const mobile=document.getElementById('notes-area-mobile');
+  const text=(desktop||mobile).value;
   try{
     await fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
-    document.getElementById('notes-status').textContent='Saved · '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-  }catch(e){
-    document.getElementById('notes-status').textContent='Save failed';
-  }
+    setNotesStatus('Saved · '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}));
+  }catch(e){ setNotesStatus('Save failed'); }
 }
+document.addEventListener('DOMContentLoaded',()=>{
+  ['notes-area','notes-area-mobile'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.addEventListener('input',()=>{
+      setNotesStatus('Saving...');
+      clearTimeout(notesTimer);
+      notesTimer=setTimeout(saveNotes,1000);
+    });
+  });
+});
 document.addEventListener('DOMContentLoaded',()=>{
   const area=document.getElementById('notes-area');
   area.addEventListener('input',()=>{
@@ -757,6 +780,17 @@ loadNotes();
   </div>
   <textarea id="notes-area" placeholder="Jot something down..." style="width:100%;height:300px;padding:.75rem 1rem;font-size:10px;font-family:'Geist Mono',monospace;color:var(--ink);background:var(--p);border:none;outline:none;resize:none;line-height:1.6;"></textarea>
   <div style="padding:.3rem 1rem;font-size:9px;color:var(--if);background:var(--pd);border-top:0.5px solid var(--ru)" id="notes-status">—</div>
+</div>
+  <div class="sec" id="sec-notes-mobile" style="display:block">
+  <div class="sec-header" onclick="toggleSec('sec-notes-mobile')">
+    <span class="sec-num">V.</span>
+    <span class="sec-title">Notes</span>
+    <span class="sec-chev">▾</span>
+  </div>
+  <div class="sec-body" id="body-sec-notes-mobile">
+    <textarea id="notes-area-mobile" placeholder="Jot something down..." style="width:100%;min-height:180px;padding:1rem 1.5rem;font-size:11px;font-family:'Geist Mono',monospace;color:var(--ink);background:var(--p);border:none;outline:none;resize:vertical;line-height:1.6;"></textarea>
+    <div style="padding:.3rem 1.5rem;font-size:9px;color:var(--if);background:var(--pd);border-top:0.5px solid var(--ru)" id="notes-status-mobile">—</div>
+  </div>
 </div>
 </body>
 </html>
