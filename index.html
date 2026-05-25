@@ -295,6 +295,22 @@ function setHeader(){
 function toggleSec(id){
   document.querySelector('#'+id+' .sec-header').classList.toggle('closed');
   document.getElementById('body-'+id).classList.toggle('closed');
+  const closed={};
+  document.querySelectorAll('.sec').forEach(s=>{
+    closed[s.id]=document.getElementById('body-'+s.id)?.classList.contains('closed');
+  });
+  localStorage.setItem('dailybrief_sections',JSON.stringify(closed));
+}
+  function restoreSections(){
+  try{
+    const closed=JSON.parse(localStorage.getItem('dailybrief_sections')||'{}');
+    Object.entries(closed).forEach(([id,isClosed])=>{
+      if(isClosed){
+        document.querySelector('#'+id+' .sec-header')?.classList.add('closed');
+        document.getElementById('body-'+id)?.classList.add('closed');
+      }
+    });
+  }catch(e){}
 }
 // ── WEATHER ──────────────────────────────────────────
 async function loadWeather(){
@@ -719,6 +735,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   });
 });
 // ── INIT ─────────────────────────────────────────────
+restoreSections();
 setHeader();
 buildRoutine();
 loadCalendar();
