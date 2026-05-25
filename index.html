@@ -541,13 +541,22 @@ function renderTasks(tasks, by){
     const sub=[t.list?.name,due].filter(Boolean).join(' · ');
     let pillText, pillClass;
     if(by==='status'){
-      pillText=t.status?.status||'—';
-      pillText=pillText.charAt(0).toUpperCase()+pillText.slice(1);
-      pillClass=t.status?.status==='in progress'?'p-ip':'p-td';
+  const statusColors={'in progress':'#f8ae00','pending client':'#e16b16','to do':'#8B8B8B'};
+  const s=t.status?.status||'';
+  const color=statusColors[s]||'#8B8B8B';
+  pillText=s.charAt(0).toUpperCase()+s.slice(1)||'—';
+  pillClass='';
+  html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${s==='in progress'?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div><div class="erow-sub">${sub||'&nbsp;'}</div></div><div class="erow-right"><span class="pill" style="background:${color}22;color:${color}">${pillText}</span><a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
+  return;
+}
     } else if(by==='priority'){
-      pillText=t.priority?.priority||'—';
-      pillText=pillText.charAt(0).toUpperCase()+pillText.slice(1);
-      pillClass=t.priority?.priority==='low'?'p-lo':'p-td';
+  const priorityColors={'urgent':'#ff4444','high':'#ff8800','normal':'#6fddff','low':'#d8d8d8'};
+  const p=t.priority?.priority||'';
+  const color=priorityColors[p]||'#d8d8d8';
+  pillText=p?p.charAt(0).toUpperCase()+p.slice(1):'—';
+  html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${t.status?.status==='in progress'?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div><div class="erow-sub">${sub||'&nbsp;'}</div></div><div class="erow-right"><span class="pill" style="background:${color}22;color:${color}">${pillText}</span><a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
+  return;
+}
     } else if(by==='project'){
       pillText=t.list?.name||'—';
       pillClass='p-td';
