@@ -3,7 +3,7 @@ export default async function handler(req, res) {
 
   let accessToken = req.cookies?.gcal_access;
   const refreshToken = req.cookies?.gcal_refresh;
-
+  
   // If no access token, try to refresh
   if (!accessToken && refreshToken) {
     const refreshRes = await fetch('https://oauth2.googleapis.com/token', {
