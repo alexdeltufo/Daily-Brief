@@ -480,7 +480,7 @@ async function loadTasks(){
       const sub=[t.list?.name,due].filter(Boolean).join(' · ');
       const pc=pillClass(t.priority?.priority,t.status?.status);
       const pl=pillLabel(t.priority?.priority,t.status?.status);
-      html+=`<div class=""><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${t.status?.status==='in progress'?'100':'3 2'}"/></svg><div class="-main"><div class="erow-label">${t.name}</div>${sub?`<div class="erow-sub">${sub}</div>`:''}</div><div class="erow-right"><span class="pill ${pc}">${pl}</span><a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
+      html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${t.status?.status==='in progress'?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div>${sub?`<div class="erow-sub">${sub}</div>`:''}</div><div class="erow-right"><span class="pill ${pc}">${pl}</span><a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
     });
     html+=`<div class="foot-row"><a class="ql" href="https://app.clickup.com/home" target="_blank" style="padding:4px 12px;font-size:10px;"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>All tasks in ClickUp</a></div>`;
     container.innerHTML=html;
