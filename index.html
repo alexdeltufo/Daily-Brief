@@ -451,7 +451,7 @@ async function loadCalendar(){
         const timeStr=allDay?'All day':fmtTime(ev.start.dateTime)+' – '+fmtTime(ev.end.dateTime);
         const loc=ev.location?`<br><span style="color:var(--if);font-size:10px">📍 ${ev.location}</span>`:'';
         const dot=`<span style="width:8px;height:8px;border-radius:50%;background:${ev._calColor||'var(--ac)'};display:inline-block;flex-shrink:0;margin-top:4px"></span>`;
-        html+=`<div class="erow">${dot}<div class="-main"><div class="-label">${ev.summary||'(No title)'}</div><div class="-sub">${timeStr}${loc}</div></div><div class="-right"><span class="pill ${allDay?'p-alld':'p-ev'}">${allDay?'All day':'Event'}</span>${ev.htmlLink?`<a class="tlink" href="${ev.htmlLink}" target="_blank">Open ↗</a>`:''}</div></div>`;
+        html+=`<div class="erow">${dot}<div class="erow-main"><div class="erow-label">${ev.summary||'(No title)'}</div><div class="erow-sub">${timeStr}${loc}</div></div><div class="erow-right"><span class="erow-pill ${allDay?'p-alld':'p-ev'}">${allDay?'All day':'Event'}</span>${ev.htmlLink?`<a class="erow-tlink" href="${ev.htmlLink}" target="_blank">Open ↗</a>`:''}</div></div>`;
       });
     });
     container.insertAdjacentHTML('afterbegin',html);
