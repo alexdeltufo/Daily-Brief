@@ -135,6 +135,9 @@
   .sort-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--im); background: none; border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 10px; cursor: pointer; font-family: 'Geist Mono', monospace; transition: all .15s; }
   .sort-btn:hover { background: var(--pdd); color: var(--ink); }
   .sort-btn.active { background: var(--ink); color: var(--p); border-color: var(--ink); }
+  .side-panel { position: fixed; top: 2rem; right: calc((100vw - 720px) / 2 - 220px); width: 200px; background: var(--p); border: 0.5px solid var(--ru); border-radius: 13px; overflow: hidden; display: none; }
+@media (min-width: 1160px) { .side-panel { display: block; } }
+.side-panel-hdr { padding: .6rem 1rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: var(--im); }
 </style>
 </head>
 <body>
@@ -272,18 +275,7 @@
     </div>
   </div>
 </div>
-  <!-- V. NOTES -->
-<div class="sec" id="sec-5">
-  <div class="sec-header" onclick="toggleSec('sec-5')">
-    <span class="sec-num">V.</span>
-    <span class="sec-title">Notes & Quick Tasks</span>
-    <span class="sec-chev">▾</span>
-  </div>
-  <div class="sec-body" id="body-sec-5">
-    <textarea id="notes-area" placeholder="Jot something down..." style="width:100%;min-height:180px;padding:1rem 1.5rem;font-size:11px;font-family:'Geist Mono',monospace;color:var(--ink);background:var(--p);border:none;outline:none;resize:vertical;line-height:1.6;"></textarea>
-    <div style="padding:.4rem 1.5rem;font-size:9px;color:var(--if);background:var(--pd);border-top:0.5px solid var(--ru)" id="notes-status">Auto-saving...</div>
-  </div>
-</div>
+
 
 <script>
 const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -737,5 +729,12 @@ buildHabits();
 loadWeather();
 loadNotes();
 </script>
+  <div class="side-panel">
+  <div class="side-panel-hdr">
+    Notes
+  </div>
+  <textarea id="notes-area" placeholder="Jot something down..." style="width:100%;height:300px;padding:.75rem 1rem;font-size:10px;font-family:'Geist Mono',monospace;color:var(--ink);background:var(--p);border:none;outline:none;resize:none;line-height:1.6;"></textarea>
+  <div style="padding:.3rem 1rem;font-size:9px;color:var(--if);background:var(--pd);border-top:0.5px solid var(--ru)" id="notes-status">—</div>
+</div>
 </body>
 </html>
