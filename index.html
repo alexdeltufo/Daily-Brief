@@ -141,6 +141,7 @@
   <div class="eyebrow">Daily Brief</div>
   <div class="mh-title" id="mh-title">Good morning, Alex.</div>
   <div class="mh-date" id="mh-date"></div>
+  <div id="weather-display" style="font-size:10px;color:var(--im);margin-top:4px;letter-spacing:.03em;"></div>
   <div class="mh-meta">
     <span class="last-updated" id="last-updated"></span>
   </div>
@@ -288,7 +289,48 @@ function toggleSec(id){
   document.querySelector('#'+id+' .sec-header').classList.toggle('closed');
   document.getElementById('body-'+id).classList.toggle('closed');
 }
-
+// ── WEATHER ──────────────────────────────────────────
+async function loadWeather(){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    try{
+      const{latitude:lat,longitude:lon}=pos.coords;
+      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&temperature_unit=fahrenheit&timezone=auto`);
+      const d=await r.json();
+      const temp=Math.round(d.current.temperature_2m);
+      const code=d.current.weathercode;
+      const icon=weatherIcon(code);
+      const cond=weatherLabel(code);
+      document.getElementById('weather-display').innerHTML=`<span style="font-size:14px">${icon}</span> ${temp}°F &nbsp;·&nbsp; ${cond}`;
+    }catch(e){}
+  },()=>{});
+}
+function weatherIcon(code){
+  if(code===0)return'☀️';
+  if(code<=2)return'⛅';
+  if(code<=3)return'☁️';
+  if(code<=48)return'🌫️';
+  if(code<=57)return'🌦️';
+  if(code<=67)return'🌧️';
+  if(code<=77)return'❄️';
+  if(code<=82)return'🌧️';
+  if(code<=86)return'🌨️';
+  if(code<=99)return'⛈️';
+  return'🌡️';
+}
+function weatherLabel(code){
+  if(code===0)return'Clear';
+  if(code<=2)return'Partly cloudy';
+  if(code<=3)return'Overcast';
+  if(code<=48)return'Foggy';
+  if(code<=57)return'Drizzle';
+  if(code<=67)return'Rainy';
+  if(code<=77)return'Snowy';
+  if(code<=82)return'Showers';
+  if(code<=86)return'Snow showers';
+  if(code<=99)return'Thunderstorm';
+  return'Unknown';
+}
 // ── ROUTINE ──────────────────────────────────────────
 const ROUTINE=[
   {id:'wake',    time:'7:30',  label:'Wake up',                   sub:'Take a moment before the phone — stretch, breathe, ease in'},
@@ -597,6 +639,7 @@ loadTasks();
 updateNow();
 setInterval(updateNow, 1000);
 buildHabits();
+loadWeather();
 </script>
 </body>
 </html>
