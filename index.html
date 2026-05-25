@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌿%3C/text%3E%3C/svg%3E">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Brief — Alex</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Geist+Mono:wght@300;400&display=swap" rel="stylesheet">
-<style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
   --p: #FFFFFF;
@@ -21,7 +20,7 @@
   --ru: #E8E4DC;
   --page: #FFFFFF;
 }
-  }
+
   html { background: var(--page); min-height: 100vh; }
   body { font-family: 'Geist Mono', monospace; color: var(--ink); max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 4rem; background: var(--page); }
   .masthead { background: var(--p); border: 0.5px solid var(--ru); border-radius: 16px; padding: 1.75rem 2rem 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
@@ -310,8 +309,19 @@ const ROUTINE=[
 ];
 const RKEY='dailybrief_routine';
 function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function loadState(){try{const r=localStorage.getItem(RKEY);if(!r)return{date:todayKey(),checked:{}};const s=JSON.parse(r);if(s.date!==todayKey())return{date:todayKey(),checked:{}};return s;}catch(e){return{date:todayKey(),checked:{}};}}
-function saveState(s){try{localStorage.setItem(RKEY,JSON.stringify(s));}catch(e){}}
+async function loadState(){
+  try{
+    const r=await fetch('/api/checklist');
+    const s=await r.json();
+    if(s.date!==todayKey())return{date:todayKey(),checked:{}};
+    return s;
+  }catch(e){return{date:todayKey(),checked:{}};}
+}
+async function saveState(s){
+  try{
+    await fetch('/api/checklist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(s)});
+  }catch(e){}
+}
 function updateProgress(checked){
   const total=ROUTINE.length,done=Object.values(checked).filter(Boolean).length;
   document.getElementById('progress-bar').style.width=Math.round(done/total*100)+'%';
@@ -320,8 +330,8 @@ function updateProgress(checked){
   if(done===total){document.getElementById('all-done').style.display='block';launchConfetti();}
   else{document.getElementById('all-done').style.display='none';}
 }
-function toggleItem(id){
-  const s=loadState();s.checked[id]=!s.checked[id];saveState(s);
+async function toggleItem(id){
+  const s=await loadState();s.checked[id]=!s.checked[id];await saveState(s);
   const el=document.getElementById('ri-'+id);
   el.classList.toggle('done',s.checked[id]);
   updateProgress(s.checked);
@@ -331,8 +341,8 @@ function resetRoutine(){
   ROUTINE.forEach(r=>{const el=document.getElementById('ri-'+r.id);if(el)el.classList.remove('done');});
   updateProgress({});
 }
-function buildRoutine(){
-  const s=loadState(),c=document.getElementById('routine-items');
+async function buildRoutine(){
+  const s=await loadState(),c=document.getElementById('routine-items');
   c.innerHTML='';
   ROUTINE.forEach(r=>{
     const done=!!s.checked[r.id];
