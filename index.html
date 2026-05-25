@@ -332,7 +332,9 @@ function updateProgress(checked){
   else{document.getElementById('all-done').style.display='none';}
 }
 async function toggleItem(id){
-  const s=await loadState();s.checked[id]=!s.checked[id];await saveState(s);
+  const s=await loadState();
+  s.checked[id]=!s.checked[id];
+  await saveState(s);
   const el=document.getElementById('ri-'+id);
   el.classList.toggle('done',s.checked[id]);
   updateProgress(s.checked);
