@@ -50,7 +50,7 @@ const calendarIds = Object.keys(calendarMap);
       calendarIds.map(id =>
         fetch(`https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(id)}/events?timeMin=${now.toISOString()}&timeMax=${weekOut.toISOString()}&orderBy=startTime&singleEvents=true&maxResults=20`, {
           headers: { Authorization: `Bearer ${accessToken}` }
-     }).then(r => r.json()).then(d => (d.items || []).map(ev => ({ ...ev, _calColor: calendarMap[id] }))).catch(() => [])
+     }).then(r => r.json()).then(d => (d.items || []).map(ev => ({ ...ev, _calColor: calendarMap[id], _calName: calendarMap[id+'_name'] }))).catch(() => [])
       )
     );
 
