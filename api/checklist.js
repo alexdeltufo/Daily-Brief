@@ -13,8 +13,8 @@ export default async function handler(req, res) {
     return res.status(200).json(value);
   }
 
- if (req.method === 'POST') {
-  const body = req.body;
+if (req.method === 'POST') {
+  const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
   await fetch(`${url}/set/${KEY}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
