@@ -4,14 +4,15 @@ export default async function handler(req, res) {
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   const KEY = 'dailybrief_checklist';
 
-  if (req.method === 'GET') {
-    const r = await fetch(`${url}/get/${KEY}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await r.json();
-    const value = data.result ? JSON.parse(data.result) : { date: '', checked: {} };
-    return res.status(200).json(value);
-  }
+ if (req.method === 'GET') {
+  res.setHeader('Cache-Control', 'no-store');
+  const r = await fetch(`${url}/get/${KEY}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await r.json();
+  const value = data.result ? JSON.parse(data.result) : { date: '', checked: {} };
+  return res.status(200).json(value);
+}
 
 if (req.method === 'POST') {
   const raw = await new Promise((resolve) => {
