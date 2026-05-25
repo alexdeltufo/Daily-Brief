@@ -543,7 +543,13 @@ function renderTasks(tasks){
     const pl=pillLabel(t.priority?.priority,t.status?.status);
     html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${t.status?.status==='in progress'?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div>${sub?`<div class="erow-sub">${sub}</div>`:''}</div><div class="erow-right"><span class="pill ${pc}">${pl}</span><a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
   });
-  container.innerHTML=html+footer;
+  let taskList=document.getElementById('task-list');
+  if(!taskList){
+    taskList=document.createElement('div');
+    taskList.id='task-list';
+    container.appendChild(taskList);
+  }
+  taskList.innerHTML=html+footer;
 }
 async function loadTasks(){
   const container=document.getElementById('body-sec-3');
