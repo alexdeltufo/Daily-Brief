@@ -1,33 +1,34 @@
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cache-Control', 'no-store');
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   const KEY = 'dailybrief_checklist';
 
- if (req.method === 'GET') {
-  res.setHeader('Cache-Control', 'no-store');
-  const r = await fetch(`${url}/get/${KEY}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  const data = await r.json();
-  const value = data.result ? JSON.parse(data.result) : { date: '', checked: {} };
-  return res.status(200).json(value);
-}
+  if (req.method === 'GET') {
+    const r = await fetch(`${url}/get/${KEY}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await r.json();
+    let value = { date: '', checked: {} };
+    if (data.result) {
+      try {
+        const parsed = JSON.parse(data.result);
+        value = typeof parsed === 'string' ? JSON.parse(parsed) : parsed;
+      } catch(e) {}
+    }
+    return res.status(200).json(value);
+  }
 
-if (req.method === 'POST') {
-  const raw = await new Promise((resolve) => {
-    let data = '';
-    req.on('data', chunk => data += chunk);
-    req.on('end', () => resolve(data));
-  });
-  const body = JSON.parse(raw);
-  await fetch(`${url}/set/${KEY}`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(JSON.stringify(body))
-  });
-  return res.status(200).json({ ok: true });
-}
+  if (req.method === 'POST') {
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    await fetch(`${url}/set/${KEY}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(JSON.stringify(body))
+    });
+    return res.status(200).json({ ok: true });
+  }
 
   res.status(405).end();
 }
