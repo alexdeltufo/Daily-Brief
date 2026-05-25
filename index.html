@@ -716,7 +716,6 @@ function buildHabits() {
 }
 // ── NOTES ─────────────────────────────────────────────
 let notesTimer=null;
-let notesTimer=null;
 async function loadNotes(){
   try{
     const r=await fetch('/api/notes');
@@ -752,14 +751,6 @@ document.addEventListener('DOMContentLoaded',()=>{
       clearTimeout(notesTimer);
       notesTimer=setTimeout(saveNotes,1000);
     });
-  });
-});
-document.addEventListener('DOMContentLoaded',()=>{
-  const area=document.getElementById('notes-area');
-  area.addEventListener('input',()=>{
-    document.getElementById('notes-status').textContent='Saving...';
-    clearTimeout(notesTimer);
-    notesTimer=setTimeout(saveNotes,1000);
   });
 });
 // ── INIT ─────────────────────────────────────────────
