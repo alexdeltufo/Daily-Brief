@@ -272,6 +272,18 @@
     </div>
   </div>
 </div>
+  <!-- V. NOTES -->
+<div class="sec" id="sec-5">
+  <div class="sec-header" onclick="toggleSec('sec-5')">
+    <span class="sec-num">V.</span>
+    <span class="sec-title">Notes & Quick Tasks</span>
+    <span class="sec-chev">▾</span>
+  </div>
+  <div class="sec-body" id="body-sec-5">
+    <textarea id="notes-area" placeholder="Jot something down..." style="width:100%;min-height:180px;padding:1rem 1.5rem;font-size:11px;font-family:'Geist Mono',monospace;color:var(--ink);background:var(--p);border:none;outline:none;resize:vertical;line-height:1.6;"></textarea>
+    <div style="padding:.4rem 1.5rem;font-size:9px;color:var(--if);background:var(--pd);border-top:0.5px solid var(--ru)" id="notes-status">Auto-saving...</div>
+  </div>
+</div>
 
 <script>
 const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -687,7 +699,33 @@ function buildHabits() {
     </div>`;
   });
 }
-
+// ── NOTES ─────────────────────────────────────────────
+let notesTimer=null;
+async function loadNotes(){
+  try{
+    const r=await fetch('/api/notes');
+    const d=await r.json();
+    document.getElementById('notes-area').value=d.text||'';
+    document.getElementById('notes-status').textContent='Saved';
+  }catch(e){}
+}
+async function saveNotes(){
+  const text=document.getElementById('notes-area').value;
+  try{
+    await fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+    document.getElementById('notes-status').textContent='Saved · '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  }catch(e){
+    document.getElementById('notes-status').textContent='Save failed';
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const area=document.getElementById('notes-area');
+  area.addEventListener('input',()=>{
+    document.getElementById('notes-status').textContent='Saving...';
+    clearTimeout(notesTimer);
+    notesTimer=setTimeout(saveNotes,1000);
+  });
+});
 // ── INIT ─────────────────────────────────────────────
 setHeader();
 buildRoutine();
@@ -697,6 +735,7 @@ updateNow();
 setInterval(updateNow, 1000);
 buildHabits();
 loadWeather();
+loadNotes();
 </script>
 </body>
 </html>
