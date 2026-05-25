@@ -30,7 +30,6 @@ export default async function handler(req, res) {
 
   const now = new Date(new Date().setHours(0,0,0,0));
   const weekOut = new Date(new Date().setHours(0,0,0,0) + 7*24*60*60*1000);
-  weekOut.setDate(now.getDate() + 7);
 
   try {
     // Fetch all calendars first
