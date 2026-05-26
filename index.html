@@ -450,6 +450,7 @@ const NOW_BLOCKS=[
 {label:'TV & evening relax', start:20.0, end:22.0},
 {label:'Read before bed',  start:22.0,  end:23.0},
 {label:'Lights out',       start:23.0,  end:24.0},
+  ];
 function nowFmt(h){
   const w=Math.floor(h),m=Math.round((h-w)*60),ampm=w<12?'am':'pm',h12=w%12===0?12:w%12;
   return m===0?h12+ampm:h12+':'+String(m).padStart(2,'0')+ampm;
