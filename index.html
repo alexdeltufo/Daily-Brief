@@ -634,7 +634,7 @@ function launchConfetti(){
     const duration=1500+Math.random()*1500,drift=(Math.random()-0.5)*200;
     el.animate([{transform:`translate(0,0) rotate(0deg)`,opacity:1},{transform:`translate(${drift}px,100vh) rotate(${Math.random()*720}deg)`,opacity:0}],{duration,easing:'cubic-bezier(0.25,0.46,0.45,0.94)'}).onfinish=()=>el.remove();
   }
-
+}
 // ── NOTES ─────────────────────────────────────────────
 let notesTimer=null;
 async function loadNotes(){
