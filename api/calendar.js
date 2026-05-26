@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'NOT_AUTHED' });
   }
 
-  const now = new Date(new Date().setHours(0,0,0,0));
+  const now = new Date(new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })).setHours(0,0,0,0));
   const weekOut = new Date(new Date().setHours(0,0,0,0) + 7*24*60*60*1000);
 
   try {
