@@ -35,6 +35,8 @@
   .ql { display: inline-flex; align-items: center; gap: 6px; background: var(--p); border: 0.5px solid var(--ru); border-radius: 20px; padding: 6px 14px; font-size: 11px; letter-spacing: .05em; color: var(--im); text-decoration: none; transition: background .15s, color .15s; font-family: 'DM Mono', monospace; }
   .ql:hover { background: var(--pd); color: var(--ink); }
   .ql svg { width: 13px; height: 13px; stroke: var(--ac); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .ql-notes { display: inline-flex; }
+@media (min-width: 1160px) { .ql-notes { display: none; } }
   .sec { scroll-margin-top: 1rem; }
   .sec { background: var(--p); border: 0.5px solid var(--ru); border-radius: 13px; margin-bottom: .9rem; overflow: hidden; }
   .sec-header { display: flex; align-items: center; gap: 10px; padding: .9rem 1.5rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); cursor: pointer; user-select: none; }
@@ -173,9 +175,9 @@
     <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>
     Notion
   </a>
-  <a class="ql" href="#sec-5">
-    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-    Notes
+<a class="ql ql-notes" href="#sec-notes-mobile">
+  <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+  Notes
   </a>
 </div>
 
