@@ -175,9 +175,9 @@
     <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>
     Notion
   </a>
-<a class="ql ql-notes" href="#sec-notes-mobile">
-  <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-  Notes
+  <a class="ql ql-notes" href="#sec-notes-mobile">
+    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    Notes
   </a>
 </div>
 
@@ -310,7 +310,8 @@ function toggleSec(id){
   });
   localStorage.setItem('dailybrief_sections',JSON.stringify(closed));
 }
-  function restoreSections(){
+
+function restoreSections(){
   try{
     const closed=JSON.parse(localStorage.getItem('dailybrief_sections')||'{}');
     Object.entries(closed).forEach(([id,isClosed])=>{
@@ -321,6 +322,7 @@ function toggleSec(id){
     });
   }catch(e){}
 }
+
 // ── WEATHER ──────────────────────────────────────────
 async function loadWeather(){
   if(!navigator.geolocation)return;
@@ -363,6 +365,7 @@ function weatherLabel(code){
   if(code<=99)return'Thunderstorm';
   return'Unknown';
 }
+
 // ── ROUTINE ──────────────────────────────────────────
 const ROUTINE=[
   {id:'wake',    time:'7:30',  label:'Wake up',                   sub:'Take a moment before the phone — stretch, breathe, ease in'},
@@ -379,6 +382,14 @@ const ROUTINE=[
   {id:'reading', time:'10:00', label:'Reading before bed',         sub:'Phone off, book open — your best investment in tomorrow'},
   {id:'sleep',   time:'11:00', label:'Lights out',                 sub:'Sleep is the work'},
 ];
+
+let TODAY_EVENTS=[];
+
+function routineTimeToHour(t){
+  const[h,m]=t.split(':').map(Number);
+  return h+m/60;
+}
+
 const RKEY='dailybrief_routine';
 function todayKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 async function loadState(){
@@ -420,12 +431,24 @@ function resetRoutine(){
 async function buildRoutine(){
   const s=await loadState(),c=document.getElementById('routine-items');
   c.innerHTML='';
-  ROUTINE.forEach(r=>{
+  ROUTINE.forEach((r,idx)=>{
     const done=!!s.checked[r.id];
     const d=document.createElement('div');
     d.className='ritem'+(done?' done':'');d.id='ri-'+r.id;
     d.onclick=()=>toggleItem(r.id);
-    d.innerHTML=`<div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div><div class="rtime">${r.time}</div><div class="rcontent"><div class="rlabel">${r.label}</div><div class="rsub">${r.sub}</div></div>`;
+    const blockStart=routineTimeToHour(r.time);
+    const nextItem=ROUTINE[idx+1];
+    const blockEnd=nextItem?routineTimeToHour(nextItem.time):24;
+    const overlapping=TODAY_EVENTS.filter(ev=>{
+      const evH=new Date(ev.start.dateTime).getHours()+new Date(ev.start.dateTime).getMinutes()/60;
+      return evH>=blockStart&&evH<blockEnd;
+    });
+    const evPills=overlapping.map(ev=>{
+      const t=fmtTime(ev.start.dateTime);
+      const color=ev._calColor||'var(--ac)';
+      return `<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0"></span><span style="font-size:9px;color:var(--im)">${ev.summary||'Event'} · ${t}</span></div>`;
+    }).join('');
+    d.innerHTML=`<div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div><div class="rtime">${r.time}</div><div class="rcontent"><div class="rlabel">${r.label}</div><div class="rsub">${r.sub}</div>${evPills}</div>`;
     c.appendChild(d);
   });
   updateProgress(s.checked);
@@ -500,6 +523,9 @@ async function loadCalendar(){
     const events=await res.json();
     document.getElementById('cal-loading')?.remove();
     const todayStart=new Date();todayStart.setHours(0,0,0,0);
+    const todayStr=todayStart.toISOString().slice(0,10);
+    TODAY_EVENTS=events.filter(ev=>getDateKey(ev)===todayStr&&ev.start?.dateTime);
+    buildRoutine();
     if(!events.length){
       container.insertAdjacentHTML('afterbegin','<div class="loading">No events this week.</div>');
       document.getElementById('cal-badge').textContent='0';
@@ -535,6 +561,7 @@ async function loadCalendar(){
     container.insertAdjacentHTML('afterbegin',`<div class="err">Could not load calendar — try refreshing.</div>`);
   }
 }
+
 // ── CLICKUP ──────────────────────────────────────────
 function pillClass(priority,status){if(status==='in progress')return 'p-ip';if(priority==='low')return 'p-lo';return 'p-td';}
 function pillLabel(priority,status){if(status==='in progress')return 'In Progress';if(priority==='urgent'||priority==='high')return priority.charAt(0).toUpperCase()+priority.slice(1);if(priority==='low')return 'Low';return 'To Do';}
@@ -608,7 +635,7 @@ async function loadTasks(){
       <button class="sort-btn" data-sort="priority" onclick="sortTasks('priority')">Priority</button>
       <button class="sort-btn" data-sort="project" onclick="sortTasks('project')">Project</button>
       <button class="sort-btn" data-sort="due" onclick="sortTasks('due')">Due Date</button>
-    </div>`;
+    </div><div id="task-list"></div>`;
     container.innerHTML=sortBar;
     sortTasks('status');
     document.getElementById('task-badge').textContent=tasks.length;
@@ -628,7 +655,6 @@ function launchConfetti(){
     el.animate([{transform:`translate(0,0) rotate(0deg)`,opacity:1},{transform:`translate(${drift}px,100vh) rotate(${Math.random()*720}deg)`,opacity:0}],{duration,easing:'cubic-bezier(0.25,0.46,0.45,0.94)'}).onfinish=()=>el.remove();
   }
 }
-
 
 // ── HABIT TRACKER ─────────────────────────────────────
 const HABITS = [
@@ -687,7 +713,6 @@ function buildHabits() {
   const days = getWeekDays();
   const today = new Date();
 
-  // Day labels
   const lblContainer = document.getElementById('habit-day-labels');
   const todayDots = days.map((d,i) => {
     const isToday = d.toDateString() === today.toDateString();
@@ -695,7 +720,6 @@ function buildHabits() {
   }).join('');
   lblContainer.innerHTML = '<div style="flex:1;min-width:0"></div>' + todayDots + '<div style="min-width:36px"></div>';
 
-  // Habit rows
   const container = document.getElementById('habit-rows');
   container.innerHTML = '';
   HABITS.forEach(h => {
@@ -716,6 +740,7 @@ function buildHabits() {
     </div>`;
   });
 }
+
 // ── NOTES ─────────────────────────────────────────────
 let notesTimer=null;
 async function loadNotes(){
@@ -739,7 +764,9 @@ function setNotesStatus(msg){
 async function saveNotes(){
   const desktop=document.getElementById('notes-area');
   const mobile=document.getElementById('notes-area-mobile');
-  const text=(desktop||mobile).value;
+  const el=desktop||mobile;
+  if(!el)return;
+  const text=el.value;
   try{
     await fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
     setNotesStatus('Saved · '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}));
@@ -755,6 +782,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     });
   });
 });
+
 // ── INIT ─────────────────────────────────────────────
 restoreSections();
 setHeader();
@@ -767,14 +795,14 @@ buildHabits();
 loadWeather();
 loadNotes();
 </script>
-  <div class="side-panel">
-  <div class="side-panel-hdr">
-    Notes
-  </div>
+
+<div class="side-panel">
+  <div class="side-panel-hdr">Notes</div>
   <textarea id="notes-area" placeholder="Jot something down..." style="width:100%;height:300px;padding:.75rem 1rem;font-size:10px;font-family:'Geist Mono',monospace;color:var(--ink);background:var(--p);border:none;outline:none;resize:none;line-height:1.6;"></textarea>
   <div style="padding:.3rem 1rem;font-size:9px;color:var(--if);background:var(--pd);border-top:0.5px solid var(--ru)" id="notes-status">—</div>
 </div>
-  <div class="sec" id="sec-notes-mobile" style="display:block">
+
+<div class="sec" id="sec-notes-mobile" style="display:block">
   <div class="sec-header" onclick="toggleSec('sec-notes-mobile')">
     <span class="sec-num">V.</span>
     <span class="sec-title">Notes</span>
@@ -785,5 +813,6 @@ loadNotes();
     <div style="padding:.3rem 1.5rem;font-size:9px;color:var(--if);background:var(--pd);border-top:0.5px solid var(--ru)" id="notes-status-mobile">—</div>
   </div>
 </div>
+
 </body>
 </html>
