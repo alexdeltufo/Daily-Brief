@@ -348,15 +348,15 @@ function weatherLabel(code){
 
 // ── ROUTINE ──────────────────────────────────────────
 const ROUTINE=[
-  {id:'wake',    time:'7:30',  label:'Wake up',                   sub:'Take a moment before the phone — stretch, breathe, ease in'},
-  {id:'coffee',  time:'8:00',  label:'Coffee & screen-free time', sub:'Brew something good, sit with it — no scrolling, no pings'},
+  {id:'wake',    time:'7:00',  label:'Wake up',                   sub:'Take a moment before the phone — stretch, breathe, ease in'},
+  {id:'coffee',  time:'7:30',  label:'Coffee & screen-free time', sub:'Brew something good, sit with it — no scrolling, no pings'},
   {id:'yoga',    time:'8:30',  label:'Morning yoga (30 min)',      sub:'Set the tone for the body before the day sets it for you'},
   {id:'workam',  time:'9:00',  label:'Morning work block',         sub:'Deep focus — tackle the hardest thing first'},
   {id:'midday',  time:'12:00', label:'Midday check-in',            sub:'Review messages, triage tasks, update ClickUp statuses'},
   {id:'lunch',   time:'12:30', label:'Lunch & walk',               sub:'Step away from the screen — get outside, reset'},
   {id:'workpm',  time:'13:30',  label:'Afternoon work block',       sub:'Client work, calls, lighter creative tasks'},
   {id:'eod',     time:'17:30',  label:'End-of-day wrap',            sub:"Update tasks, set tomorrow's top 3, close the tab"},
-  {id:'workout', time:'18:00',  label:'Workout',                    sub:'Move the body, clear the head'},
+  {id:'workout', time:'18:00',  label:'Workout or break',           sub:'Move the body, clear the head'},
   {id:'dinner',  time:'19:00',  label:'Cook + eat dinner',          sub:'Something real — the ritual matters as much as the food'},
   {id:'tv',      time:'20:00',  label:'TV & evening relax',         sub:'Wind down, laugh, decompress'},
   {id:'reading', time:'22:00', label:'Read before bed',         sub:'Phone off, book open — your best investment in tomorrow'},
@@ -437,8 +437,8 @@ async function buildRoutine(){
 
 // ── NOW WIDGET ────────────────────────────────────────
 const NOW_BLOCKS=[
-  {label:'Wake up',              desc:'Take your time waking up. No screens yet — ease into the day.',                start:7.5,  end:8.0,  color:'#EF9F27'},
-  {label:'Coffee & screen-free', desc:'Brew coffee, sit with it. No scrolling.',                                      start:8.0,  end:8.5,  color:'#EF9F27'},
+  {label:'Wake up',              desc:'Take your time waking up. No screens yet — ease into the day.',                start:7.0,  end:7.5,  color:'#EF9F27'},
+  {label:'Coffee & screen-free', desc:'Brew coffee, sit with it. No scrolling.',                                      start:7.5,  end:8.5,  color:'#EF9F27'},
   {label:'Morning yoga',         desc:'30 minutes on the mat. Move, breathe, set your intention.',                    start:8.5,  end:9.0,  color:'#1D9E75'},
   {label:'Morning work block',   desc:'Deep focus time. Tackle your most important work while your energy is fresh.', start:9.0,  end:12.0, color:'#378ADD'},
   {label:'Midday check-in',      desc:'Take stock of the morning. Triage messages, update ClickUp, plan the PM.',    start:12.0, end:12.5, color:'#D85A30'},
