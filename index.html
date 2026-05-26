@@ -635,47 +635,53 @@ function launchConfetti(){
     el.animate([{transform:`translate(0,0) rotate(0deg)`,opacity:1},{transform:`translate(${drift}px,100vh) rotate(${Math.random()*720}deg)`,opacity:0}],{duration,easing:'cubic-bezier(0.25,0.46,0.45,0.94)'}).onfinish=()=>el.remove();
   }
 }
-// ── NOTES ─────────────────────────────────────────────
-let notesTimer=null;
-async function loadNotes(){
+// ── QUICK TASKS ───────────────────────────────────────
+let QT=[];
+async function loadQuickTasks(){
   try{
-    const r=await fetch('/api/notes');
-    const d=await r.json();
-    const text=d.text||'';
-    const desktop=document.getElementById('notes-area');
-    const mobile=document.getElementById('notes-area-mobile');
-    if(desktop)desktop.value=text;
-    if(mobile)mobile.value=text;
-    setNotesStatus('Saved');
+    const r=await fetch('/api/quicktasks');
+    QT=await r.json();
+    renderQuickTasks();
   }catch(e){}
 }
-function setNotesStatus(msg){
-  const ds=document.getElementById('notes-status');
-  const ms=document.getElementById('notes-status-mobile');
-  if(ds)ds.textContent=msg;
-  if(ms)ms.textContent=msg;
-}
-async function saveNotes(){
-  const desktop=document.getElementById('notes-area');
-  const mobile=document.getElementById('notes-area-mobile');
-  const el=desktop||mobile;
-  if(!el)return;
-  const text=el.value;
+async function saveQuickTasks(){
   try{
-    await fetch('/api/notes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
-    setNotesStatus('Saved · '+new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}));
-  }catch(e){ setNotesStatus('Save failed'); }
+    await fetch('/api/quicktasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(QT)});
+  }catch(e){}
 }
-document.addEventListener('DOMContentLoaded',()=>{
-  ['notes-area','notes-area-mobile'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.addEventListener('input',()=>{
-      setNotesStatus('Saving...');
-      clearTimeout(notesTimer);
-      notesTimer=setTimeout(saveNotes,1000);
-    });
+function renderQuickTasks(){
+  ['qt-list','qt-list-mobile'].forEach(id=>{
+    const c=document.getElementById(id);
+    if(!c)return;
+    if(!QT.length){c.innerHTML='<div style="padding:.5rem 1rem;font-size:10px;color:var(--if);font-style:italic">Nothing yet</div>';return;}
+    c.innerHTML=QT.map((t,i)=>`<div style="display:flex;align-items:flex-start;gap:8px;padding:.4rem 1rem;border-bottom:0.5px solid var(--ru);cursor:pointer" onclick="toggleQT(${i})">
+      <div style="width:13px;height:13px;border-radius:3px;border:1.5px solid ${t.done?'var(--ac)':'var(--ru)'};background:${t.done?'var(--ac)':'var(--p)'};flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center">
+        ${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}
+      </div>
+      <span style="font-size:10px;color:${t.done?'var(--if)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'};line-height:1.5">${t.text}</span>
+    </div>`).join('');
   });
-});
+}
+async function toggleQT(i){
+  QT[i].done=!QT[i].done;
+  renderQuickTasks();
+  await saveQuickTasks();
+}
+async function addQT(inputId){
+  const input=document.getElementById(inputId);
+  if(!input)return;
+  const text=input.value.trim();
+  if(!text)return;
+  QT.push({text,done:false});
+  input.value='';
+  renderQuickTasks();
+  await saveQuickTasks();
+}
+async function clearDoneQT(){
+  QT=QT.filter(t=>!t.done);
+  renderQuickTasks();
+  await saveQuickTasks();
+}
 
 // ── INIT ─────────────────────────────────────────────
 restoreSections();
@@ -686,24 +692,36 @@ loadTasks();
 updateNow();
 setInterval(updateNow, 1000);
 loadWeather();
-loadNotes();
+loadQuickTasks()
 </script>
 
 <div class="side-panel">
-  <div class="side-panel-hdr">Notes</div>
-  <textarea id="notes-area" placeholder="Jot something down..." style="width:100%;height:300px;padding:.75rem 1rem;font-size:10px;font-family:'Geist Mono',monospace;color:var(--ink);background:var(--p);border:none;outline:none;resize:none;line-height:1.6;"></textarea>
-  <div style="padding:.3rem 1rem;font-size:9px;color:var(--if);background:var(--pd);border-top:0.5px solid var(--ru)" id="notes-status">—</div>
+  <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between">
+    Quick Tasks
+    <button onclick="clearDoneQT()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear done</button>
+  </div>
+  <div style="display:flex;gap:6px;padding:.5rem .75rem;border-bottom:0.5px solid var(--ru)">
+    <input id="qt-input" placeholder="Add task..." onkeydown="if(event.key==='Enter')addQT('qt-input')" style="flex:1;font-size:10px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
+    <button onclick="addQT('qt-input')" style="font-size:14px;color:var(--ac);background:none;border:none;cursor:pointer;line-height:1">+</button>
+  </div>
+  <div id="qt-list"></div>
 </div>
 
 <div class="sec" id="sec-notes-mobile" style="display:block">
   <div class="sec-header" onclick="toggleSec('sec-notes-mobile')">
     <span class="sec-num">V.</span>
-    <span class="sec-title">Notes</span>
+    <span class="sec-title">Quick Tasks</span>
     <span class="sec-chev">▾</span>
   </div>
   <div class="sec-body" id="body-sec-notes-mobile">
-    <textarea id="notes-area-mobile" placeholder="Jot something down..." style="width:100%;min-height:180px;padding:1rem 1.5rem;font-size:11px;font-family:'Geist Mono',monospace;color:var(--ink);background:var(--p);border:none;outline:none;resize:vertical;line-height:1.6;"></textarea>
-    <div style="padding:.3rem 1.5rem;font-size:9px;color:var(--if);background:var(--pd);border-top:0.5px solid var(--ru)" id="notes-status-mobile">—</div>
+    <div style="display:flex;gap:6px;padding:.75rem 1.5rem;border-bottom:0.5px solid var(--ru)">
+      <input id="qt-input-mobile" placeholder="Add task..." onkeydown="if(event.key==='Enter')addQT('qt-input-mobile')" style="flex:1;font-size:11px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
+      <button onclick="addQT('qt-input-mobile')" style="font-size:16px;color:var(--ac);background:none;border:none;cursor:pointer">+</button>
+    </div>
+    <div id="qt-list-mobile"></div>
+    <div style="padding:.4rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd)">
+      <button onclick="clearDoneQT()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear done</button>
+    </div>
   </div>
 </div>
 
