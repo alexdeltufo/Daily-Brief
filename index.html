@@ -523,7 +523,7 @@ async function loadCalendar(){
     const events=await res.json();
     document.getElementById('cal-loading')?.remove();
     const todayStart=new Date();todayStart.setHours(0,0,0,0);
-    const todayStr=todayStart.toISOString().slice(0,10);
+    const todayStr=todayKey();
     TODAY_EVENTS=events.filter(ev=>getDateKey(ev)===todayStr&&ev.start?.dateTime);
     buildRoutine();
     if(!events.length){
