@@ -634,26 +634,6 @@ function launchConfetti(){
     el.animate([{transform:`translate(0,0) rotate(0deg)`,opacity:1},{transform:`translate(${drift}px,100vh) rotate(${Math.random()*720}deg)`,opacity:0}],{duration,easing:'cubic-bezier(0.25,0.46,0.45,0.94)'}).onfinish=()=>el.remove();
   }
 }
-  const container = document.getElementById('habit-rows');
-  container.innerHTML = '';
-  HABITS.forEach(h => {
-    const checked = s.data[h.id] || [];
-    const count = checked.length;
-    const done = count >= h.goal;
-    const dots = days.map((d, i) => {
-      const isPast = d <= today;
-      const filled = checked.includes(i);
-      const opacity = !isPast && !filled ? 'opacity:0.4;' : '';
-      return `<div class="habit-dot${filled ? ' filled' : ''}" style="${opacity}" onclick="toggleHabitDay('${h.id}', ${i})" title="${DAY_ABBR[d.getDay()]}"></div>`;
-    }).join('');
-    const streakColor = done ? 'color:var(--ac)' : 'color:var(--if)';
-    container.innerHTML += `<div class="habit-row">
-      <div class="habit-name" style="${done ? 'color:var(--ink)' : ''}">${h.label}</div>
-      <div class="habit-dots">${dots}</div>
-      <div class="habit-streak" style="${streakColor};min-width:36px;text-align:right">${count}/${h.goal}</div>
-    </div>`;
-  });
-}
 
 // ── NOTES ─────────────────────────────────────────────
 let notesTimer=null;
