@@ -171,7 +171,7 @@
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
 
   <!-- Routine widget -->
-  <div style="background: var(--card-bg, #fff); border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.1); border-left: 2.5px solid #888780; padding: 0.75rem 1rem;">
+  <div class="now-card" id="routine-widget">
     <div class="now-accent" id="now-accent"></div>
     <div class="now-inner">
       <div class="now-eyebrow">
@@ -193,10 +193,16 @@
   </div>
 
   <!-- Calendar widget -->
-  <div style="background: var(--card-bg, #fff); border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.1); border-left: 2.5px solid #1D9E75; padding: 0.75rem 1rem;" id="calendar-widget">
-    <p style="font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #999; font-family: 'DM Mono', monospace; margin: 0 0 4px;">calendar</p>
-    <p style="font-family: 'EB Garamond', serif; font-size: 22px; font-weight: 400; line-height: 1.2; margin: 0 0 2px;" id="cal-event-name">—</p>
-    <p style="font-family: 'DM Mono', monospace; font-size: 11px; color: #888; margin: 0;" id="cal-event-time"></p>
+  <div class="now-card" id="calendar-widget">
+    <div class="now-accent" id="cal-top-bar" style="background: #cabdbf;"></div>
+    <div class="now-inner">
+      <div class="now-eyebrow">
+        <span class="now-live-dot" id="cal-live-dot" style="background: #cabdbf;"></span>
+        calendar
+      </div>
+      <div class="now-title" id="cal-event-name">—</div>
+      <div class="now-desc" id="cal-event-time"></div>
+    </div>
   </div>
 
 </div>
