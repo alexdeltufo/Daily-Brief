@@ -167,8 +167,8 @@
   </a>
 </div>
 
-<!-- TOP WIDGETS ROW -->
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+<!-- TOP WIDGETS -->
+<div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
 
   <!-- Routine widget -->
   <div class="now-card" id="routine-widget">
@@ -194,19 +194,21 @@
 
   <!-- Calendar widget -->
   <div class="now-card" id="calendar-widget">
-    <div class="now-accent" id="cal-top-bar" style="background: #cabdbf;"></div>
-    <div class="now-inner">
-      <div class="now-eyebrow">
-        <span class="now-live-dot" id="cal-live-dot" style="background: #cabdbf;"></span>
-        calendar
+    <div class="now-accent" id="cal-top-bar"></div>
+    <div style="padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <div class="now-eyebrow">
+          <span class="now-live-dot" id="cal-live-dot"></span>
+          <span id="cal-eyebrow-text">calendar</span>
+        </div>
+        <div class="now-title" id="cal-event-name">—</div>
       </div>
-      <div class="now-title" id="cal-event-name">—</div>
-      <div class="now-desc" id="cal-event-time"></div>
+      <div class="mo" style="font-size: 11px; color: var(--im); text-align: right; font-family: 'DM Mono', monospace;" id="cal-event-time"></div>
     </div>
   </div>
 
 </div>
-
+  
 <!-- I. DAILY ROUTINE -->
 <div class="sec" id="sec-1">
   <div class="sec-header" onclick="toggleSec('sec-1')">
@@ -515,26 +517,35 @@ function updateCalendarWidget(events){
   console.log(next?._calColor, next?.summary);
 if(next){
   const start=new Date(next.start.dateTime||next.start.date);
-  const minsAway=Math.round((start-now)/60000);
+  const now2=new Date();
+  const minsAway=Math.round((start-now2)/60000);
+  const end=next.end?.dateTime?new Date(next.end.dateTime):null;
+  const isActive=start<=now2&&end&&end>now2;
   const timeStr=start.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-   const timeLabel = minsAway < 60 ? `in ${minsAway} min · ${timeStr}`
-    : start.toDateString() === now.toDateString() ? `today · ${timeStr}`
-    : start.toDateString() === new Date(now.getTime() + 86400000).toDateString() ? `tomorrow · ${timeStr}`
+  const timeLabel = minsAway < 60 && !isActive ? `in ${minsAway} min · ${timeStr}`
+    : isActive ? `until ${end.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`
+    : start.toDateString()===now.toDateString() ? `today · ${timeStr}`
+    : start.toDateString()===new Date(now.getTime()+86400000).toDateString() ? `tomorrow · ${timeStr}`
     : `${start.toLocaleDateString([],{weekday:'short'})} · ${timeStr}`;
+  const eyebrow = isActive ? 'calendar · now' : 'calendar · next up';
+  document.getElementById('cal-eyebrow-text').textContent=eyebrow;
+  document.getElementById('cal-live-dot').style.background=next._calColor||'#1D9E75';
+  document.getElementById('cal-top-bar').style.background=next._calColor||'#1D9E75';
+  widget.style.borderLeft=`2.5px solid ${next._calColor||'#1D9E75'}`;
   nameEl.textContent=next.summary;
   nameEl.style.fontStyle='normal';
   nameEl.style.color='';
   timeEl.textContent=timeLabel;
-  widget.style.borderLeft=`2.5px solid ${next._calColor || '#1D9E75'}`;
-  document.getElementById('cal-top-bar').style.background = next._calColor || '#1D9E75';
 } else {
+  document.getElementById('cal-eyebrow-text').textContent='calendar';
+  document.getElementById('cal-live-dot').style.background='var(--ru)';
+  document.getElementById('cal-top-bar').style.background='var(--ru)';
+  widget.style.borderLeft='2.5px solid var(--ru)';
   nameEl.textContent='no upcoming events';
   nameEl.style.fontStyle='italic';
   nameEl.style.color='#bbb';
   timeEl.textContent='';
-  widget.style.borderLeft='2.5px solid rgba(0,0,0,0.1)';
 }
-} 
 async function loadCalendar(){
   const container=document.getElementById('body-sec-2');
   try{
