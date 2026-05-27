@@ -501,7 +501,6 @@ function updateCalendarWidget(events){
   if(!widget) return;
   const now=new Date();
   const cutoff=new Date(now.getTime()+6*60*60*1000);
-  const widget=document.getElementById('calendar-widget');
   const nameEl=document.getElementById('cal-event-name');
   const timeEl=document.getElementById('cal-event-time');
   const next = events
