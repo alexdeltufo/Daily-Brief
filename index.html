@@ -504,6 +504,8 @@ function getDateKey(ev){
   return '';
 }
 function updateCalendarWidget(events){
+  console.log('events received:', events?.length, events?.[0]);
+  const widget=document.getElementById('calendar-widget');
   const widget=document.getElementById('calendar-widget');
   if(!widget) return;
   const now=new Date();
