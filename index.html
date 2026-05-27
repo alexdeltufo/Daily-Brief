@@ -506,7 +506,6 @@ function getDateKey(ev){
 function updateCalendarWidget(events){
   console.log('events received:', events?.length, events?.[0]);
   const widget=document.getElementById('calendar-widget');
-  const widget=document.getElementById('calendar-widget');
   if(!widget) return;
   const now=new Date();
   const cutoff=new Date(now.getTime()+6*60*60*1000);
