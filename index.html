@@ -189,7 +189,6 @@
         </div>
         <span class="now-pct" id="now-pct"></span>
       </div>
-      <div class="now-next" id="now-next"></div>
     </div>
   </div>
 
@@ -480,7 +479,6 @@ function updateNow(){
   document.getElementById('now-bar').style.width=pct+'%';
   document.getElementById('now-bar').style.background=block.color;
   document.getElementById('now-pct').textContent=pct+'%';
-  document.getElementById('now-next').innerHTML='→ Up next: <strong>'+next.label+'</strong> at '+nowFmt(next.start)+' &nbsp;·&nbsp; '+remText;
 }
 
 // ── CALENDAR ─────────────────────────────────────────
@@ -504,26 +502,28 @@ function updateCalendarWidget(events){
   const widget=document.getElementById('calendar-widget');
   const nameEl=document.getElementById('cal-event-name');
   const timeEl=document.getElementById('cal-event-time');
-  const next=events.find(e=>{
-    const start=new Date(e.start?.dateTime||e.start?.date);
-    return start>now&&start<cutoff;
+  const next = events
+  .filter(e => new Date(e.start?.dateTime || e.start?.date) > now)
+  .sort((a,b) => new Date(a.start?.dateTime||a.start?.date) - new Date(b.start?.dateTime||b.start?.date))[0];
   });
-  if(next){
-    const start=new Date(next.start.dateTime);
-    const minsAway=Math.round((start-now)/60000);
-    const timeStr=start.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-    nameEl.textContent=next.summary;
-    nameEl.style.fontStyle='normal';
-    nameEl.style.color='';
-    timeEl.textContent=`in ${minsAway} min · ${timeStr}`;
-    widget.style.borderLeft='2.5px solid #1D9E75';
-  } else {
-    nameEl.textContent='nothing for 6 hours';
-    nameEl.style.fontStyle='italic';
-    nameEl.style.color='#bbb';
-    timeEl.textContent='';
-    widget.style.borderLeft='2.5px solid rgba(0,0,0,0.1)';
-  }
+if(next){
+  const start=new Date(next.start.dateTime||next.start.date);
+  const minsAway=Math.round((start-now)/60000);
+  const timeStr=start.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+  const timeLabel = minsAway < 60 ? `in ${minsAway} min · ${timeStr}`
+    : minsAway < 1440 ? `today · ${timeStr}`
+    : `${start.toLocaleDateString([],{weekday:'short'})} · ${timeStr}`;
+  nameEl.textContent=next.summary;
+  nameEl.style.fontStyle='normal';
+  nameEl.style.color='';
+  timeEl.textContent=timeLabel;
+  widget.style.borderLeft='2.5px solid #1D9E75';
+} else {
+  nameEl.textContent='no upcoming events';
+  nameEl.style.fontStyle='italic';
+  nameEl.style.color='#bbb';
+  timeEl.textContent='';
+  widget.style.borderLeft='2.5px solid rgba(0,0,0,0.1)';
 }
 async function loadCalendar(){
   const container=document.getElementById('body-sec-2');
