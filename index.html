@@ -504,52 +504,54 @@ function getDateKey(ev){
   return '';
 }
 function updateCalendarWidget(events){
-  console.log('events received:', events?.length, events?.[0]);
   const widget=document.getElementById('calendar-widget');
   if(!widget) return;
   const now=new Date();
-  const cutoff=new Date(now.getTime()+6*60*60*1000);
   const nameEl=document.getElementById('cal-event-name');
   const timeEl=document.getElementById('cal-event-time');
-  const next = events
-  .filter(e => new Date(e.start?.dateTime || e.start?.date) > now)
-  .sort((a,b) => new Date(a.start?.dateTime||a.start?.date) - new Date(b.start?.dateTime||b.start?.date))[0];
-  console.log(next?._calColor, next?.summary);
-  const timeLabel=isActive?`Until ${end.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`
-  :minsAway<60?`In ${minsAway} min · ${timeStr}`
-  :start.toDateString()===now.toDateString()?`Today · ${timeStr}`
-  :start.toDateString()===new Date(now.getTime()+86400000).toDateString()?`Tomorrow · ${timeStr}`
-  :`${start.toLocaleDateString([],{weekday:'short'})} · ${timeStr}`;
-if(next){
-  const start=new Date(next.start.dateTime||next.start.date);
-  const now2=new Date();
-  const minsAway=Math.round((start-now2)/60000);
-  const end=next.end?.dateTime?new Date(next.end.dateTime):null;
-  const isActive=start<=now2&&end&&end>now2;
-  const timeStr=start.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-  const timeLabel = minsAway < 60 && !isActive ? `in ${minsAway} min · ${timeStr}`
-    : isActive ? `until ${end.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`
-    : start.toDateString()===now.toDateString() ? `today · ${timeStr}`
-    : start.toDateString()===new Date(now.getTime()+86400000).toDateString() ? `tomorrow · ${timeStr}`
-    : `${start.toLocaleDateString([],{weekday:'short'})} · ${timeStr}`;
-  const eyebrow = isActive ? 'calendar · now' : 'calendar · next up';
-  document.getElementById('cal-eyebrow-text').textContent=eyebrow;
-  document.getElementById('cal-live-dot').style.background=next._calColor||'#1D9E75';
-  document.getElementById('cal-top-bar').style.background=next._calColor||'#1D9E75';
-  widget.style.borderLeft=`2.5px solid ${next._calColor||'#1D9E75'}`;
-  nameEl.textContent=next.summary;
-  nameEl.style.fontStyle='normal';
-  nameEl.style.color='';
-  timeEl.textContent=timeLabel;
-} else {
-  document.getElementById('cal-eyebrow-text').textContent='calendar';
-  document.getElementById('cal-live-dot').style.background='var(--ru)';
-  document.getElementById('cal-top-bar').style.background='var(--ru)';
-  widget.style.borderLeft='2.5px solid var(--ru)';
-  nameEl.textContent='no upcoming events';
-  nameEl.style.fontStyle='italic';
-  nameEl.style.color='#bbb';
-  timeEl.textContent='';
+  const locEl=document.getElementById('cal-event-location');
+  const next=events
+    .filter(e=>{
+      const start=new Date(e.start?.dateTime||e.start?.date);
+      const end=e.end?.dateTime?new Date(e.end.dateTime):null;
+      return start>now||(start<=now&&end&&end>now);
+    })
+    .sort((a,b)=>new Date(a.start?.dateTime||a.start?.date)-new Date(b.start?.dateTime||b.start?.date))[0];
+  if(next){
+    const start=new Date(next.start.dateTime||next.start.date);
+    const end=next.end?.dateTime?new Date(next.end.dateTime):null;
+    const isActive=start<=now&&end&&end>now;
+    const minsAway=Math.round((start-now)/60000);
+    const timeStr=start.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+    const timeLabel=isActive?`Until ${end.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`
+      :minsAway<60?`In ${minsAway} min · ${timeStr}`
+      :start.toDateString()===now.toDateString()?`Today · ${timeStr}`
+      :start.toDateString()===new Date(now.getTime()+86400000).toDateString()?`Tomorrow · ${timeStr}`
+      :`${start.toLocaleDateString([],{weekday:'short'})} · ${timeStr}`;
+    document.getElementById('cal-eyebrow-text').textContent=isActive?'calendar · now':'calendar · next up';
+    document.getElementById('cal-live-dot').style.background=next._calColor||'#1D9E75';
+    document.getElementById('cal-top-bar').style.background=next._calColor||'#1D9E75';
+    widget.style.borderLeft=`2.5px solid ${next._calColor||'#1D9E75'}`;
+    nameEl.textContent=next.summary;
+    nameEl.style.fontStyle='normal';
+    nameEl.style.color='';
+    timeEl.textContent=timeLabel;
+    if(next.location){
+      locEl.textContent='📍 '+next.location;
+      locEl.style.display='block';
+    } else {
+      locEl.style.display='none';
+    }
+  } else {
+    document.getElementById('cal-eyebrow-text').textContent='calendar';
+    document.getElementById('cal-live-dot').style.background='var(--ru)';
+    document.getElementById('cal-top-bar').style.background='var(--ru)';
+    widget.style.borderLeft='2.5px solid var(--ru)';
+    nameEl.textContent='no upcoming events';
+    nameEl.style.fontStyle='italic';
+    nameEl.style.color='#bbb';
+    timeEl.textContent='';
+    locEl.style.display='none';
   }
 }
 async function loadCalendar(){
@@ -599,11 +601,10 @@ async function loadCalendar(){
     container.insertAdjacentHTML('afterbegin',html);
     container.insertAdjacentHTML('beforeend',footHtml);
     document.getElementById('cal-badge').textContent=count;
- }catch(e){
-  container.insertAdjacentHTML('afterbegin',`<div class="err">Could not load calendar — try refreshing.</div>`);
+  }catch(e){
+    container.insertAdjacentHTML('afterbegin',`<div class="err">Could not load calendar — try refreshing.</div>`);
+  }
 }
-}
-
 // ── CLICKUP ──────────────────────────────────────────
 function pillClass(priority,status){if(status==='in progress')return 'p-ip';if(priority==='low')return 'p-lo';return 'p-td';}
 function pillLabel(priority,status){if(status==='in progress')return 'In Progress';if(priority==='urgent'||priority==='high')return priority.charAt(0).toUpperCase()+priority.slice(1);if(priority==='low')return 'Low';return 'To Do';}
