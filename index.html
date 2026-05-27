@@ -505,7 +505,6 @@ function updateCalendarWidget(events){
   const next = events
   .filter(e => new Date(e.start?.dateTime || e.start?.date) > now)
   .sort((a,b) => new Date(a.start?.dateTime||a.start?.date) - new Date(b.start?.dateTime||b.start?.date))[0];
-  });
 if(next){
   const start=new Date(next.start.dateTime||next.start.date);
   const minsAway=Math.round((start-now)/60000);
