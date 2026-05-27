@@ -167,14 +167,16 @@
   </a>
 </div>
 
-<!-- NOW WIDGET -->
-<div class="now-wrap">
-  <div class="now-card">
+<!-- TOP WIDGETS ROW -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+
+  <!-- Routine widget -->
+  <div style="background: var(--card-bg, #fff); border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.1); border-left: 2.5px solid #888780; padding: 0.75rem 1rem;">
     <div class="now-accent" id="now-accent"></div>
     <div class="now-inner">
       <div class="now-eyebrow">
         <span class="now-live-dot" id="now-live-dot"></span>
-        Right now
+        routine
       </div>
       <div class="now-title" id="now-title">Loading...</div>
       <div class="now-desc" id="now-desc"></div>
@@ -190,7 +192,14 @@
       <div class="now-next" id="now-next"></div>
     </div>
   </div>
-  <div class="now-clock" id="now-clock"></div>
+
+  <!-- Calendar widget -->
+  <div style="background: var(--card-bg, #fff); border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.1); border-left: 2.5px solid #1D9E75; padding: 0.75rem 1rem;" id="calendar-widget">
+    <p style="font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #999; font-family: 'DM Mono', monospace; margin: 0 0 4px;">calendar</p>
+    <p style="font-family: 'Playfair Display', serif; font-size: 15px; margin: 0 0 2px;" id="cal-event-name">—</p>
+    <p style="font-family: 'DM Mono', monospace; font-size: 11px; color: #888; margin: 0;" id="cal-event-time"></p>
+  </div>
+
 </div>
 
 <!-- I. DAILY ROUTINE -->
@@ -472,7 +481,6 @@ function updateNow(){
   document.getElementById('now-bar').style.background=block.color;
   document.getElementById('now-pct').textContent=pct+'%';
   document.getElementById('now-next').innerHTML='→ Up next: <strong>'+next.label+'</strong> at '+nowFmt(next.start)+' &nbsp;·&nbsp; '+remText;
-  document.getElementById('now-clock').textContent=new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',second:'2-digit'});
 }
 
 // ── CALENDAR ─────────────────────────────────────────
@@ -490,6 +498,33 @@ function getDateKey(ev){
   if(ev.start?.dateTime)return ev.start.dateTime.slice(0,10);
   return '';
 }
+function updateCalendarWidget(events){
+  const now=new Date();
+  const cutoff=new Date(now.getTime()+6*60*60*1000);
+  const widget=document.getElementById('calendar-widget');
+  const nameEl=document.getElementById('cal-event-name');
+  const timeEl=document.getElementById('cal-event-time');
+  const next=events.find(e=>{
+    const start=new Date(e.start?.dateTime||e.start?.date);
+    return start>now&&start<cutoff;
+  });
+  if(next){
+    const start=new Date(next.start.dateTime);
+    const minsAway=Math.round((start-now)/60000);
+    const timeStr=start.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+    nameEl.textContent=next.summary;
+    nameEl.style.fontStyle='normal';
+    nameEl.style.color='';
+    timeEl.textContent=`in ${minsAway} min · ${timeStr}`;
+    widget.style.borderLeft='2.5px solid #1D9E75';
+  } else {
+    nameEl.textContent='nothing for 6 hours';
+    nameEl.style.fontStyle='italic';
+    nameEl.style.color='#bbb';
+    timeEl.textContent='';
+    widget.style.borderLeft='2.5px solid rgba(0,0,0,0.1)';
+  }
+}
 async function loadCalendar(){
   const container=document.getElementById('body-sec-2');
   try{
@@ -501,6 +536,7 @@ async function loadCalendar(){
     }
     if(!res.ok)throw new Error('HTTP '+res.status);
     const events=await res.json();
+    updateCalendarWidget(events);
     document.getElementById('cal-loading')?.remove();
     const todayStart=new Date();todayStart.setHours(0,0,0,0);
     const todayStr=todayKey();
