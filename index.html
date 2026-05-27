@@ -497,6 +497,8 @@ function getDateKey(ev){
   return '';
 }
 function updateCalendarWidget(events){
+  const widget=document.getElementById('calendar-widget');
+  if(!widget) return;
   const now=new Date();
   const cutoff=new Date(now.getTime()+6*60*60*1000);
   const widget=document.getElementById('calendar-widget');
@@ -528,7 +530,6 @@ if(next){
 }
 } 
 async function loadCalendar(){
-  console.log('loadCalendar firing');
   const container=document.getElementById('body-sec-2');
   const container=document.getElementById('body-sec-2');
   try{
@@ -576,8 +577,7 @@ async function loadCalendar(){
     container.insertAdjacentHTML('afterbegin',html);
     container.insertAdjacentHTML('beforeend',footHtml);
     document.getElementById('cal-badge').textContent=count;
-  }catch(e){
-  console.error('Calendar error:', e);
+ }catch(e){
   document.getElementById('cal-loading').textContent='';
   container.insertAdjacentHTML('afterbegin',`<div class="err">Could not load calendar — try refreshing.</div>`);
 }
