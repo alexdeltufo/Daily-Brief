@@ -690,7 +690,7 @@ async function loadTasks(){
       <button class="sort-btn" data-sort="due" onclick="sortTasks('due')">Due Date</button>
     </div><div id="task-list"></div>`;
     container.innerHTML=sortBar;
-    sortTasks('status');
+    sortTasks('priority');
     document.getElementById('task-badge').textContent=tasks.length;
   }catch(e){
     document.getElementById('task-loading').textContent='';
