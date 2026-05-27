@@ -575,9 +575,10 @@ async function loadCalendar(){
     container.insertAdjacentHTML('beforeend',footHtml);
     document.getElementById('cal-badge').textContent=count;
   }catch(e){
-    document.getElementById('cal-loading').textContent='';
-    container.insertAdjacentHTML('afterbegin',`<div class="err">Could not load calendar — try refreshing.</div>`);
-  }
+  console.error('Calendar error:', e);
+  document.getElementById('cal-loading').textContent='';
+  container.insertAdjacentHTML('afterbegin',`<div class="err">Could not load calendar — try refreshing.</div>`);
+}
 }
 
 // ── CLICKUP ──────────────────────────────────────────
