@@ -470,6 +470,17 @@ function nowFmt(h){
   return m===0?h12+ampm:h12+':'+String(m).padStart(2,'0')+ampm;
 }
 function updateNow(){
+  const day=new Date().getDay();
+  if(day===0||day===6){
+    document.getElementById('now-title').textContent='Enjoy your weekend';
+    document.getElementById('now-desc').textContent='';
+    document.getElementById('now-window').textContent='';
+    document.getElementById('now-bar').style.width='0%';
+    document.getElementById('now-pct').textContent='';
+    document.getElementById('now-accent').style.background='var(--ru)';
+    document.getElementById('now-live-dot').style.background='var(--ru)';
+    return;
+  }
   const h=new Date().getHours()+new Date().getMinutes()/60+new Date().getSeconds()/3600;
   let block=NOW_BLOCKS[0],idx=0;
   for(let i=0;i<NOW_BLOCKS.length;i++){if(h>=NOW_BLOCKS[i].start&&h<NOW_BLOCKS[i].end){block=NOW_BLOCKS[i];idx=i;break;}}
