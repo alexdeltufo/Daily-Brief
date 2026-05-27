@@ -684,8 +684,8 @@ async function loadTasks(){
     if(!tasks.length){container.innerHTML='<div class="loading">No open tasks.</div>';document.getElementById('task-badge').textContent='0';return;}
     ALL_TASKS=tasks;
     const sortBar=`<div style="display:flex;gap:6px;padding:.5rem 1.5rem;border-bottom:0.5px solid var(--ru);background:var(--pd);flex-wrap:wrap;">
-      <button class="sort-btn active" data-sort="status" onclick="sortTasks('status')">Status</button>
-      <button class="sort-btn" data-sort="priority" onclick="sortTasks('priority')">Priority</button>
+      <button class="sort-btn active" data-sort="priority" onclick="sortTasks('priority')">Priority</button>
+      <button class="sort-btn" data-sort="status" onclick="sortTasks('status')">Status</button>
       <button class="sort-btn" data-sort="project" onclick="sortTasks('project')">Project</button>
       <button class="sort-btn" data-sort="due" onclick="sortTasks('due')">Due Date</button>
     </div><div id="task-list"></div>`;
