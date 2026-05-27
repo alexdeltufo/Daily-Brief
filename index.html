@@ -515,6 +515,11 @@ function updateCalendarWidget(events){
   .filter(e => new Date(e.start?.dateTime || e.start?.date) > now)
   .sort((a,b) => new Date(a.start?.dateTime||a.start?.date) - new Date(b.start?.dateTime||b.start?.date))[0];
   console.log(next?._calColor, next?.summary);
+  const timeLabel=isActive?`Until ${end.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}`
+  :minsAway<60?`In ${minsAway} min · ${timeStr}`
+  :start.toDateString()===now.toDateString()?`Today · ${timeStr}`
+  :start.toDateString()===new Date(now.getTime()+86400000).toDateString()?`Tomorrow · ${timeStr}`
+  :`${start.toLocaleDateString([],{weekday:'short'})} · ${timeStr}`;
 if(next){
   const start=new Date(next.start.dateTime||next.start.date);
   const now2=new Date();
