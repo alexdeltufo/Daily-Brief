@@ -528,6 +528,8 @@ if(next){
 }
 } 
 async function loadCalendar(){
+  console.log('loadCalendar firing');
+  const container=document.getElementById('body-sec-2');
   const container=document.getElementById('body-sec-2');
   try{
     const res=await fetch('/api/calendar');
