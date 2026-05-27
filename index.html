@@ -452,19 +452,19 @@ async function buildRoutine(){
 
 // ── NOW WIDGET ────────────────────────────────────────
 const NOW_BLOCKS=[
-  {label:'Wake up',              desc:'Take your time waking up. No screens yet — ease into the day.',                start:7.0,  end:7.5,  color:'#EF9F27'},
-  {label:'Coffee & screen-free', desc:'Brew coffee, sit with it. No scrolling.',                                      start:7.5,  end:8.5,  color:'#EF9F27'},
-  {label:'Morning yoga',         desc:'30 minutes on the mat. Move, breathe, set your intention.',                    start:8.5,  end:9.0,  color:'#1D9E75'},
-  {label:'Morning work block',   desc:'Deep focus time. Tackle your most important work while your energy is fresh.', start:9.0,  end:12.0, color:'#378ADD'},
-  {label:'Midday check-in',      desc:'Take stock of the morning. Triage messages, update ClickUp, plan the PM.',    start:12.0, end:12.5, color:'#D85A30'},
-  {label:'Lunch & walk',         desc:"Step away from the screen. Eat, move, reset — you'll come back sharper.",     start:12.5, end:13.5, color:'#1D9E75'},
-  {label:'Afternoon work block', desc:'Second session. Client work, calls, emails, or wrapping loose ends.',          start:13.5, end:17.5, color:'#378ADD'},
-  {label:'End-of-day wrap',      desc:"Close out intentionally. Log what's done, set tomorrow's top 3, close the tab.", start:17.5, end:18.0, color:'#D85A30'},
-  {label:'Workout',              desc:'Sweat it out. Move hard, clear your head.',                                    start:18.0, end:19.0, color:'#1D9E75'},
-  {label:'Cook + eat dinner',    desc:'Offline and in the kitchen. A good meal to close the workday.',               start:19.0, end:20.0, color:'#EF9F27'},
-  {label:'TV & evening relax',   desc:'Decompress. No work thoughts — just rest and enjoy the evening.',             start:20.0, end:22.0, color:'#7F77DD'},
-  {label:'Read before bed',      desc:'Wind down with a book.',                                                       start:22.0, end:23.0, color:'#7F77DD'},
-  {label:'Lights out',           desc:'Bed time!',                                                                   start:23.0, end:24.0, color:'#7F77DD'},
+  {label:'Wake up',              desc:'Take your time waking up. No screens yet — ease into the day.',                start:7.0,  end:7.5,  color:'#C47A3A'},
+  {label:'Coffee & screen-free', desc:'Brew coffee, sit with it. No scrolling.',                                      start:7.5,  end:8.5,  color:'#8A9A3A'},
+  {label:'Morning yoga',         desc:'30 minutes on the mat. Move, breathe, set your intention.',                    start:8.5,  end:9.0,  color:'#C0392B'},
+  {label:'Morning work block',   desc:'Deep focus time. Tackle your most important work while your energy is fresh.', start:9.0,  end:12.0, color:'#7A4A2A'},
+  {label:'Midday check-in',      desc:'Take stock of the morning. Triage messages, update ClickUp, plan the PM.',    start:12.0, end:12.5, color:'#E8A838'},
+  {label:'Lunch & walk',         desc:"Step away from the screen. Eat, move, reset — you'll come back sharper.",     start:12.5, end:13.5, color:'#8A9A3A'},
+  {label:'Afternoon work block', desc:'Second session. Client work, calls, emails, or wrapping loose ends.',          start:13.5, end:17.5, color:'#7A4A2A'},
+  {label:'End-of-day wrap',      desc:"Close out intentionally. Log what's done, set tomorrow's top 3, close the tab.", start:17.5, end:18.0, color:'#5C2A6B'},
+  {label:'Workout',              desc:'Sweat it out. Move hard, clear your head.',                                    start:18.0, end:19.0, color:'#C0392B'},
+  {label:'Cook + eat dinner',    desc:'Offline and in the kitchen. A good meal to close the workday.',               start:19.0, end:20.0, color:'#8A9A3A'},
+  {label:'TV & evening relax',   desc:'Decompress. No work thoughts — just rest and enjoy the evening.',             start:20.0, end:22.0, color:'#4A6FA5'},
+  {label:'Read before bed',      desc:'Wind down with a book.',                                                       start:22.0, end:23.0, color:'#A8206A'},
+  {label:'Lights out',           desc:'Bed time!',                                                                   start:23.0, end:24.0, color:'#4A4A7A'},
 ];
 function nowFmt(h){
   const w=Math.floor(h),m=Math.round((h-w)*60),ampm=w<12?'am':'pm',h12=w%12===0?12:w%12;
