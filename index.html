@@ -517,7 +517,8 @@ if(next){
   nameEl.style.fontStyle='normal';
   nameEl.style.color='';
   timeEl.textContent=timeLabel;
-  widget.style.borderLeft='2.5px solid #1D9E75';
+  widget.style.borderLeft=`2.5px solid ${next._calColor || '#1D9E75'}`;
+  document.getElementById('cal-top-bar').style.background = next._calColor || '#1D9E75';
 } else {
   nameEl.textContent='no upcoming events';
   nameEl.style.fontStyle='italic';
