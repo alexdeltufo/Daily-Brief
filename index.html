@@ -541,7 +541,6 @@ function updateCalendarWidget(events){
     document.getElementById('cal-eyebrow-text').textContent=isActive?'calendar · now':'calendar · next up';
     document.getElementById('cal-live-dot').style.background=next._calColor||'#1D9E75';
     document.getElementById('cal-top-bar').style.background=next._calColor||'#1D9E75';
-    widget.style.borderLeft=`2.5px solid ${next._calColor||'#1D9E75'}`;
     nameEl.textContent=next.summary;
     nameEl.style.fontStyle='normal';
     nameEl.style.color='';
@@ -556,7 +555,6 @@ function updateCalendarWidget(events){
     document.getElementById('cal-eyebrow-text').textContent='calendar';
     document.getElementById('cal-live-dot').style.background='var(--ru)';
     document.getElementById('cal-top-bar').style.background='var(--ru)';
-    widget.style.borderLeft='2.5px solid var(--ru)';
     nameEl.textContent='no upcoming events';
     nameEl.style.fontStyle='italic';
     nameEl.style.color='#bbb';
