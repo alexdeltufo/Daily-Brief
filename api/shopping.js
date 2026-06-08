@@ -8,7 +8,11 @@ export default async function handler(req, res) {
     return res.json(data || { need: [], want: [] });
   }
   if (req.method === 'POST') {
-    await redis.set('shopping_lists', req.body);
+    let body = req.body;
+    if (typeof body === 'string') {
+      try { body = JSON.parse(body); } catch(e) {}
+    }
+    await redis.set('shopping_lists', JSON.stringify(body));
     return res.json({ ok: true });
   }
   res.status(405).end();
