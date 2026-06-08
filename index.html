@@ -845,22 +845,23 @@ loadShopLists()
     <button onclick="addQT('qt-input')" style="font-size:14px;color:var(--ac);background:none;border:none;cursor:pointer;line-height:1">+</button>
   </div>
   <div id="qt-list"></div>
-</div>
-<!-- SHOPPING LISTS -->
-<div style="border-top: 0.5px solid var(--ru);">
-  <div style="padding: .6rem 1rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); display: flex; align-items: center; justify-content: space-between;">
-    <span style="font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: var(--im);">Shopping</span>
-    <div style="display: flex; gap: 4px;">
-      <button onclick="switchShopTab('need')" id="shop-tab-need" class="shop-tab active-tab" style="font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: var(--ink); color: var(--p); border: none; border-radius: 20px; padding: 2px 8px; cursor: pointer; font-family: 'Geist Mono', monospace;">Need</button>
-      <button onclick="switchShopTab('want')" id="shop-tab-want" class="shop-tab" style="font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; color: var(--im); border: 0.5px solid var(--ru); border-radius: 20px; padding: 2px 8px; cursor: pointer; font-family: 'Geist Mono', monospace;">Want</button>
+  <!-- SHOPPING LISTS -->
+  <div style="border-top: 0.5px solid var(--ru);">
+    <div style="padding: .6rem 1rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); display: flex; align-items: center; justify-content: space-between;">
+      <span style="font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: var(--im);">Shopping</span>
+      <div style="display: flex; gap: 4px;">
+        <button onclick="switchShopTab('need')" id="shop-tab-need" style="font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: var(--ink); color: var(--p); border: none; border-radius: 20px; padding: 2px 8px; cursor: pointer; font-family: 'Geist Mono', monospace;">Need</button>
+        <button onclick="switchShopTab('want')" id="shop-tab-want" style="font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; color: var(--im); border: 0.5px solid var(--ru); border-radius: 20px; padding: 2px 8px; cursor: pointer; font-family: 'Geist Mono', monospace;">Want</button>
+      </div>
+    </div>
+    <div id="shop-items" style="max-height: 180px; overflow-y: auto;"></div>
+    <div style="padding: .5rem .75rem; border-top: 0.5px solid var(--ru); display: flex; gap: 6px;">
+      <input id="shop-input" type="text" placeholder="Add item..." style="flex: 1; font-size: 10px; font-family: 'Geist Mono', monospace; background: var(--pd); border: 0.5px solid var(--ru); border-radius: 6px; padding: 5px 8px; color: var(--ink); outline: none;" onkeydown="if(event.key==='Enter')addShopItem()">
+      <button onclick="addShopItem()" style="font-size: 11px; background: var(--ac); color: white; border: none; border-radius: 6px; width: 24px; cursor: pointer;">+</button>
     </div>
   </div>
-  <div id="shop-items" style="max-height: 180px; overflow-y: auto;"></div>
-  <div style="padding: .5rem .75rem; border-top: 0.5px solid var(--ru); display: flex; gap: 6px;">
-    <input id="shop-input" type="text" placeholder="Add item..." style="flex: 1; font-size: 10px; font-family: 'Geist Mono', monospace; background: var(--pd); border: 0.5px solid var(--ru); border-radius: 6px; padding: 5px 8px; color: var(--ink); outline: none;" onkeydown="if(event.key==='Enter')addShopItem()">
-    <button onclick="addShopItem()" style="font-size: 11px; background: var(--ac); color: white; border: none; border-radius: 6px; width: 24px; cursor: pointer;">+</button>
-  </div>
 </div>
+
 <div class="sec" id="sec-notes-mobile" style="display:block">
   <div class="sec-header" onclick="toggleSec('sec-notes-mobile')">
     <span class="sec-num">V.</span>
