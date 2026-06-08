@@ -316,7 +316,75 @@ function restoreSections(){
     });
   }catch(e){}
 }
+// ── SHOPPING LISTS ────────────────────────────────────
+let shopTab = 'need';
+let shopData = { need: [], want: [] };
 
+async function loadShopLists() {
+  try {
+    const r = await fetch('/api/shopping');
+    const d = await r.json();
+    if (d && d.need) shopData = d;
+  } catch(e) {}
+  renderShopItems();
+}
+
+async function saveShopLists() {
+  try {
+    await fetch('/api/shopping', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(shopData) });
+  } catch(e) {}
+}
+
+function switchShopTab(tab) {
+  shopTab = tab;
+  document.getElementById('shop-tab-need').style.background = tab === 'need' ? 'var(--ink)' : 'none';
+  document.getElementById('shop-tab-need').style.color = tab === 'need' ? 'var(--p)' : 'var(--im)';
+  document.getElementById('shop-tab-need').style.border = tab === 'need' ? 'none' : '0.5px solid var(--ru)';
+  document.getElementById('shop-tab-want').style.background = tab === 'want' ? 'var(--ink)' : 'none';
+  document.getElementById('shop-tab-want').style.color = tab === 'want' ? 'var(--p)' : 'var(--im)';
+  document.getElementById('shop-tab-want').style.border = tab === 'want' ? 'none' : '0.5px solid var(--ru)';
+  renderShopItems();
+}
+
+function renderShopItems() {
+  const c = document.getElementById('shop-items');
+  const items = shopData[shopTab] || [];
+  if (!items.length) {
+    c.innerHTML = '<div style="padding: .6rem 1rem; font-size: 10px; color: var(--if); font-style: italic; font-family: \'EB Garamond\', serif;">Nothing here yet.</div>';
+    return;
+  }
+  c.innerHTML = items.map((item, i) => `
+    <div style="display: flex; align-items: center; gap: 8px; padding: .4rem .75rem; border-bottom: 0.5px solid var(--ru); ${item.done ? 'opacity: .45;' : ''}">
+      <div onclick="toggleShopItem(${i})" style="width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid ${item.done ? 'var(--ac)' : 'var(--ru)'}; background: ${item.done ? 'var(--ac)' : 'var(--p)'}; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+        ${item.done ? '<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+      </div>
+      <span style="flex: 1; font-size: 10px; color: var(--ink); ${item.done ? 'text-decoration: line-through;' : ''}">${item.text}</span>
+      <span onclick="removeShopItem(${i})" style="font-size: 11px; color: var(--if); cursor: pointer; line-height: 1;">×</span>
+    </div>
+  `).join('');
+}
+
+async function addShopItem() {
+  const input = document.getElementById('shop-input');
+  const text = input.value.trim();
+  if (!text) return;
+  shopData[shopTab].push({ text, done: false });
+  input.value = '';
+  renderShopItems();
+  await saveShopLists();
+}
+
+async function toggleShopItem(i) {
+  shopData[shopTab][i].done = !shopData[shopTab][i].done;
+  renderShopItems();
+  await saveShopLists();
+}
+
+async function removeShopItem(i) {
+  shopData[shopTab].splice(i, 1);
+  renderShopItems();
+  await saveShopLists();
+}
 // ── WEATHER ──────────────────────────────────────────
 async function loadWeather(){
   if(!navigator.geolocation)return;
@@ -763,7 +831,8 @@ loadTasks();
 updateNow();
 setInterval(updateNow, 1000);
 loadWeather();
-loadQuickTasks()
+loadQuickTasks(); 
+loadShopLists()
 </script>
 
 <div class="side-panel">
@@ -777,7 +846,21 @@ loadQuickTasks()
   </div>
   <div id="qt-list"></div>
 </div>
-
+<!-- SHOPPING LISTS -->
+<div style="border-top: 0.5px solid var(--ru);">
+  <div style="padding: .6rem 1rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); display: flex; align-items: center; justify-content: space-between;">
+    <span style="font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: var(--im);">Shopping</span>
+    <div style="display: flex; gap: 4px;">
+      <button onclick="switchShopTab('need')" id="shop-tab-need" class="shop-tab active-tab" style="font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: var(--ink); color: var(--p); border: none; border-radius: 20px; padding: 2px 8px; cursor: pointer; font-family: 'Geist Mono', monospace;">Need</button>
+      <button onclick="switchShopTab('want')" id="shop-tab-want" class="shop-tab" style="font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; color: var(--im); border: 0.5px solid var(--ru); border-radius: 20px; padding: 2px 8px; cursor: pointer; font-family: 'Geist Mono', monospace;">Want</button>
+    </div>
+  </div>
+  <div id="shop-items" style="max-height: 180px; overflow-y: auto;"></div>
+  <div style="padding: .5rem .75rem; border-top: 0.5px solid var(--ru); display: flex; gap: 6px;">
+    <input id="shop-input" type="text" placeholder="Add item..." style="flex: 1; font-size: 10px; font-family: 'Geist Mono', monospace; background: var(--pd); border: 0.5px solid var(--ru); border-radius: 6px; padding: 5px 8px; color: var(--ink); outline: none;" onkeydown="if(event.key==='Enter')addShopItem()">
+    <button onclick="addShopItem()" style="font-size: 11px; background: var(--ac); color: white; border: none; border-radius: 6px; width: 24px; cursor: pointer;">+</button>
+  </div>
+</div>
 <div class="sec" id="sec-notes-mobile" style="display:block">
   <div class="sec-header" onclick="toggleSec('sec-notes-mobile')">
     <span class="sec-num">V.</span>
