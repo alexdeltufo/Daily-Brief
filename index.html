@@ -438,20 +438,21 @@ function weatherLabel(code){
 }
 
 // ── ROUTINE ──────────────────────────────────────────
-const ROUTINE=[
-  {id:'wake',    time:'7:00',  label:'Wake up',                   sub:'Take a moment before the phone — stretch, breathe, ease in'},
-  {id:'coffee',  time:'7:30',  label:'Coffee & screen-free time', sub:'Brew something good, sit with it — no scrolling, no pings'},
-  {id:'yoga',    time:'8:30',  label:'Morning yoga (30 min)',      sub:'Set the tone for the body before the day sets it for you'},
-  {id:'workam',  time:'9:00',  label:'Morning work block',         sub:'Deep focus — tackle the hardest thing first'},
-  {id:'midday',  time:'12:00', label:'Midday check-in',            sub:'Review messages, triage tasks, update ClickUp statuses'},
-  {id:'lunch',   time:'12:30', label:'Lunch & walk',               sub:'Step away from the screen — get outside, reset'},
-  {id:'workpm',  time:'13:30',  label:'Afternoon work block',       sub:'Client work, calls, lighter creative tasks'},
-  {id:'eod',     time:'17:30',  label:'End-of-day wrap',            sub:"Update tasks, set tomorrow's top 3, close the tab"},
-  {id:'workout', time:'18:00',  label:'Workout or break',           sub:'Move the body, clear the head'},
-  {id:'dinner',  time:'19:00',  label:'Cook + eat dinner',          sub:'Something real — the ritual matters as much as the food'},
-  {id:'tv',      time:'20:00',  label:'TV & evening relax',         sub:'Wind down, laugh, decompress'},
-  {id:'reading', time:'22:00', label:'Read before bed',         sub:'Phone off, book open — your best investment in tomorrow'},
-  {id:'sleep',   time:'23:00', label:'Lights out',                 sub:'Bed time!'},
+const ROUTINE = [
+  { time: '07:00', label: 'Wake up',                    desc: 'Take your time waking up. Coffee first, everything else can wait.' },
+  { time: '07:30', label: 'Morning yoga',               desc: '30 minutes on the mat. Move, breathe, set your intention for the day.' },
+  { time: '08:00', label: 'Breakfast',                  desc: "Eat something real before you head out. Don't skip this." },
+  { time: '08:30', label: 'Get ready',                  desc: 'Get dressed, tie up any quick admin before you head out.' },
+  { time: '09:00', label: 'Summer camp',                desc: "You're on — running the show. Knock out client tasks during any downtime." },
+  { time: '13:00', label: 'Walk or swim',               desc: 'Get outside. Walk, swim, or just sit in the sun — whatever sounds good.' },
+  { time: '13:30', label: 'Lunch & rest',               desc: 'Eat, slow down, take 30 if you need it. A nap here is a good investment, not a luxury.' },
+  { time: '14:00', label: 'Deep work',                  desc: "Client builds, QA, deliverables. Protect this block — it's your prime time." },
+  { time: '18:00', label: 'Strength training or break', desc: 'Move your body or take the time to decompress — your call.' },
+  { time: '18:30', label: 'Cook dinner',                desc: 'Off the clock. In the kitchen, offline, winding down the day.' },
+  { time: '19:30', label: 'Dinner',                     desc: 'Eat well. No work thoughts at the table.' },
+  { time: '20:00', label: 'TV & relax',                 desc: 'Fully decompress. Couch time is earned.' },
+  { time: '21:30', label: 'Reading',                    desc: 'Wind down with a book before sleep.' },
+  { time: '22:30', label: 'Lights out',                 desc: 'Bed. Consistent sleep makes everything else work.' },
 ];
 
 let TODAY_EVENTS=[];
@@ -527,20 +528,22 @@ async function buildRoutine(){
 }
 
 // ── NOW WIDGET ────────────────────────────────────────
-const NOW_BLOCKS=[
-  {label:'Wake up',              desc:'Take your time waking up. No screens yet — ease into the day.',                start:7.0,  end:7.5,  color:'#C47A3A'},
-  {label:'Coffee & screen-free', desc:'Brew coffee, sit with it. No scrolling.',                                      start:7.5,  end:8.5,  color:'#8A9A3A'},
-  {label:'Morning yoga',         desc:'30 minutes on the mat. Move, breathe, set your intention.',                    start:8.5,  end:9.0,  color:'#C0392B'},
-  {label:'Morning work block',   desc:'Deep focus time. Tackle your most important work while your energy is fresh.', start:9.0,  end:12.0, color:'#1A9E8A'},
-  {label:'Midday check-in',      desc:'Take stock of the morning. Triage messages, update ClickUp, plan the PM.',    start:12.0, end:12.5, color:'#E8A838'},
-  {label:'Lunch & walk',         desc:"Step away from the screen. Eat, move, reset — you'll come back sharper.",     start:12.5, end:13.5, color:'#8A9A3A'},
-  {label:'Afternoon work block', desc:'Second session. Client work, calls, emails, and REACH OUT.',                  start:13.5, end:17.5, color:'#1A9E8A'},
-  {label:'End-of-day wrap',      desc:"Close out intentionally. Log what's done, set tomorrow's top 3, close the tab.", start:17.5, end:18.0, color:'#1A9E8A'},
-  {label:'Workout',              desc:'Sweat it out. Move hard, clear your head.',                                    start:18.0, end:19.0, color:'#C0392B'},
-  {label:'Cook + eat dinner',    desc:'Offline and in the kitchen. A good meal to close the workday.',               start:19.0, end:20.0, color:'#8A9A3A'},
-  {label:'TV & evening relax',   desc:'Decompress. No work thoughts — just rest and enjoy the evening.',             start:20.0, end:22.0, color:'#4A6FA5'},
-  {label:'Read before bed',      desc:'Wind down with a book.',                                                       start:22.0, end:23.0, color:'#A8206A'},
-  {label:'Lights out',           desc:'Bed time!',                                                                   start:23.0, end:24.0, color:'#4A4A7A'},
+const NOW_BLOCKS = [
+  { label: 'Asleep',                  desc: "Rest up. You've got a full day ahead.",                                            start: 0,    end: 7.0,  color: '#7F77DD' },
+  { label: 'Wake up',                 desc: 'Take your time waking up. Coffee first, everything else can wait.',                start: 7.0,  end: 7.5,  color: '#EF9F27' },
+  { label: 'Morning yoga',            desc: '30 minutes on the mat. Move, breathe, set your intention for the day.',            start: 7.5,  end: 8.0,  color: '#1D9E75' },
+  { label: 'Breakfast',               desc: "Eat something real before you head out. Don't skip this.",                         start: 8.0,  end: 8.5,  color: '#EF9F27' },
+  { label: 'Get ready',               desc: 'Get dressed, tie up any quick admin before you head out.',                         start: 8.5,  end: 9.0,  color: '#EF9F27' },
+  { label: 'ACRA',                    desc: "You're on — running the show. Knock out client tasks during any downtime.",        start: 9.0,  end: 13.0, color: '#D85A30' },
+  { label: 'Walk or swim',            desc: 'Get outside. Walk, swim, or just sit in the sun — whatever sounds good.',          start: 13.0, end: 13.5, color: '#1D9E75' },
+  { label: 'Lunch & rest',            desc: 'Eat, slow down, take 30 if you need it. A nap here is a good investment, not a luxury.', start: 13.5, end: 14.0, color: '#EF9F27' },
+  { label: 'Deep work',               desc: "Client builds, QA, deliverables. Protect this block — it's your prime time.",     start: 14.0, end: 18.0, color: '#378ADD' },
+  { label: 'Strength training or break', desc: 'Move your body or take the time to decompress — your call.',                   start: 18.0, end: 18.5, color: '#1D9E75' },
+  { label: 'Cook dinner',             desc: 'Off the clock. In the kitchen, offline, winding down the day.',                   start: 18.5, end: 19.5, color: '#EF9F27' },
+  { label: 'Dinner',                  desc: 'Eat well. No work thoughts at the table.',                                         start: 19.5, end: 20.0, color: '#EF9F27' },
+  { label: 'TV & relax',              desc: 'Fully decompress. Couch time is earned.',                                          start: 20.0, end: 21.5, color: '#7F77DD' },
+  { label: 'Reading',                 desc: 'Wind down with a book before sleep.',                                              start: 21.5, end: 22.5, color: '#7F77DD' },
+  { label: 'Lights out',              desc: 'Bed. Consistent sleep makes everything else work.',                                start: 22.5, end: 24.0, color: '#7F77DD' },
 ];
 function nowFmt(h){
   const w=Math.floor(h),m=Math.round((h-w)*60),ampm=w<12?'am':'pm',h12=w%12===0?12:w%12;
