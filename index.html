@@ -439,22 +439,21 @@ function weatherLabel(code){
 
 // ── ROUTINE ──────────────────────────────────────────
 const ROUTINE = [
-  { time: '07:00', label: 'Wake up',                    desc: 'Take your time waking up. Coffee first, everything else can wait.' },
-  { time: '07:30', label: 'Morning yoga',               desc: '30 minutes on the mat. Move, breathe, set your intention for the day.' },
-  { time: '08:00', label: 'Breakfast',                  desc: "Eat something real before you head out. Don't skip this." },
-  { time: '08:30', label: 'Get ready',                  desc: 'Get dressed, tie up any quick admin before you head out.' },
-  { time: '09:00', label: 'Summer camp',                desc: "You're on — running the show. Knock out client tasks during any downtime." },
-  { time: '13:00', label: 'Walk or swim',               desc: 'Get outside. Walk, swim, or just sit in the sun — whatever sounds good.' },
-  { time: '13:30', label: 'Lunch & rest',               desc: 'Eat, slow down, take 30 if you need it. A nap here is a good investment, not a luxury.' },
-  { time: '14:00', label: 'Deep work',                  desc: "Client builds, QA, deliverables. Protect this block — it's your prime time." },
-  { time: '18:00', label: 'Strength training or break', desc: 'Move your body or take the time to decompress — your call.' },
-  { time: '18:30', label: 'Cook dinner',                desc: 'Off the clock. In the kitchen, offline, winding down the day.' },
-  { time: '19:30', label: 'Dinner',                     desc: 'Eat well. No work thoughts at the table.' },
-  { time: '20:00', label: 'TV & relax',                 desc: 'Fully decompress. Couch time is earned.' },
-  { time: '21:30', label: 'Reading',                    desc: 'Wind down with a book before sleep.' },
-  { time: '22:30', label: 'Lights out',                 desc: 'Bed. Consistent sleep makes everything else work.' },
+  { id: 'wake-up',          time: '07:00', label: 'Wake up',                    desc: 'Take your time waking up. Coffee first, everything else can wait.' },
+  { id: 'yoga',             time: '07:30', label: 'Morning yoga',               desc: '30 minutes on the mat. Move, breathe, set your intention for the day.' },
+  { id: 'breakfast',        time: '08:00', label: 'Breakfast',                  desc: "Eat something real before you head out. Don't skip this." },
+  { id: 'get-ready',        time: '08:30', label: 'Get ready',                  desc: 'Get dressed, tie up any quick admin before you head out.' },
+  { id: 'summer-camp',      time: '09:00', label: 'Summer camp',                desc: "You're on — running the show. Knock out client tasks during any downtime." },
+  { id: 'walk-or-swim',     time: '13:00', label: 'Walk or swim',               desc: 'Get outside. Walk, swim, or just sit in the sun — whatever sounds good.' },
+  { id: 'lunch-rest',       time: '13:30', label: 'Lunch & rest',               desc: 'Eat, slow down, take 30 if you need it. A nap here is a good investment, not a luxury.' },
+  { id: 'deep-work',        time: '14:00', label: 'Deep work',                  desc: "Client builds, QA, deliverables. Protect this block — it's your prime time." },
+  { id: 'strength-break',   time: '18:00', label: 'Strength training or break', desc: 'Move your body or take the time to decompress — your call.' },
+  { id: 'cook-dinner',      time: '18:30', label: 'Cook dinner',                desc: 'Off the clock. In the kitchen, offline, winding down the day.' },
+  { id: 'dinner',           time: '19:30', label: 'Dinner',                     desc: 'Eat well. No work thoughts at the table.' },
+  { id: 'tv-relax',         time: '20:00', label: 'TV & relax',                 desc: 'Fully decompress. Couch time is earned.' },
+  { id: 'reading',          time: '21:30', label: 'Reading',                    desc: 'Wind down with a book before sleep.' },
+  { id: 'lights-out',       time: '22:30', label: 'Lights out',                 desc: 'Bed. Consistent sleep makes everything else work.' },
 ];
-
 let TODAY_EVENTS=[];
 
 function routineTimeToHour(t){
