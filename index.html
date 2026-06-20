@@ -521,7 +521,7 @@ async function buildRoutine(){
     }).join('');
     const[rh,rm]=r.time.split(':').map(Number);
     const disp=(rh%12||12)+(rm?':'+String(rm).padStart(2,'0'):'')+(rh<12?'am':'pm');
-    d.innerHTML=`<div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div><div class="rtime">${disp}</div><div class="rcontent"><div class="rlabel">${r.label}</div><div class="rsub">${r.sub}</div>${evPills}</div>`;    c.appendChild(d);
+    d.innerHTML=`<div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div><div class="rtime">${disp}</div><div class="rcontent"><div class="rlabel">${r.label}</div><div class="rsub">${r.desc}</div>${evPills}</div>`;    c.appendChild(d);
   });
   updateProgress(s.checked);
 }
