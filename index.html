@@ -440,19 +440,18 @@ function weatherLabel(code){
 
 // ── ROUTINE ──────────────────────────────────────────
 const ROUTINE=[
-  {id:'wake',    time:'7:00',  label:'Wake up',                   sub:'Take a moment before the phone — stretch, breathe, ease in'},
-  {id:'coffee',  time:'7:30',  label:'Coffee & screen-free time', sub:'Brew something good, sit with it — no scrolling, no pings'},
-  {id:'yoga',    time:'8:30',  label:'Morning yoga (30 min)',      sub:'Set the tone for the body before the day sets it for you'},
-  {id:'workam',  time:'9:00',  label:'Morning work block',         sub:'Deep focus — tackle the hardest thing first'},
-  {id:'midday',  time:'12:00', label:'Midday check-in',            sub:'Review messages, triage tasks, update ClickUp statuses'},
-  {id:'lunch',   time:'12:30', label:'Lunch & walk',               sub:'Step away from the screen — get outside, reset'},
-  {id:'workpm',  time:'13:30',  label:'Afternoon work block',       sub:'Client work, calls, lighter creative tasks'},
-  {id:'eod',     time:'17:30',  label:'End-of-day wrap',            sub:"Update tasks, set tomorrow's top 3, close the tab"},
-  {id:'workout', time:'18:00',  label:'Workout or break',           sub:'Move the body, clear the head'},
-  {id:'dinner',  time:'19:00',  label:'Cook + eat dinner',          sub:'Something real — the ritual matters as much as the food'},
-  {id:'tv',      time:'20:00',  label:'TV & evening relax',         sub:'Wind down, laugh, decompress'},
-  {id:'reading', time:'22:00', label:'Read before bed',         sub:'Phone off, book open — your best investment in tomorrow'},
-  {id:'sleep',   time:'23:00', label:'Lights out',                 sub:'Bed time!'},
+  {id:'wake',    time:'7:30',  label:'Wake up',                sub:'Water, sunlight, no phone yet'},
+  {id:'porch',   time:'8:00',  label:'Coffee & porch reading', sub:'Brew something good, sit with it'},
+  {id:'bfast',   time:'8:30',  label:'Breakfast',              sub:'Muesli and a slow start'},
+  {id:'workam',  time:'9:00',  label:'Morning work block',     sub:'Email, admin, easy wins first'},
+  {id:'walk',    time:'12:00', label:'Walk & shake lunch',     sub:'Shake in hand, out the door'},
+  {id:'deep',    time:'13:00', label:'Deep work block',        sub:'One hard thing, full attention'},
+  {id:'workpm',  time:'16:00', label:'Finish work',            sub:"Wrap up, set tomorrow's top 3"},
+  {id:'move',    time:'17:30', label:'Movement',               sub:'Lift, walk, or stretch — just show up'},
+  {id:'dinner',  time:'19:00', label:'Cook + eat dinner',      sub:'Something real, protein first'},
+  {id:'relax',   time:'20:00', label:'Free time',              sub:'Wind down, decompress'},
+  {id:'read',    time:'21:30', label:'Read before bed',        sub:'Phone off, book open'},
+  {id:'sleep',   time:'22:30', label:'Sleeeeep',               sub:'Lights out'},
 ];
 
 let TODAY_EVENTS=[];
@@ -529,20 +528,20 @@ async function buildRoutine(){
 
 // ── NOW WIDGET ────────────────────────────────────────
 const NOW_BLOCKS=[
-  {label:'Wake up',              desc:'Take your time waking up. No screens yet — ease into the day.',                start:7.0,  end:7.5,  color:'#C47A3A'},
-  {label:'Coffee & screen-free', desc:'Brew coffee, sit with it. No scrolling.',                                      start:7.5,  end:8.5,  color:'#8A9A3A'},
-  {label:'Morning yoga',         desc:'30 minutes on the mat. Move, breathe, set your intention.',                    start:8.5,  end:9.0,  color:'#C0392B'},
-  {label:'Morning work block',   desc:'Deep focus time. Tackle your most important work while your energy is fresh.', start:9.0,  end:12.0, color:'#1A9E8A'},
-  {label:'Midday check-in',      desc:'Take stock of the morning. Triage messages, update ClickUp, plan the PM.',    start:12.0, end:12.5, color:'#E8A838'},
-  {label:'Lunch & walk',         desc:"Step away from the screen. Eat, move, reset — you'll come back sharper.",     start:12.5, end:13.5, color:'#8A9A3A'},
-  {label:'Afternoon work block', desc:'Second session. Client work, calls, emails, and REACH OUT.',                  start:13.5, end:17.5, color:'#1A9E8A'},
-  {label:'End-of-day wrap',      desc:"Close out intentionally. Log what's done, set tomorrow's top 3, close the tab.", start:17.5, end:18.0, color:'#1A9E8A'},
-  {label:'Workout',              desc:'Sweat it out. Move hard, clear your head.',                                    start:18.0, end:19.0, color:'#C0392B'},
-  {label:'Cook + eat dinner',    desc:'Offline and in the kitchen. A good meal to close the workday.',               start:19.0, end:20.0, color:'#8A9A3A'},
-  {label:'TV & evening relax',   desc:'Decompress. No work thoughts — just rest and enjoy the evening.',             start:20.0, end:22.0, color:'#4A6FA5'},
-  {label:'Read before bed',      desc:'Wind down with a book.',                                                       start:22.0, end:23.0, color:'#A8206A'},
-  {label:'Lights out',           desc:'Bed time!',                                                                   start:23.0, end:24.0, color:'#4A4A7A'},
+  {label:'Wake up',              desc:'Water, sunlight, no phone yet. Ease into the day.',                        start:7.5,  end:8.0,  color:'#C47A3A'},
+  {label:'Coffee & porch reading',desc:'Brew something good, sit with it. Book, not phone.',                      start:8.0,  end:8.5,  color:'#8A9A3A'},
+  {label:'Breakfast',            desc:'Muesli and a slow start.',                                                 start:8.5,  end:9.0,  color:'#E8A838'},
+  {label:'Morning work block',   desc:'Email, admin, easy wins first. The win is starting.',                      start:9.0,  end:12.0, color:'#1A9E8A'},
+  {label:'Walk & shake lunch',   desc:'Shake in hand, out the door. Reset before the afternoon.',                 start:12.0, end:13.0, color:'#8A9A3A'},
+  {label:'Deep work block',      desc:'Peak hours. One hard thing, full attention.',                              start:13.0, end:16.0, color:'#1A9E8A'},
+  {label:'Finish work',          desc:"Wrap up loose ends, set tomorrow's top 3, close the tab.",                 start:16.0, end:17.5, color:'#1A9E8A'},
+  {label:'Movement',             desc:'Lift, walk, or stretch — just show up. Shower after.',                     start:17.5, end:19.0, color:'#C0392B'},
+  {label:'Cook + eat dinner',    desc:'Offline and in the kitchen. Something real, protein first.',               start:19.0, end:20.0, color:'#8A9A3A'},
+  {label:'Free time',            desc:'Decompress. No work thoughts — the day is done.',                          start:20.0, end:21.5, color:'#4A6FA5'},
+  {label:'Read before bed',      desc:'Phone off, book open.',                                                    start:21.5, end:22.5, color:'#A8206A'},
+  {label:'Lights out',           desc:'Sleeeeep.',                                                                start:22.5, end:24.0, color:'#4A4A7A'},
 ];
+  
 function nowFmt(h){
   const w=Math.floor(h),m=Math.round((h-w)*60),ampm=w<12?'am':'pm',h12=w%12===0?12:w%12;
   return m===0?h12+ampm:h12+':'+String(m).padStart(2,'0')+ampm;
