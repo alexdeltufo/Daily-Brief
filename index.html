@@ -145,6 +145,26 @@
   .meal-input::placeholder { color: var(--if); font-style: italic; }
   .cook-tag { font-size: 9px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; cursor: pointer; flex-shrink: 0; white-space: nowrap; user-select: none; font-family: 'Geist Mono', monospace; line-height: 1.5; transition: all .12s; }
   .cook-tag:hover { filter: brightness(0.94); }
+  /* ── WORKOUTS ── */
+  .wk-row { display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--ru); }
+  .wk-row:last-child { border-bottom: none; }
+  .wk-row.today { background: #F0EAE0; }
+  .wk-day { font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: var(--if); min-width: 26px; flex-shrink: 0; }
+  .wk-row.today .wk-day { color: var(--ac); }
+  .wk-tag { flex: 1; min-width: 0; padding: 2px 8px; border-radius: 20px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; font-family: 'Geist Mono', monospace; line-height: 1.7; transition: all .12s; }
+  .wk-tag:hover { filter: brightness(0.94); }
+  .wk-tag.empty { font-style: italic; }
+  .wk-check { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--ru); background: var(--p); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all .15s; }
+  .wk-check.done { background: var(--ac); border-color: var(--ac); }
+  .wk-check svg { width: 8px; height: 8px; stroke: white; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  .wk-check.done svg { opacity: 1; }
+  .wk-spacer { width: 15px; flex-shrink: 0; }
+  .wk-prog-row { display: flex; align-items: center; gap: 6px; padding: .3rem .75rem; border-bottom: 0.5px solid var(--ru); }
+  .wk-prog-input { flex: 1; min-width: 0; font-size: 10px; font-family: 'Geist Mono', monospace; color: var(--ink); background: none; border: none; outline: none; }
+  .wk-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .wk-x { font-size: 12px; color: var(--if); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .wk-x:hover { color: var(--ac); }
+  .offline-flag { font-size: 9px; letter-spacing: .05em; text-transform: uppercase; color: #A85A32; background: #FBF0EC; padding: 1px 7px; border-radius: 20px; }
 </style>
 </head>
 <body>
@@ -181,6 +201,10 @@
   <a class="ql ql-notes" href="#sec-meals-mobile">
     <svg viewBox="0 0 24 24"><path d="M3 2v7a3 3 0 0 0 6 0V2"/><line x1="6" y1="9" x2="6" y2="22"/><path d="M18 2c-2 2-3 4-3 7v4h4V2z"/><line x1="17" y1="13" x2="17" y2="22"/></svg>
     Meals
+  </a>
+    <a class="ql ql-notes" href="#sec-workouts-mobile">
+    <svg viewBox="0 0 24 24"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/></svg>
+    Workouts
   </a>
 </div>
 <!-- TOP WIDGETS -->
@@ -467,6 +491,130 @@ function clearMeals(){
   renderMeals();
   saveMeals();
 }
+  // ── THIS WEEK'S WORKOUTS ──────────────────────────────
+const WK_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const WK_COLORS=['#8B2A1A','#4A6FA5','#6B8C4A','#C47A3A','#A8206A','#1A9E8A','#8A7B5C'];
+const DEFAULT_PROGRAM=['Upper Lift','Lower Lift','Long Run','Yoga','Zone 2'];
+let WK=wkBlank();
+let wkEditing=false, wkOffline=false;
+function wkBlank(){
+  return {program:['Upper Lift','Lower Lift','Long Run','Yoga','Zone 2'],
+          days:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(day=>({day,w:'',done:false}))};
+}
+function wkColor(name){
+  if(!name)return 'var(--if)';
+  if(name==='Rest')return '#8A7B5C';
+  const i=WK.program.indexOf(name);
+  return i>=0?WK_COLORS[i%WK_COLORS.length]:'var(--im)';
+}
+async function loadWorkouts(){
+  try{
+    const r=await fetch('/api/workouts');
+    if(!r.ok)throw new Error(r.status);
+    const d=await r.json();
+    if(d&&Array.isArray(d.days)&&d.days.length===7){
+      WK={program:Array.isArray(d.program)&&d.program.length?d.program:DEFAULT_PROGRAM.slice(),days:d.days};
+    }
+    wkOffline=false;
+  }catch(e){wkOffline=true;}
+  renderWorkouts();
+  buildRoutine();
+}
+async function saveWorkouts(){
+  try{
+    const r=await fetch('/api/workouts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({week:mondayKey(),program:WK.program,days:WK.days})});
+    wkOffline=!r.ok;
+  }catch(e){wkOffline=true;}
+  renderWorkouts();
+}
+// Tapping a day cycles: blank -> each workout -> Rest -> blank
+function wkCycle(i){
+  const opts=['',...WK.program,'Rest'];
+  const idx=opts.indexOf(WK.days[i].w||'');
+  WK.days[i].w=opts[(idx+1)%opts.length];
+  if(!WK.days[i].w||WK.days[i].w==='Rest')WK.days[i].done=false;
+  renderWorkouts();saveWorkouts();buildRoutine();
+}
+function wkToggleDone(i){
+  const d=WK.days[i];
+  if(!d.w||d.w==='Rest')return;
+  d.done=!d.done;
+  renderWorkouts();saveWorkouts();buildRoutine();
+}
+function wkToggleEdit(){wkEditing=!wkEditing;renderWorkouts();}
+function wkRename(i,val){
+  const old=WK.program[i], nv=val.trim().slice(0,32);
+  if(!nv||nv===old)return;
+  WK.program[i]=nv;
+  WK.days.forEach(d=>{if(d.w===old)d.w=nv;}); // keep scheduled days pointing at it
+  saveWorkouts();buildRoutine();
+}
+function wkRemove(i){
+  const name=WK.program[i];
+  WK.program.splice(i,1);
+  WK.days.forEach(d=>{if(d.w===name){d.w='';d.done=false;}});
+  renderWorkouts();saveWorkouts();buildRoutine();
+}
+function wkAdd(inputId){
+  const el=document.getElementById(inputId);
+  if(!el)return;
+  const v=el.value.trim().slice(0,32);
+  if(!v)return;
+  WK.program.push(v);el.value='';
+  renderWorkouts();saveWorkouts();
+}
+function renderWorkouts(){
+  const t=todayMealIdx();
+  [['wk-list',false],['wk-list-mobile',true]].forEach(([cid,mob])=>{
+    const c=document.getElementById(cid);
+    if(!c)return;
+    c.innerHTML=WK.days.map((d,i)=>{
+      const has=!!d.w, rest=d.w==='Rest', col=wkColor(d.w);
+      const check=has&&!rest
+        ? `<div class="wk-check${d.done?' done':''}" onclick="wkToggleDone(${i})"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>`
+        : `<div class="wk-spacer"></div>`;
+      return `<div class="wk-row${i===t?' today':''}" style="padding:${mob?'.5rem 1.5rem':'.4rem .75rem'}">
+        <span class="wk-day">${d.day}</span>
+        <span class="wk-tag${has?'':' empty'}" onclick="wkCycle(${i})" title="Tap to change" style="font-size:${mob?'11px':'10px'};background:${has?col+'22':'transparent'};color:${has?col:'var(--if)'};${d.done?'text-decoration:line-through;opacity:.55;':''}">${has?esc(d.w):'tap to set'}</span>
+        ${check}
+      </div>`;
+    }).join('');
+  });
+  // Program editor
+  [['wk-prog',false],['wk-prog-mobile',true]].forEach(([cid,mob])=>{
+    const c=document.getElementById(cid);
+    if(!c)return;
+    if(!wkEditing){c.innerHTML='';c.style.display='none';return;}
+    c.style.display='block';
+    const pad=mob?'.35rem 1.5rem':'.3rem .75rem';
+    c.innerHTML=WK.program.map((n,i)=>`<div class="wk-prog-row" style="padding:${pad}">
+        <span class="wk-dot" style="background:${WK_COLORS[i%WK_COLORS.length]}"></span>
+        <input class="wk-prog-input" value="${esc(n)}" onchange="wkRename(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()" style="font-size:${mob?'11px':'10px'}">
+        <span class="wk-x" onclick="wkRemove(${i})">×</span>
+      </div>`).join('')
+      +`<div class="wk-prog-row" style="padding:${pad};border-bottom:none">
+        <span class="wk-dot" style="background:var(--ru)"></span>
+        <input class="wk-prog-input" id="wk-add${mob?'-mobile':''}" placeholder="Add workout..." onkeydown="if(event.key==='Enter')wkAdd('wk-add${mob?'-mobile':''}')" style="font-size:${mob?'11px':'10px'}">
+        <span class="wk-x" onclick="wkAdd('wk-add${mob?'-mobile':''}')" style="color:var(--ac)">+</span>
+      </div>`;
+  });
+  // Footer: progress + anything that never made it onto the week
+  const scheduled=WK.days.filter(d=>d.w&&d.w!=='Rest');
+  const done=scheduled.filter(d=>d.done).length;
+  const placed=new Set(scheduled.map(d=>d.w));
+  const unscheduled=WK.program.filter(n=>!placed.has(n));
+  const bits=[`<span style="color:var(--im)">${done} of ${scheduled.length} done</span>`];
+  if(unscheduled.length)bits.push(`<span style="color:#A85A32">Unscheduled: ${unscheduled.map(esc).join(', ')}</span>`);
+  ['wk-summary','wk-summary-mobile'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML=bits.join(' · ');
+  });
+  // Loud about being offline — a dead endpoint shouldn't look like a working one
+  ['wk-offline','wk-offline-mobile'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML=wkOffline?'<span class="offline-flag">not saving</span>':'';
+  });
+}
 // ── WEATHER ──────────────────────────────────────────
 async function loadWeather(){
   if(!navigator.geolocation)return;
@@ -594,6 +742,15 @@ async function buildRoutine(){
       if(m&&(m.meal||m.cook)){
         const ck=cookMeta(m.cook);
         mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${ck.color};display:inline-block;flex-shrink:0"></span><span style="font-size:9px;color:var(--im)">${esc(m.meal)||'Not planned'}${m.cook?' · '+ck.label+' cooking':''}</span></div>`;
+      }
+    }
+        // Today's workout, surfaced on the 5:30pm Movement block
+    if(r.id==='move'){
+      const w=WK.days[todayMealIdx()];
+      if(w&&w.w){
+        const col=wkColor(w.w);
+        const label=w.w==='Rest'?'Rest day':esc(w.w)+(w.done?' · done ✓':'');
+        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${col};display:inline-block;flex-shrink:0"></span><span style="font-size:9px;color:var(--im);${w.done?'text-decoration:line-through;opacity:.6':''}">${label}</span></div>`;
       }
     }
     const[rh,rm]=r.time.split(':').map(Number);
@@ -916,6 +1073,7 @@ loadWeather();
 loadQuickTasks();
 loadShopLists();
 loadMeals();
+loadWorkouts();
 
 </script>
 <div class="side-rail">
@@ -1003,6 +1161,36 @@ loadMeals();
       <span style="font-size:9px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary-mobile"></span>
       <button onclick="clearMeals()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear</button>
     </div>
+  </div>
+    <!-- This Week's Workouts -->
+  <div class="side-panel" id="workouts-panel">
+    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+      <span>This Week's Workouts</span>
+      <span style="display:flex;align-items:center;gap:6px">
+        <span id="wk-offline"></span>
+        <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Edit</button>
+      </span>
+    </div>
+    <div id="wk-prog" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
+    <div id="wk-list"></div>
+    <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em" id="wk-summary"></div>
+  </div>
+</div>
+</div>
+  <div class="sec mobile-sec" id="sec-workouts-mobile">
+  <div class="sec-header" onclick="toggleSec('sec-workouts-mobile')">
+    <span class="sec-num">VIII.</span>
+    <span class="sec-title">This Week's Workouts</span>
+    <span id="wk-offline-mobile"></span>
+    <span class="sec-chev">▾</span>
+  </div>
+  <div class="sec-body" id="body-sec-workouts-mobile">
+    <div style="display:flex;justify-content:flex-end;padding:.4rem 1.5rem;border-bottom:0.5px solid var(--ru);background:var(--pd)">
+      <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Edit program</button>
+    </div>
+    <div id="wk-prog-mobile" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
+    <div id="wk-list-mobile"></div>
+    <div style="padding:.5rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em" id="wk-summary-mobile"></div>
   </div>
 </div>
 </body>
