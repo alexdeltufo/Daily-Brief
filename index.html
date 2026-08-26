@@ -190,10 +190,6 @@
     <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
     Tasks
   </a>
-  <a class="ql" href="#sec-4">
-    <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>
-    Notion
-  </a>
   <a class="ql ql-notes" href="#sec-notes-mobile">
     <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
     Quick Tasks
@@ -286,33 +282,6 @@
   </div>
   <div class="sec-body" id="body-sec-2">
     <div class="loading" id="cal-loading">Fetching calendar<span class="dot">...</span></div>
-  </div>
-</div>
-<!-- IV. NOTION -->
-<div class="sec" id="sec-4">
-  <div class="sec-header" onclick="toggleSec('sec-4')">
-    <span class="sec-num">IV.</span>
-    <span class="sec-title">Notion Pages</span>
-    <span class="sec-badge">10</span>
-    <span class="sec-chev">▾</span>
-  </div>
-  <div class="sec-body" id="body-sec-4">
-    <a class="ncard" href="https://www.notion.so/23b04f60cb204e6e8cff690def44c90c?pvs=1" target="_blank"><span class="nemoji">🏠</span><span class="ntitle">Alex's Home</span><span class="nws">Personal</span></a>
-    <a class="ncard" href="https://www.notion.so/1fa9110d02c780158c22e5e8ca7ec035?pvs=1" target="_blank"><span class="nemoji">🍂</span><span class="ntitle">Alex's Daily Schedule</span><span class="nws">Personal</span></a>
-    <a class="ncard" href="https://www.notion.so/e28593479f24460ebda0b507f24f3eb0?pvs=1" target="_blank"><span class="nemoji">✈️</span><span class="ntitle">Alex's Travel</span><span class="nws">Personal</span></a>
-    <a class="ncard" href="https://www.notion.so/adc1280c4cb5483e9ed80099ae5802c9?pvs=1" target="_blank"><span class="nemoji">💪</span><span class="ntitle">Alex's Health</span><span class="nws">Personal</span></a>
-    <a class="ncard" href="https://www.notion.so/1fa9110d02c780bd9d96d47e870386d3?pvs=1" target="_blank"><span class="nemoji">📋</span><span class="ntitle">Alex's Tasks &amp; Schedule</span><span class="nws">Personal</span></a>
-    <a class="ncard" href="https://www.notion.so/1699110d02c780579846ec15e3b10e62?pvs=1" target="_blank"><span class="nemoji">🎯</span><span class="ntitle">Alex's 2025 Goals</span><span class="nws">Personal</span></a>
-    <a class="ncard" href="https://www.notion.so/1279110d02c780268e51c4efbeea1281?pvs=1" target="_blank"><span class="nemoji">🏃</span><span class="ntitle">Alex's Activities</span><span class="nws">Personal</span></a>
-    <a class="ncard" href="https://www.notion.so/e39bd351528048d49d5c305efcb1157a?pvs=1" target="_blank"><span class="nemoji">🌴</span><span class="ntitle">Tulum Anniversary Trip</span><span class="nws">Travel</span></a>
-    <a class="ncard" href="https://www.notion.so/1ce9110d02c78041b015e538ea203f34?pvs=1" target="_blank"><span class="nemoji">📊</span><span class="ntitle">ACRA 2025 Dashboard</span><span class="nws">Work</span></a>
-    <a class="ncard" href="https://www.notion.so/cb49110d02c78220bdbc81bd66f6851a?pvs=1" target="_blank"><span class="nemoji">🤖</span><span class="ntitle">AI Meeting Notes</span><span class="nws">Work</span></a>
-    <div class="foot-row">
-      <a class="ql" href="https://www.notion.so" target="_blank" style="padding:4px 12px;font-size:10px;">
-        <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Open Notion
-      </a>
-    </div>
   </div>
 </div>
 <script>
@@ -442,7 +411,7 @@ async function loadMeals(){
     const r=await fetch('/api/meals');
     const d=await r.json();
     if(d&&Array.isArray(d.meals)&&d.meals.length===7){
-      MEALS=d.week===mondayKey()?d.meals:blankMeals();
+      MEALS=d.meals; // carry over between weeks; use Clear to wipe
     }
   }catch(e){}
   renderMeals();
@@ -1043,18 +1012,42 @@ async function saveQuickTasks(){
     await fetch('/api/quicktasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(QT)});
   }catch(e){}
 }
+const QT_PRIOS=[
+  {id:'',     label:'—',    color:'var(--if)', rank:3},
+  {id:'high', label:'High', color:'#C0392B',   rank:0},
+  {id:'med',  label:'Med',  color:'#C47A3A',   rank:1},
+  {id:'low',  label:'Low',  color:'#4A6FA5',   rank:2},
+];
+function qtPrio(id){return QT_PRIOS.find(p=>p.id===(id||''))||QT_PRIOS[0];}
 function renderQuickTasks(){
+  // Sort a copy, but carry the original index so handlers still hit the right task
+  const order=QT.map((t,i)=>({t,i})).sort((a,b)=>
+    (a.t.done?1:0)-(b.t.done?1:0) ||
+    qtPrio(a.t.prio).rank-qtPrio(b.t.prio).rank ||
+    a.i-b.i
+  );
   ['qt-list','qt-list-mobile'].forEach(id=>{
     const c=document.getElementById(id);
     if(!c)return;
     if(!QT.length){c.innerHTML='<div style="padding:.5rem 1rem;font-size:10px;color:var(--if);font-style:italic">Nothing yet</div>';return;}
-    c.innerHTML=QT.map((t,i)=>`<div style="display:flex;align-items:flex-start;gap:8px;padding:.4rem 1rem;border-bottom:0.5px solid var(--ru);cursor:pointer" onclick="toggleQT(${i})">
+    const mob=id.endsWith('mobile');
+    c.innerHTML=order.map(({t,i})=>{
+      const p=qtPrio(t.prio), on=!!t.prio;
+      return `<div style="display:flex;align-items:flex-start;gap:8px;padding:${mob?'.5rem 1.5rem':'.4rem 1rem'};border-bottom:0.5px solid var(--ru);cursor:pointer" onclick="toggleQT(${i})">
       <div style="width:13px;height:13px;border-radius:3px;border:1.5px solid ${t.done?'var(--ac)':'var(--ru)'};background:${t.done?'var(--ac)':'var(--p)'};flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center">
         ${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}
       </div>
-      <span style="font-size:10px;color:${t.done?'var(--if)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'};line-height:1.5">${t.text}</span>
-    </div>`).join('');
+      <span style="flex:1;min-width:0;font-size:${mob?'11px':'10px'};color:${t.done?'var(--if)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'};line-height:1.5">${esc(t.text)}</span>
+      <span onclick="event.stopPropagation();cycleQT(${i})" title="Tap to set priority" style="flex-shrink:0;margin-top:1px;font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:1px 7px;border-radius:20px;user-select:none;line-height:1.6;background:${on?p.color+'22':'transparent'};color:${on?p.color:'var(--if)'};border:0.5px solid ${on?'transparent':'var(--ru)'};${t.done?'opacity:.45':''}">${p.label}</span>
+    </div>`;
+    }).join('');
   });
+}
+async function cycleQT(i){
+  const idx=QT_PRIOS.findIndex(p=>p.id===(QT[i].prio||''));
+  QT[i].prio=QT_PRIOS[(idx+1)%QT_PRIOS.length].id;
+  renderQuickTasks();
+  await saveQuickTasks();
 }
 async function toggleQT(i){
   QT[i].done=!QT[i].done;
@@ -1066,7 +1059,7 @@ async function addQT(inputId){
   if(!input)return;
   const text=input.value.trim();
   if(!text)return;
-  QT.push({text,done:false});
+  QT.push({text,done:false,prio:''});
   input.value='';
   renderQuickTasks();
   await saveQuickTasks();
@@ -1144,7 +1137,7 @@ loadWorkouts();
 </div>
 <div class="sec mobile-sec" id="sec-notes-mobile">
   <div class="sec-header" onclick="toggleSec('sec-notes-mobile')">
-    <span class="sec-num">V.</span>
+    <span class="sec-num">IV.</span>
     <span class="sec-title">Quick Tasks</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -1161,7 +1154,7 @@ loadWorkouts();
 </div>
 <div class="sec mobile-sec" id="sec-shop-mobile">
   <div class="sec-header" onclick="toggleSec('sec-shop-mobile')">
-    <span class="sec-num">VI.</span>
+    <span class="sec-num">V.</span>
     <span class="sec-title">Shopping</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -1179,7 +1172,7 @@ loadWorkouts();
 </div>
 <div class="sec mobile-sec" id="sec-meals-mobile">
   <div class="sec-header" onclick="toggleSec('sec-meals-mobile')">
-    <span class="sec-num">VII.</span>
+    <span class="sec-num">VI.</span>
     <span class="sec-title">This Week's Meals</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -1193,7 +1186,7 @@ loadWorkouts();
 </div>
 <div class="sec mobile-sec" id="sec-workouts-mobile">
   <div class="sec-header" onclick="toggleSec('sec-workouts-mobile')">
-    <span class="sec-num">VIII.</span>
+    <span class="sec-num">VII.</span>
     <span class="sec-title">This Week's Workouts</span>
     <span id="wk-offline-mobile"></span>
     <span class="sec-chev">▾</span>
