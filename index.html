@@ -151,9 +151,11 @@
   .wk-row.today { background: #F0EAE0; }
   .wk-day { font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: var(--if); min-width: 26px; flex-shrink: 0; }
   .wk-row.today .wk-day { color: var(--ac); }
-  .wk-tag { flex: 1; min-width: 0; padding: 2px 8px; border-radius: 20px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; font-family: 'Geist Mono', monospace; line-height: 1.7; transition: all .12s; }
-  .wk-tag:hover { filter: brightness(0.94); }
-  .wk-tag.empty { font-style: italic; }
+  .wk-selwrap { flex: 1; min-width: 0; position: relative; display: flex; }
+  .wk-select { flex: 1; min-width: 0; padding: 2px 16px 2px 8px; border: none; border-radius: 20px; cursor: pointer; outline: none; font-family: 'Geist Mono', monospace; line-height: 1.7; appearance: none; -webkit-appearance: none; text-overflow: ellipsis; transition: all .12s; }
+  .wk-select:hover { filter: brightness(0.94); }
+  .wk-select.empty { font-style: italic; }
+  .wk-caret { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 8px; color: var(--if); pointer-events: none; }
   .wk-check { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--ru); background: var(--p); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all .15s; }
   .wk-check.done { background: var(--ac); border-color: var(--ac); }
   .wk-check svg { width: 8px; height: 8px; stroke: white; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
@@ -511,11 +513,9 @@ async function saveWorkouts(){
   }catch(e){wkOffline=true;}
   renderWorkouts();
 }
-// Tapping a day cycles: blank -> each workout -> Rest -> blank
-function wkCycle(i){
-  const opts=['',...WK.program,'Rest'];
-  const idx=opts.indexOf(WK.days[i].w||'');
-  WK.days[i].w=opts[(idx+1)%opts.length];
+// Direct assignment from the dropdown — no index math, so it can't desync
+function wkSet(i,val){
+  WK.days[i].w=val||'';
   if(!WK.days[i].w||WK.days[i].w==='Rest')WK.days[i].done=false;
   renderWorkouts();saveWorkouts();buildRoutine();
 }
@@ -557,9 +557,19 @@ function renderWorkouts(){
       const check=has&&!rest
         ? `<div class="wk-check${d.done?' done':''}" onclick="wkToggleDone(${i})"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>`
         : `<div class="wk-spacer"></div>`;
+      // A day pointing at a workout no longer in the program still gets an option,
+      // so it stays visible and changeable instead of vanishing
+      const orphan=has&&!rest&&WK.program.indexOf(d.w)<0;
+      const opts=`<option value="">— none —</option>`
+        +WK.program.map(n=>`<option value="${esc(n)}"${d.w===n?' selected':''}>${esc(n)}</option>`).join('')
+        +`<option value="Rest"${rest?' selected':''}>Rest</option>`
+        +(orphan?`<option value="${esc(d.w)}" selected>${esc(d.w)} (removed)</option>`:'');
       return `<div class="wk-row${i===t?' today':''}" style="padding:${mob?'.5rem 1.5rem':'.4rem .75rem'}">
         <span class="wk-day">${d.day}</span>
-        <span class="wk-tag${has?'':' empty'}" onclick="wkCycle(${i})" title="Tap to change" style="font-size:${mob?'11px':'10px'};background:${has?col+'22':'transparent'};color:${has?col:'var(--if)'};${d.done?'text-decoration:line-through;opacity:.55;':''}">${has?esc(d.w):'tap to set'}</span>
+        <span class="wk-selwrap">
+          <select class="wk-select${has?'':' empty'}" onchange="wkSet(${i},this.value)" style="font-size:${mob?'11px':'10px'};background:${has?col+'22':'transparent'};color:${has?col:'var(--if)'};${d.done?'text-decoration:line-through;opacity:.55;':''}">${opts}</select>
+          <span class="wk-caret">▾</span>
+        </span>
         ${check}
       </div>`;
     }).join('');
