@@ -37,15 +37,16 @@ function normalize(obj, week) {
     .filter(n => typeof n === 'string' && n.trim())
     .map(n => n.trim().slice(0, 32))
     .slice(0, 12);
-  const valid = new Set([...(program.length ? program : DEFAULT_PROGRAM), 'Rest']);
   const incoming = Array.isArray(obj && obj.days) ? obj.days : [];
   return {
     week,
     program: program.length ? program : DEFAULT_PROGRAM.slice(),
+    // Keep whatever string the day holds, even if it's no longer in the program.
+    // The UI surfaces those as "(removed)" so they stay visible and fixable —
+    // silently blanking them was making assignments disappear.
     days: DAYS.map((day, i) => {
       const row = incoming[i] || {};
-      // Drop assignments pointing at a workout that no longer exists
-      const w = typeof row.w === 'string' && valid.has(row.w) ? row.w : '';
+      const w = typeof row.w === 'string' ? row.w.trim().slice(0, 32) : '';
       return { day, w, done: w && w !== 'Rest' ? !!row.done : false };
     })
   };
