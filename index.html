@@ -4,7 +4,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌿%3C/text%3E%3C/svg%3E">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alex's Daily Brief</title>
+<title>Daily Brief — Alex</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Geist+Mono:wght@300;400&display=swap" rel="stylesheet">
  <style>
@@ -1019,13 +1019,29 @@ const QT_PRIOS=[
   {id:'low',  label:'Low',  color:'#4A6FA5',   rank:2},
 ];
 function qtPrio(id){return QT_PRIOS.find(p=>p.id===(id||''))||QT_PRIOS[0];}
-function renderQuickTasks(){
-  // Sort a copy, but carry the original index so handlers still hit the right task
-  const order=QT.map((t,i)=>({t,i})).sort((a,b)=>
-    (a.t.done?1:0)-(b.t.done?1:0) ||
-    qtPrio(a.t.prio).rank-qtPrio(b.t.prio).rank ||
-    a.i-b.i
+// Display order is frozen while you're tapping, so nothing slides out from under you.
+// It re-sorts 1.5s after the last tap, then flashes whatever moved.
+let QT_VIEW=null, qtSettleTimer=null, qtFlash=null;
+function qtSortedOrder(){
+  return QT.map((t,i)=>i).sort((a,b)=>
+    (QT[a].done?1:0)-(QT[b].done?1:0) ||
+    qtPrio(QT[a].prio).rank-qtPrio(QT[b].prio).rank ||
+    a-b
   );
+}
+function qtSettleLater(i){
+  clearTimeout(qtSettleTimer);
+  qtSettleTimer=setTimeout(()=>{
+    QT_VIEW=qtSortedOrder();
+    qtFlash=i;
+    renderQuickTasks();
+    setTimeout(()=>{qtFlash=null;renderQuickTasks();},900);
+  },1500);
+}
+function renderQuickTasks(){
+  // Stale view (task added or removed) -> rebuild it
+  if(!QT_VIEW||QT_VIEW.length!==QT.length)QT_VIEW=qtSortedOrder();
+  const order=QT_VIEW.map(i=>({t:QT[i],i})).filter(x=>x.t);
   ['qt-list','qt-list-mobile'].forEach(id=>{
     const c=document.getElementById(id);
     if(!c)return;
@@ -1033,7 +1049,7 @@ function renderQuickTasks(){
     const mob=id.endsWith('mobile');
     c.innerHTML=order.map(({t,i})=>{
       const p=qtPrio(t.prio), on=!!t.prio;
-      return `<div style="display:flex;align-items:flex-start;gap:8px;padding:${mob?'.5rem 1.5rem':'.4rem 1rem'};border-bottom:0.5px solid var(--ru);cursor:pointer" onclick="toggleQT(${i})">
+      return `<div style="display:flex;align-items:flex-start;gap:8px;padding:${mob?'.5rem 1.5rem':'.4rem 1rem'};border-bottom:0.5px solid var(--ru);cursor:pointer;transition:background .3s;background:${qtFlash===i?'var(--al)':'transparent'}" onclick="toggleQT(${i})">
       <div style="width:13px;height:13px;border-radius:3px;border:1.5px solid ${t.done?'var(--ac)':'var(--ru)'};background:${t.done?'var(--ac)':'var(--p)'};flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center">
         ${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}
       </div>
@@ -1046,12 +1062,14 @@ function renderQuickTasks(){
 async function cycleQT(i){
   const idx=QT_PRIOS.findIndex(p=>p.id===(QT[i].prio||''));
   QT[i].prio=QT_PRIOS[(idx+1)%QT_PRIOS.length].id;
-  renderQuickTasks();
+  renderQuickTasks();   // repaint in place — no reorder yet
+  qtSettleLater(i);
   await saveQuickTasks();
 }
 async function toggleQT(i){
   QT[i].done=!QT[i].done;
   renderQuickTasks();
+  qtSettleLater(i);
   await saveQuickTasks();
 }
 async function addQT(inputId){
@@ -1065,7 +1083,9 @@ async function addQT(inputId){
   await saveQuickTasks();
 }
 async function clearDoneQT(){
+  clearTimeout(qtSettleTimer);
   QT=QT.filter(t=>!t.done);
+  QT_VIEW=null;
   renderQuickTasks();
   await saveQuickTasks();
 }
