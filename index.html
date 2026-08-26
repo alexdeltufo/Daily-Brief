@@ -133,6 +133,10 @@
 @media (min-width: 1160px) { .side-rail { display: flex; } }
   .side-panel { background: var(--p); border: 0.5px solid var(--ru); border-radius: 13px; overflow: hidden; flex-shrink: 0; }
   .side-panel-hdr { padding: .6rem 1rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: var(--im); }
+  .sp-toggle { font-size: 10px; color: var(--if); background: none; border: none; cursor: pointer; line-height: 1; padding: 0; transition: transform .2s; font-family: 'Geist Mono', monospace; }
+  .sp-toggle:hover { color: var(--ac); }
+  .side-panel.collapsed .sp-toggle { transform: rotate(-90deg); }
+  .side-panel.collapsed .side-panel-body { display: none; }
   .mobile-sec { display: block; }
 @media (min-width: 1160px) { .mobile-sec { display: none; } }
   /* ── MEALS ── */
@@ -317,6 +321,20 @@ function restoreSections(){
         document.getElementById('body-'+id)?.classList.add('closed');
       }
     });
+  }catch(e){}
+}
+function toggleSidePanel(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.toggle('collapsed');
+  const st={};
+  document.querySelectorAll('.side-panel').forEach(p=>{if(p.id)st[p.id]=p.classList.contains('collapsed');});
+  localStorage.setItem('dailybrief_panels',JSON.stringify(st));
+}
+function restoreSidePanels(){
+  try{
+    const st=JSON.parse(localStorage.getItem('dailybrief_panels')||'{}');
+    Object.entries(st).forEach(([id,c])=>{if(c)document.getElementById(id)?.classList.add('collapsed');});
   }catch(e){}
 }
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -1101,6 +1119,7 @@ async function clearDoneQT(){
 }
 // ── INIT ─────────────────────────────────────────────
 restoreSections();
+restoreSidePanels();
 setHeader();
 buildRoutine();
 loadCalendar();
@@ -1116,40 +1135,53 @@ loadWorkouts();
 </script>
 <div class="side-rail">
   <!-- Quick Tasks -->
-  <div class="side-panel">
-    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between">
-      Quick Tasks
-      <button onclick="clearDoneQT()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear done</button>
+  <div class="side-panel" id="qt-panel">
+    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+      <span>Quick Tasks</span>
+      <span style="display:flex;align-items:center;gap:6px">
+        <button onclick="clearDoneQT()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear done</button>
+        <button class="sp-toggle" onclick="toggleSidePanel('qt-panel')" title="Minimize">&#9662;</button>
+      </span>
     </div>
-    <div style="display:flex;gap:6px;padding:.5rem .75rem;border-bottom:0.5px solid var(--ru)">
-      <input id="qt-input" placeholder="Add task..." onkeydown="if(event.key==='Enter')addQT('qt-input')" style="flex:1;font-size:10px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
-      <button onclick="addQT('qt-input')" style="font-size:14px;color:var(--ac);background:none;border:none;cursor:pointer;line-height:1">+</button>
+    <div class="side-panel-body">
+      <div style="display:flex;gap:6px;padding:.5rem .75rem;border-bottom:0.5px solid var(--ru)">
+        <input id="qt-input" placeholder="Add task..." onkeydown="if(event.key==='Enter')addQT('qt-input')" style="flex:1;font-size:10px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
+        <button onclick="addQT('qt-input')" style="font-size:14px;color:var(--ac);background:none;border:none;cursor:pointer;line-height:1">+</button>
+      </div>
+      <div id="qt-list"></div>
     </div>
-    <div id="qt-list"></div>
   </div>
   <!-- Shopping -->
   <div class="side-panel" id="shop-panel">
-    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between">
+    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
       <span>Shopping</span>
-      <div style="display:flex;gap:4px">
+      <span style="display:flex;align-items:center;gap:4px">
         <button onclick="switchShopTab('need')" id="shop-tab-need" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--p);border:none;border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Geist Mono',monospace">Need</button>
         <button onclick="switchShopTab('want')" id="shop-tab-want" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--im);border:0.5px solid var(--ru);border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Geist Mono',monospace">Want</button>
-      </div>
+        <button class="sp-toggle" onclick="toggleSidePanel('shop-panel')" title="Minimize">&#9662;</button>
+      </span>
     </div>
-    <div id="shop-items" style="max-height:180px;overflow-y:auto"></div>
-    <div style="padding:.5rem .75rem;border-top:0.5px solid var(--ru);display:flex;gap:6px">
-      <input id="shop-input" type="text" placeholder="Add item..." style="flex:1;font-size:10px;font-family:'Geist Mono',monospace;background:var(--pd);border:0.5px solid var(--ru);border-radius:6px;padding:5px 8px;color:var(--ink);outline:none" onkeydown="if(event.key==='Enter')addShopItem()">
-      <button onclick="addShopItem()" style="font-size:11px;background:var(--ac);color:white;border:none;border-radius:6px;width:24px;cursor:pointer">+</button>
+    <div class="side-panel-body">
+      <div id="shop-items" style="max-height:180px;overflow-y:auto"></div>
+      <div style="padding:.5rem .75rem;border-top:0.5px solid var(--ru);display:flex;gap:6px">
+        <input id="shop-input" type="text" placeholder="Add item..." style="flex:1;font-size:10px;font-family:'Geist Mono',monospace;background:var(--pd);border:0.5px solid var(--ru);border-radius:6px;padding:5px 8px;color:var(--ink);outline:none" onkeydown="if(event.key==='Enter')addShopItem()">
+        <button onclick="addShopItem()" style="font-size:11px;background:var(--ac);color:white;border:none;border-radius:6px;width:24px;cursor:pointer">+</button>
+      </div>
     </div>
   </div>
   <!-- This Week's Meals -->
   <div class="side-panel" id="meals-panel">
-    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between">
+    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
       <span>This Week's Meals</span>
-      <button onclick="clearMeals()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear</button>
+      <span style="display:flex;align-items:center;gap:6px">
+        <button onclick="clearMeals()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear</button>
+        <button class="sp-toggle" onclick="toggleSidePanel('meals-panel')" title="Minimize">&#9662;</button>
+      </span>
     </div>
-    <div id="meals-list"></div>
-    <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary"></div>
+    <div class="side-panel-body">
+      <div id="meals-list"></div>
+      <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary"></div>
+    </div>
   </div>
   <!-- This Week's Workouts -->
   <div class="side-panel" id="workouts-panel">
@@ -1158,11 +1190,14 @@ loadWorkouts();
       <span style="display:flex;align-items:center;gap:6px">
         <span id="wk-offline"></span>
         <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Edit</button>
+        <button class="sp-toggle" onclick="toggleSidePanel('workouts-panel')" title="Minimize">&#9662;</button>
       </span>
     </div>
-    <div id="wk-prog" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
-    <div id="wk-list"></div>
-    <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em" id="wk-summary"></div>
+    <div class="side-panel-body">
+      <div id="wk-prog" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
+      <div id="wk-list"></div>
+      <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em" id="wk-summary"></div>
+    </div>
   </div>
 </div>
 <div class="sec mobile-sec" id="sec-notes-mobile">
