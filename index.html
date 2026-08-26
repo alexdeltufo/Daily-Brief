@@ -202,7 +202,7 @@
     <svg viewBox="0 0 24 24"><path d="M3 2v7a3 3 0 0 0 6 0V2"/><line x1="6" y1="9" x2="6" y2="22"/><path d="M18 2c-2 2-3 4-3 7v4h4V2z"/><line x1="17" y1="13" x2="17" y2="22"/></svg>
     Meals
   </a>
-    <a class="ql ql-notes" href="#sec-workouts-mobile">
+  <a class="ql ql-notes" href="#sec-workouts-mobile">
     <svg viewBox="0 0 24 24"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/></svg>
     Workouts
   </a>
@@ -462,7 +462,7 @@ function renderMeals(){
       const on=!!m.cook;
       return `<div class="meal-row${i===t?' today':''}" style="padding:${mob?'.5rem 1.5rem':'.4rem .75rem'}">
         <span class="meal-day">${m.day}</span>
-        <input class="meal-input" style="font-size:${mob?'11px':'10px'}" value="${esc(m.meal)}" placeholder="add a meal" onchange="setMeal(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+        <input class="meal-input" style="font-size:${mob?'11px':'10px'}" value="${esc(m.meal)}" placeholder="add a meal" oninput="setMeal(${i},this.value)" onblur="flushMeals()" onkeydown="if(event.key==='Enter')this.blur()">
         <span class="cook-tag" onclick="cycleCook(${i})" title="Tap to change who's cooking" style="background:${on?ck.color+'22':'transparent'};color:${on?ck.color:'var(--if)'};border:0.5px solid ${on?'transparent':'var(--ru)'}">${ck.label}</span>
       </div>`;
     }).join('');
@@ -477,7 +477,22 @@ function renderMeals(){
     if(el)el.innerHTML=summary||'<span style="color:var(--if)">nothing assigned yet</span>';
   });
 }
-function setMeal(i,val){MEALS[i].meal=val;saveMeals();renderMeals();}
+// Debounced: saves while typing, so nothing is lost if you refresh without blurring.
+// Deliberately does NOT re-render — that would destroy the input you're typing in.
+let mealSaveTimer=null;
+function setMeal(i,val){
+  MEALS[i].meal=val;
+  clearTimeout(mealSaveTimer);
+  mealSaveTimer=setTimeout(saveMeals,400);
+}
+function flushMeals(){clearTimeout(mealSaveTimer);saveMeals();}
+window.addEventListener('beforeunload',()=>{
+  if(mealSaveTimer){
+    clearTimeout(mealSaveTimer);
+    // fetch() gets killed on unload; sendBeacon survives it.
+    try{navigator.sendBeacon('/api/meals',new Blob([JSON.stringify({week:mondayKey(),meals:MEALS})],{type:'application/json'}));}catch(e){}
+  }
+});
 function cycleCook(i){
   const cur=MEALS[i].cook||'';
   const idx=COOKS.findIndex(c=>c.id===cur);
@@ -491,7 +506,7 @@ function clearMeals(){
   renderMeals();
   saveMeals();
 }
-  // ── THIS WEEK'S WORKOUTS ──────────────────────────────
+// ── THIS WEEK'S WORKOUTS ──────────────────────────────
 const WK_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const WK_COLORS=['#8B2A1A','#4A6FA5','#6B8C4A','#C47A3A','#A8206A','#1A9E8A','#8A7B5C'];
 const DEFAULT_PROGRAM=['Upper Lift','Lower Lift','Long Run','Yoga','Zone 2'];
@@ -744,7 +759,7 @@ async function buildRoutine(){
         mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${ck.color};display:inline-block;flex-shrink:0"></span><span style="font-size:9px;color:var(--im)">${esc(m.meal)||'Not planned'}${m.cook?' · '+ck.label+' cooking':''}</span></div>`;
       }
     }
-        // Today's workout, surfaced on the 5:30pm Movement block
+    // Today's workout, surfaced on the 5:30pm Movement block
     if(r.id==='move'){
       const w=WK.days[todayMealIdx()];
       if(w&&w.w){
@@ -1113,6 +1128,19 @@ loadWorkouts();
     <div id="meals-list"></div>
     <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary"></div>
   </div>
+  <!-- This Week's Workouts -->
+  <div class="side-panel" id="workouts-panel">
+    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+      <span>This Week's Workouts</span>
+      <span style="display:flex;align-items:center;gap:6px">
+        <span id="wk-offline"></span>
+        <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Edit</button>
+      </span>
+    </div>
+    <div id="wk-prog" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
+    <div id="wk-list"></div>
+    <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em" id="wk-summary"></div>
+  </div>
 </div>
 <div class="sec mobile-sec" id="sec-notes-mobile">
   <div class="sec-header" onclick="toggleSec('sec-notes-mobile')">
@@ -1162,22 +1190,8 @@ loadWorkouts();
       <button onclick="clearMeals()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear</button>
     </div>
   </div>
-    <!-- This Week's Workouts -->
-  <div class="side-panel" id="workouts-panel">
-    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-      <span>This Week's Workouts</span>
-      <span style="display:flex;align-items:center;gap:6px">
-        <span id="wk-offline"></span>
-        <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Edit</button>
-      </span>
-    </div>
-    <div id="wk-prog" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
-    <div id="wk-list"></div>
-    <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em" id="wk-summary"></div>
-  </div>
 </div>
-</div>
-  <div class="sec mobile-sec" id="sec-workouts-mobile">
+<div class="sec mobile-sec" id="sec-workouts-mobile">
   <div class="sec-header" onclick="toggleSec('sec-workouts-mobile')">
     <span class="sec-num">VIII.</span>
     <span class="sec-title">This Week's Workouts</span>
