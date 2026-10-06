@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alex's Daily Brief</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Geist+Mono:wght@300;400&display=swap" rel="stylesheet">
  <style>
@@ -51,8 +52,6 @@
   .sec-body { padding: 0; }
   .sec-body.closed { display: none; }
   .sec-header.closed .sec-chev { transform: rotate(-90deg); }
-  #sec-notes-mobile { display: block; }
-@media (min-width: 1160px) { #sec-notes-mobile { display: none; } }
   .routine-progress { padding: .65rem 1.5rem; background: #F0EAE0; border-bottom: 0.5px solid var(--ru); display: flex; align-items: center; gap: 12px; }
   .progress-bar-wrap { flex: 1; height: 4px; background: var(--ru); border-radius: 2px; overflow: hidden; }
   .progress-bar { height: 100%; background: var(--ac); border-radius: 2px; transition: width .4s ease; }
@@ -170,23 +169,44 @@
   .wk-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
   .wk-x { font-size: 12px; color: var(--if); cursor: pointer; line-height: 1; flex-shrink: 0; }
   .wk-x:hover { color: var(--ac); }
-  /* ── TASK TABS / WORK ── */
-  .tt-tab { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; color: var(--im); border: 0.5px solid var(--ru); border-radius: 20px; padding: 2px 8px; cursor: pointer; font-family: 'Geist Mono', monospace; white-space: nowrap; }
+  /* ── TASK TABS ── */
+  .tt-bar { display: flex; gap: 6px; padding: .6rem 1.5rem; border-bottom: 0.5px solid var(--ru); }
+  .tt-tab { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: none; color: var(--im); border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 11px; cursor: pointer; font-family: 'Geist Mono', monospace; white-space: nowrap; }
   .tt-tab.on { background: var(--ink); color: var(--p); border-color: var(--ink); }
-  .wt-pane { display: none; }
-  .wt-pane.on { display: block; }
-  .wt-in { min-width: 0; font-size: 10px; font-family: 'Geist Mono', monospace; color: var(--ink); background: var(--pd); border: 0.5px solid var(--ru); border-radius: 6px; padding: 4px 7px; outline: none; }
+  .tt-count { opacity: .6; margin-left: 2px; }
+  .tt-pane { display: none; }
+  .tt-pane.on { display: block; }
+  /* ── WORK ── */
+  .wt-add { padding: .75rem 1.5rem; border-bottom: 0.5px solid var(--ru); display: flex; flex-direction: column; gap: 6px; }
+  .wt-add-toggle { display: flex; align-items: center; gap: 6px; width: 100%; padding: .55rem 1.5rem; background: var(--pd); border: none; border-bottom: 0.5px solid var(--ru); cursor: pointer; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--im); text-align: left; }
+  .wt-add-toggle:hover { background: var(--pdd); color: var(--ink); }
+  #wt-add-icon { font-size: 13px; color: var(--ac); letter-spacing: 0; width: 10px; }
+  .wt-add-top { display: flex; gap: 8px; align-items: center; }
+  .wt-text { flex: 1; min-width: 0; font-size: 11px; font-family: 'Geist Mono', monospace; color: var(--ink); background: none; border: none; outline: none; }
+  .wt-plus { font-size: 16px; color: var(--ac); background: none; border: none; cursor: pointer; line-height: 1; }
+  .wt-fields { display: flex; flex-wrap: wrap; gap: 6px; }
+  .wt-in { min-width: 0; font-size: 10px; font-family: 'Geist Mono', monospace; color: var(--ink); background: var(--pd); border: 0.5px solid var(--ru); border-radius: 6px; padding: 5px 8px; outline: none; }
   .wt-in::placeholder { color: var(--if); }
-  .wt-row { display: flex; align-items: flex-start; gap: 8px; border-bottom: 0.5px solid var(--ru); }
-  .wt-box { width: 13px; height: 13px; border-radius: 3px; border: 1.5px solid var(--ru); background: var(--p); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .wt-row { display: flex; align-items: flex-start; gap: 10px; padding: .55rem 1.5rem; border-bottom: 0.5px solid var(--ru); }
+  .wt-row.done { opacity: .5; }
+  .wt-box { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--ru); background: var(--p); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .wt-box.done { border-color: var(--ac); background: var(--ac); }
   .wt-main { flex: 1; min-width: 0; cursor: pointer; }
-  .wt-name { line-height: 1.5; word-wrap: break-word; }
-  .wt-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 2px; font-size: 9px; letter-spacing: .04em; color: var(--if); }
-  .wt-client { text-transform: uppercase; letter-spacing: .06em; padding: 0 6px; border-radius: 20px; background: var(--al); color: var(--ac); line-height: 1.6; }
-  .wt-link { color: var(--ac); text-decoration: none; }
+  .wt-name { font-size: 11px; color: var(--ink); line-height: 1.4; word-wrap: break-word; }
+  .wt-row.done .wt-name { text-decoration: line-through; }
+  .wt-note { font-size: 10px; color: var(--if); font-style: italic; margin-top: 2px; }
+  .wt-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; max-width: 50%; }
+  .wt-client { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; background: var(--al); color: var(--ac); white-space: nowrap; }
+  .wt-link { font-size: 10px; color: var(--ac); text-decoration: none; white-space: nowrap; }
   .wt-link:hover { text-decoration: underline; }
+  .wt-edit { padding: .65rem 1.5rem; border-bottom: 0.5px solid var(--ru); background: var(--al); display: flex; flex-direction: column; gap: 6px; }
   .wt-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Geist Mono', monospace; color: var(--if); padding: 0; }
+  .wt-empty { padding: .75rem 1.5rem; font-size: 10px; color: var(--if); font-style: italic; }
+  /* ── QUICK TASK DRAG ── */
+  .qt-handle { cursor: grab; color: var(--if); font-size: 11px; line-height: 1; padding: 2px 2px 0; flex-shrink: 0; user-select: none; touch-action: none; letter-spacing: -2px; }
+  .qt-handle:hover { color: var(--im); }
+  .qt-ghost { background: var(--al) !important; opacity: .6; }
+  .qt-drag { background: var(--p) !important; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
   .offline-flag { font-size: 9px; letter-spacing: .05em; text-transform: uppercase; color: #A85A32; background: #FBF0EC; padding: 1px 7px; border-radius: 20px; }
 </style>
 </head>
@@ -209,8 +229,8 @@
     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     Calendar
   </a>
-  <a class="ql ql-notes" href="#sec-notes-mobile">
-    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+  <a class="ql" href="#sec-work">
+    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
     Tasks
   </a>
   <a class="ql ql-notes" href="#sec-meals-mobile">
@@ -279,10 +299,49 @@
     <div class="all-done-banner" id="all-done">All done for today — well earned. ✦</div>
   </div>
 </div>
-<!-- II. CALENDAR -->
+<!-- II. TASKS -->
+<div class="sec" id="sec-work">
+  <div class="sec-header" onclick="toggleSec('sec-work')">
+    <span class="sec-num">II.</span>
+    <span class="sec-title">Tasks</span>
+    <span class="sec-chev">▾</span>
+  </div>
+  <div class="sec-body" id="body-sec-work">
+    <div class="tt-bar">
+      <button class="tt-tab on" data-tt="work" onclick="switchTaskTab('work')">Work <span class="tt-count" id="wt-badge"></span></button>
+      <button class="tt-tab" data-tt="personal" onclick="switchTaskTab('personal')">Personal <span class="tt-count" id="qt-badge"></span></button>
+    </div>
+    <div class="tt-pane on" data-pane="work">
+    <button class="wt-add-toggle" id="wt-add-toggle" onclick="wtToggleAdd()"><span id="wt-add-icon">+</span> <span id="wt-add-label">New task</span></button>
+    <div class="wt-add" id="wt-add" style="display:none">
+      <div class="wt-add-top">
+        <input id="wt-text" class="wt-text" placeholder="Add work task..." onkeydown="if(event.key==='Enter')wtSubmit()">
+        <button class="wt-plus" onclick="wtSubmit()" title="Add">+</button>
+      </div>
+      <div class="wt-fields">
+        <input class="wt-in" id="wt-client" list="wt-clients" placeholder="Client" style="flex:1 1 120px" onkeydown="if(event.key==='Enter')wtSubmit()">
+        <input class="wt-in" id="wt-due" type="date" title="Due date" style="flex:0 1 140px">
+        <input class="wt-in" id="wt-note" placeholder="Note or link (optional)" style="flex:2 1 180px" onkeydown="if(event.key==='Enter')wtSubmit()">
+      </div>
+    </div>
+    <datalist id="wt-clients"></datalist>
+    <div id="wt-list"></div>
+    <div class="foot-row" style="justify-content:flex-end"><button class="wt-btn" onclick="wtClearDone()">Clear done</button></div>
+    </div>
+    <div class="tt-pane" data-pane="personal">
+      <div class="wt-add-top" style="padding:.7rem 1.5rem;border-bottom:0.5px solid var(--ru)">
+        <input id="qt-input" class="wt-text" placeholder="Add personal task..." onkeydown="if(event.key==='Enter')addQT('qt-input')">
+        <button class="wt-plus" onclick="addQT('qt-input')" title="Add">+</button>
+      </div>
+      <div id="qt-list"></div>
+      <div class="foot-row" style="justify-content:flex-end"><button class="wt-btn" onclick="clearDoneQT()">Clear done</button></div>
+    </div>
+  </div>
+</div>
+<!-- III. CALENDAR -->
 <div class="sec" id="sec-2">
   <div class="sec-header" onclick="toggleSec('sec-2')">
-    <span class="sec-num">II.</span>
+    <span class="sec-num">III.</span>
     <span class="sec-title">Calendar — This Week</span>
     <span class="sec-badge" id="cal-badge">–</span>
     <span class="sec-chev">▾</span>
@@ -959,64 +1018,46 @@ async function saveQuickTasks(){
     await fetch('/api/quicktasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(QT)});
   }catch(e){}
 }
-const QT_PRIOS=[
-  {id:'',     label:'—',    color:'var(--if)', rank:3},
-  {id:'high', label:'High', color:'#C0392B',   rank:0},
-  {id:'med',  label:'Med',  color:'#C47A3A',   rank:1},
-  {id:'low',  label:'Low',  color:'#4A6FA5',   rank:2},
-];
-function qtPrio(id){return QT_PRIOS.find(p=>p.id===(id||''))||QT_PRIOS[0];}
-// Display order is frozen while you're tapping, so nothing slides out from under you.
-// It re-sorts 1.5s after the last tap, then flashes whatever moved.
-let QT_VIEW=null, qtSettleTimer=null, qtFlash=null;
-function qtSortedOrder(){
-  return QT.map((t,i)=>i).sort((a,b)=>
-    (QT[a].done?1:0)-(QT[b].done?1:0) ||
-    qtPrio(QT[a].prio).rank-qtPrio(QT[b].prio).rank ||
-    a-b
-  );
-}
-function qtSettleLater(i){
-  clearTimeout(qtSettleTimer);
-  qtSettleTimer=setTimeout(()=>{
-    QT_VIEW=qtSortedOrder();
-    qtFlash=i;
-    renderQuickTasks();
-    setTimeout(()=>{qtFlash=null;renderQuickTasks();},900);
-  },1500);
-}
 function renderQuickTasks(){
-  // Stale view (task added or removed) -> rebuild it
-  if(!QT_VIEW||QT_VIEW.length!==QT.length)QT_VIEW=qtSortedOrder();
-  const order=QT_VIEW.map(i=>({t:QT[i],i})).filter(x=>x.t);
-  ['qt-list','qt-list-mobile'].forEach(id=>{
+  updateQTCount();
+  ['qt-list'].forEach(id=>{
     const c=document.getElementById(id);
     if(!c)return;
-    if(!QT.length){c.innerHTML='<div style="padding:.5rem 1rem;font-size:10px;color:var(--if);font-style:italic">Nothing yet</div>';return;}
-    const mob=id.endsWith('mobile');
-    c.innerHTML=order.map(({t,i})=>{
-      const p=qtPrio(t.prio), on=!!t.prio;
-      return `<div style="display:flex;align-items:flex-start;gap:8px;padding:${mob?'.5rem 1.5rem':'.4rem 1rem'};border-bottom:0.5px solid var(--ru);cursor:pointer;transition:background .3s;background:${qtFlash===i?'var(--al)':'transparent'}" onclick="toggleQT(${i})">
+    if(!QT.length){c.innerHTML='<div class="wt-empty">No personal tasks yet.</div>';return;}
+    c.innerHTML=QT.map((t,i)=>`<div class="qt-item" style="display:flex;align-items:flex-start;gap:10px;padding:.55rem 1.5rem .55rem 1.1rem;border-bottom:0.5px solid var(--ru);cursor:pointer;background:var(--p)" onclick="toggleQT(${i})">
+      <span class="qt-handle" title="Drag to reorder" onclick="event.stopPropagation()">⋮⋮</span>
       <div style="width:13px;height:13px;border-radius:3px;border:1.5px solid ${t.done?'var(--ac)':'var(--ru)'};background:${t.done?'var(--ac)':'var(--p)'};flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center">
         ${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}
       </div>
-      <span style="flex:1;min-width:0;font-size:${mob?'11px':'10px'};color:${t.done?'var(--if)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'};line-height:1.5">${esc(t.text)}</span>
-      <span onclick="event.stopPropagation();cycleQT(${i})" title="Tap to set priority" style="flex-shrink:0;margin-top:1px;font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:1px 7px;border-radius:20px;user-select:none;line-height:1.6;background:${on?p.color+'22':'transparent'};color:${on?p.color:'var(--if)'};border:0.5px solid ${on?'transparent':'var(--ru)'};${t.done?'opacity:.45':''}">${p.label}</span>
-    </div>`;
-    }).join('');
+      <span style="flex:1;min-width:0;font-size:11px;color:${t.done?'var(--if)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'};line-height:1.5">${esc(t.text)}</span>
+    </div>`).join('');
   });
 }
-async function cycleQT(i){
-  const idx=QT_PRIOS.findIndex(p=>p.id===(QT[i].prio||''));
-  QT[i].prio=QT_PRIOS[(idx+1)%QT_PRIOS.length].id;
-  renderQuickTasks();   // repaint in place — no reorder yet
-  qtSettleLater(i);
-  await saveQuickTasks();
+function updateQTCount(){
+  const n=QT.filter(t=>!t.done).length;
+  const el=document.getElementById('qt-badge');if(el)el.textContent=n||'';
+}
+function initQTSortable(){
+  if(typeof Sortable==='undefined')return;
+  ['qt-list'].forEach(id=>{
+    const c=document.getElementById(id);
+    if(!c||c._sortable)return;
+    c._sortable=Sortable.create(c,{
+      handle:'.qt-handle',draggable:'.qt-item',animation:150,
+      ghostClass:'qt-ghost',chosenClass:'qt-drag',
+      onEnd:async e=>{
+        if(e.oldIndex===e.newIndex)return;
+        const [moved]=QT.splice(e.oldIndex,1);
+        QT.splice(e.newIndex,0,moved);
+        renderQuickTasks();
+        await saveQuickTasks();
+      }
+    });
+  });
 }
 async function toggleQT(i){
   QT[i].done=!QT[i].done;
   renderQuickTasks();
-  qtSettleLater(i);
   await saveQuickTasks();
 }
 async function addQT(inputId){
@@ -1024,33 +1065,20 @@ async function addQT(inputId){
   if(!input)return;
   const text=input.value.trim();
   if(!text)return;
-  QT.push({text,done:false,prio:''});
+  QT.push({text,done:false});
   input.value='';
   renderQuickTasks();
   await saveQuickTasks();
 }
 async function clearDoneQT(){
-  clearTimeout(qtSettleTimer);
   QT=QT.filter(t=>!t.done);
-  QT_VIEW=null;
   renderQuickTasks();
   await saveQuickTasks();
 }
 // ── WORK TASKS ───────────────────────────────────────
-// Stored separately from personal tasks: /api/quicktasks?list=work
+// Stored in Redis via /api/quicktasks?list=work
 // Each task: {text, client, due:'YYYY-MM-DD', note, done}
-let WT=[], WT_EDIT=null, TASK_TAB='personal';
-function switchTaskTab(tab){
-  TASK_TAB=tab;
-  document.querySelectorAll('.tt-tab').forEach(b=>b.classList.toggle('on',b.dataset.tt===tab));
-  document.querySelectorAll('.wt-pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===tab));
-  try{localStorage.setItem('db_task_tab',tab);}catch(e){}
-}
-function restoreTaskTab(){
-  let t='personal';
-  try{t=localStorage.getItem('db_task_tab')||'personal';}catch(e){}
-  switchTaskTab(t==='work'?'work':'personal');
-}
+let WT=[], WT_EDIT=null;
 async function loadWorkTasks(){
   try{
     const r=await fetch('/api/quicktasks?list=work');
@@ -1064,21 +1092,16 @@ async function saveWorkTasks(){
     await fetch('/api/quicktasks?list=work',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(WT)});
   }catch(e){}
 }
-function wtDayDiff(due){
+function wtDueLabel(due){
   if(!due)return null;
   const [y,m,d]=due.split('-').map(Number);
   const t=new Date();t.setHours(0,0,0,0);
-  return Math.round((new Date(y,m-1,d)-t)/86400000);
-}
-function wtDueLabel(due){
-  const n=wtDayDiff(due);
-  if(n===null)return null;
-  const [y,m,d]=due.split('-').map(Number);
+  const n=Math.round((new Date(y,m-1,d)-t)/86400000);
   if(n<0)return{text:'Overdue · '+SMONS[m-1]+' '+d,color:'#C0392B'};
   if(n===0)return{text:'Today',color:'#C0392B'};
   if(n===1)return{text:'Tomorrow',color:'#C47A3A'};
-  if(n<7)return{text:SDAYS[new Date(y,m-1,d).getDay()],color:'var(--im)'};
-  return{text:SMONS[m-1]+' '+d,color:'var(--if)'};
+  if(n<7)return{text:SDAYS[new Date(y,m-1,d).getDay()],color:'#7A7570'};
+  return{text:SMONS[m-1]+' '+d,color:'#9B9B9B'};
 }
 function wtOrder(){
   return WT.map((t,i)=>i).sort((a,b)=>{
@@ -1089,115 +1112,81 @@ function wtOrder(){
     return a-b;
   });
 }
-function wtClients(){return [...new Set(WT.map(t=>(t.client||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));}
+function switchTaskTab(tab){
+  document.querySelectorAll('.tt-tab').forEach(b=>b.classList.toggle('on',b.dataset.tt===tab));
+  document.querySelectorAll('.tt-pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===tab));
+  try{localStorage.setItem('db_task_tab',tab);}catch(e){}
+}
+function wtSetAddOpen(open,focus){
+  document.getElementById('wt-add').style.display=open?'flex':'none';
+  document.getElementById('wt-add-icon').textContent=open?'−':'+';
+  document.getElementById('wt-add-label').textContent=open?'Hide':'New task';
+  try{localStorage.setItem('db_wt_add_open',open?'1':'0');}catch(e){}
+  if(open&&focus)document.getElementById('wt-text').focus();
+}
+function wtToggleAdd(){wtSetAddOpen(document.getElementById('wt-add').style.display==='none',true);}
 function wtIsUrl(s){return /^https?:\/\//i.test((s||'').trim());}
-function wtFields(sfx,t,mob){
-  const fs=mob?'11px':'10px';
-  return `<input class="wt-in" id="wt-client${sfx}" list="wt-clients" placeholder="Client" value="${esc(t.client||'')}" style="flex:1 1 90px;font-size:${fs}" onkeydown="if(event.key==='Enter')wtSubmit('${sfx}')">
-      <input class="wt-in" id="wt-due${sfx}" type="date" value="${esc(t.due||'')}" title="Due date" style="flex:1 1 115px;font-size:${fs};padding:4px 5px">`;
-}
-function renderWorkAdd(){
-  document.querySelectorAll('.wt-add').forEach(box=>{
-    if(box.dataset.built)return;
-    const sfx=box.dataset.sfx, mob=sfx==='-mobile', pad=mob?'.6rem 1.5rem':'.5rem .75rem', fs=mob?'11px':'10px';
-    box.innerHTML=`<div style="padding:${pad};border-bottom:0.5px solid var(--ru);display:flex;flex-direction:column;gap:5px">
-      <div style="display:flex;gap:6px;align-items:center">
-        <input id="wt-text${sfx}" placeholder="Add work task..." onkeydown="if(event.key==='Enter')wtSubmit('${sfx}')" style="flex:1;min-width:0;font-size:${fs};font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
-        <button onclick="wtSubmit('${sfx}')" style="font-size:${mob?'16px':'14px'};color:var(--ac);background:none;border:none;cursor:pointer;line-height:1">+</button>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:5px">${wtFields(sfx,{},mob)}</div>
-      <input class="wt-in" id="wt-note${sfx}" placeholder="Note or link (optional)" style="font-size:${fs}" onkeydown="if(event.key==='Enter')wtSubmit('${sfx}')">
-    </div>`;
-    box.dataset.built='1';
-  });
-}
 function renderWorkTasks(){
-  let dl=document.getElementById('wt-clients');
-  if(!dl){dl=document.createElement('datalist');dl.id='wt-clients';document.body.appendChild(dl);}
-  dl.innerHTML=wtClients().map(c=>`<option value="${esc(c)}">`).join('');
+  const clients=[...new Set(WT.map(t=>(t.client||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  document.getElementById('wt-clients').innerHTML=clients.map(c=>`<option value="${esc(c)}">`).join('');
   const open=WT.filter(t=>!t.done).length;
-  document.querySelectorAll('.wt-count').forEach(el=>el.textContent=open?String(open):'');
-  const order=wtOrder();
-  ['wt-list','wt-list-mobile'].forEach(id=>{
-    const c=document.getElementById(id);
-    if(!c)return;
-    const mob=id.endsWith('mobile'), pad=mob?'.5rem 1.5rem':'.45rem 1rem', fs=mob?'11px':'10px';
-    if(!WT.length){c.innerHTML=`<div style="padding:.5rem 1rem;font-size:10px;color:var(--if);font-style:italic">No work tasks yet</div>`;return;}
-    c.innerHTML=order.map(i=>{
-      const t=WT[i];
-      if(WT_EDIT===i){
-        const sfx='-e'+(mob?'m':'d');
-        return `<div style="padding:${pad};border-bottom:0.5px solid var(--ru);background:var(--al);display:flex;flex-direction:column;gap:5px">
-          <input class="wt-in" id="wt-text${sfx}" value="${esc(t.text)}" style="font-size:${fs}" onkeydown="if(event.key==='Enter')wtSaveEdit(${i},'${sfx}')">
-          <div style="display:flex;flex-wrap:wrap;gap:5px">${wtFields(sfx,t,mob).replace(/wtSubmit\('[^']*'\)/g,`wtSaveEdit(${i},'${sfx}')`)}</div>
-          <input class="wt-in" id="wt-note${sfx}" value="${esc(t.note||'')}" placeholder="Note or link" style="font-size:${fs}" onkeydown="if(event.key==='Enter')wtSaveEdit(${i},'${sfx}')">
-          <div style="display:flex;justify-content:space-between;gap:8px">
-            <button class="wt-btn" style="color:#C0392B" onclick="wtDelete(${i})">Delete</button>
-            <span style="display:flex;gap:12px"><button class="wt-btn" onclick="WT_EDIT=null;renderWorkTasks()">Cancel</button><button class="wt-btn" style="color:var(--ac)" onclick="wtSaveEdit(${i},'${sfx}')">Save</button></span>
-          </div>
-        </div>`;
-      }
-      const due=t.done?null:wtDueLabel(t.due);
-      const note=(t.note||'').trim();
-      const noteHtml=!note?'':wtIsUrl(note)
-        ?`<a class="wt-link" href="${esc(note)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">link ↗</a>`
-        :`<span style="font-style:italic">${esc(note)}</span>`;
-      const bits=[
-        t.client?`<span class="wt-client">${esc(t.client)}</span>`:'',
-        due?`<span style="color:${due.color}">${due.text}</span>`:'',
-        noteHtml
-      ].filter(Boolean).join('');
-      return `<div class="wt-row" style="padding:${pad};${t.done?'opacity:.5':''}">
-        <div class="wt-box ${t.done?'done':''}" onclick="wtToggle(${i})">${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}</div>
-        <div class="wt-main" onclick="WT_EDIT=${i};renderWorkTasks()" title="Tap to edit">
-          <div class="wt-name" style="font-size:${fs};text-decoration:${t.done?'line-through':'none'}">${esc(t.text)}</div>
-          ${bits?`<div class="wt-sub">${bits}</div>`:''}
+  document.getElementById('wt-badge').textContent=open||'';
+  const c=document.getElementById('wt-list');
+  if(!WT.length){c.innerHTML='<div class="wt-empty">No work tasks yet.</div>';return;}
+  c.innerHTML=wtOrder().map(i=>{
+    const t=WT[i];
+    if(WT_EDIT===i){
+      return `<div class="wt-edit">
+        <input class="wt-in" id="wte-text" value="${esc(t.text)}" style="font-size:11px" onkeydown="if(event.key==='Enter')wtSaveEdit(${i})">
+        <div class="wt-fields">
+          <input class="wt-in" id="wte-client" list="wt-clients" placeholder="Client" value="${esc(t.client||'')}" style="flex:1 1 120px" onkeydown="if(event.key==='Enter')wtSaveEdit(${i})">
+          <input class="wt-in" id="wte-due" type="date" value="${esc(t.due||'')}" style="flex:0 1 140px">
+          <input class="wt-in" id="wte-note" placeholder="Note or link" value="${esc(t.note||'')}" style="flex:2 1 180px" onkeydown="if(event.key==='Enter')wtSaveEdit(${i})">
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <button class="wt-btn" style="color:#C0392B" onclick="wtDelete(${i})">Delete</button>
+          <span style="display:flex;gap:14px"><button class="wt-btn" onclick="WT_EDIT=null;renderWorkTasks()">Cancel</button><button class="wt-btn" style="color:var(--ac)" onclick="wtSaveEdit(${i})">Save</button></span>
         </div>
       </div>`;
-    }).join('');
-  });
+    }
+    const due=t.done?null:wtDueLabel(t.due);
+    const note=(t.note||'').trim(), isUrl=wtIsUrl(note);
+    return `<div class="wt-row ${t.done?'done':''}">
+      <div class="wt-box ${t.done?'done':''}" onclick="wtToggle(${i})">${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}</div>
+      <div class="wt-main" onclick="WT_EDIT=${i};renderWorkTasks()" title="Click to edit">
+        <div class="wt-name">${esc(t.text)}</div>
+        ${note&&!isUrl?`<div class="wt-note">${esc(note)}</div>`:''}
+      </div>
+      <div class="wt-right">
+        ${t.client?`<span class="wt-client">${esc(t.client)}</span>`:''}
+        ${due?`<span class="pill" style="background:${due.color}1f;color:${due.color}">${due.text}</span>`:''}
+        ${isUrl?`<a class="wt-link" href="${esc(note)}" target="_blank" rel="noopener">Open ↗</a>`:''}
+      </div>
+    </div>`;
+  }).join('');
 }
-function wtRead(sfx){
-  const v=id=>(document.getElementById(id+sfx)?.value||'').trim();
-  return {text:v('wt-text'),client:v('wt-client'),due:v('wt-due'),note:v('wt-note')};
-}
-async function wtSubmit(sfx){
-  const f=wtRead(sfx);
-  if(!f.text){document.getElementById('wt-text'+sfx)?.focus();return;}
-  WT.push({...f,done:false});
-  ['wt-text','wt-client','wt-due','wt-note'].forEach(id=>{const el=document.getElementById(id+sfx);if(el)el.value='';});
-  document.getElementById('wt-text'+sfx)?.focus();
+async function wtSubmit(){
+  const v=id=>(document.getElementById(id).value||'').trim();
+  const t={text:v('wt-text'),client:v('wt-client'),due:v('wt-due'),note:v('wt-note'),done:false};
+  if(!t.text){document.getElementById('wt-text').focus();return;}
+  WT.push(t);
+  ['wt-text','wt-client','wt-due','wt-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('wt-text').focus();
   renderWorkTasks();
   await saveWorkTasks();
 }
-async function wtSaveEdit(i,sfx){
-  const f=wtRead(sfx);
-  if(!f.text)return;
-  WT[i]={...WT[i],...f};
+async function wtSaveEdit(i){
+  const v=id=>(document.getElementById(id).value||'').trim();
+  const text=v('wte-text');
+  if(!text)return;
+  WT[i]={...WT[i],text,client:v('wte-client'),due:v('wte-due'),note:v('wte-note')};
   WT_EDIT=null;
   renderWorkTasks();
   await saveWorkTasks();
 }
-async function wtDelete(i){
-  WT.splice(i,1);
-  WT_EDIT=null;
-  renderWorkTasks();
-  await saveWorkTasks();
-}
-async function wtToggle(i){
-  WT[i].done=!WT[i].done;
-  renderWorkTasks();
-  await saveWorkTasks();
-}
-async function clearDoneTasks(){
-  if(TASK_TAB==='work'){
-    WT=WT.filter(t=>!t.done);WT_EDIT=null;
-    renderWorkTasks();
-    await saveWorkTasks();
-  }else{
-    await clearDoneQT();
-  }
-}
+async function wtDelete(i){WT.splice(i,1);WT_EDIT=null;renderWorkTasks();await saveWorkTasks();}
+async function wtToggle(i){WT[i].done=!WT[i].done;renderWorkTasks();await saveWorkTasks();}
+async function wtClearDone(){WT=WT.filter(t=>!t.done);WT_EDIT=null;renderWorkTasks();await saveWorkTasks();}
 // ── INIT ─────────────────────────────────────────────
 restoreSections();
 restoreSidePanels();
@@ -1208,40 +1197,16 @@ updateNow();
 setInterval(updateNow, 1000);
 loadWeather();
 loadQuickTasks();
-// panel markup sits below this script, so wait for it
-document.addEventListener('DOMContentLoaded',()=>{renderWorkAdd();restoreTaskTab();loadWorkTasks();});
+loadWorkTasks();
+try{wtSetAddOpen(localStorage.getItem('db_wt_add_open')==='1',false);}catch(e){}
+initQTSortable();
+try{switchTaskTab(localStorage.getItem('db_task_tab')==='personal'?'personal':'work');}catch(e){}
 loadShopLists();
 loadMeals();
 loadWorkouts();
 
 </script>
 <div class="side-rail">
-  <!-- Quick Tasks -->
-  <div class="side-panel" id="qt-panel">
-    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-      <span style="display:flex;align-items:center;gap:4px">
-        <button class="tt-tab on" data-tt="personal" onclick="switchTaskTab('personal')">Personal</button>
-        <button class="tt-tab" data-tt="work" onclick="switchTaskTab('work')">Work <span class="wt-count"></span></button>
-      </span>
-      <span style="display:flex;align-items:center;gap:6px">
-        <button onclick="clearDoneTasks()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace;white-space:nowrap">Clear</button>
-        <button class="sp-toggle" onclick="toggleSidePanel('qt-panel')" title="Minimize">&#9662;</button>
-      </span>
-    </div>
-    <div class="side-panel-body">
-      <div class="wt-pane on" data-pane="personal">
-        <div style="display:flex;gap:6px;padding:.5rem .75rem;border-bottom:0.5px solid var(--ru)">
-          <input id="qt-input" placeholder="Add task..." onkeydown="if(event.key==='Enter')addQT('qt-input')" style="flex:1;font-size:10px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
-          <button onclick="addQT('qt-input')" style="font-size:14px;color:var(--ac);background:none;border:none;cursor:pointer;line-height:1">+</button>
-        </div>
-        <div id="qt-list"></div>
-      </div>
-      <div class="wt-pane" data-pane="work">
-        <div class="wt-add" data-sfx=""></div>
-        <div id="wt-list" style="max-height:360px;overflow-y:auto"></div>
-      </div>
-    </div>
-  </div>
   <!-- Shopping -->
   <div class="side-panel" id="shop-panel">
     <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
@@ -1288,33 +1253,6 @@ loadWorkouts();
       <div id="wk-prog" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
       <div id="wk-list"></div>
       <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em" id="wk-summary"></div>
-    </div>
-  </div>
-</div>
-<div class="sec mobile-sec" id="sec-notes-mobile">
-  <div class="sec-header" onclick="toggleSec('sec-notes-mobile')">
-    <span class="sec-num">III.</span>
-    <span class="sec-title">Tasks</span>
-    <span class="sec-chev">▾</span>
-  </div>
-  <div class="sec-body" id="body-sec-notes-mobile">
-    <div style="display:flex;gap:4px;padding:.5rem 1.5rem;border-bottom:0.5px solid var(--ru)">
-      <button class="tt-tab on" data-tt="personal" onclick="switchTaskTab('personal')">Personal</button>
-      <button class="tt-tab" data-tt="work" onclick="switchTaskTab('work')">Work <span class="wt-count"></span></button>
-    </div>
-    <div class="wt-pane on" data-pane="personal">
-      <div style="display:flex;gap:6px;padding:.75rem 1.5rem;border-bottom:0.5px solid var(--ru)">
-        <input id="qt-input-mobile" placeholder="Add task..." onkeydown="if(event.key==='Enter')addQT('qt-input-mobile')" style="flex:1;font-size:11px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
-        <button onclick="addQT('qt-input-mobile')" style="font-size:16px;color:var(--ac);background:none;border:none;cursor:pointer">+</button>
-      </div>
-      <div id="qt-list-mobile"></div>
-    </div>
-    <div class="wt-pane" data-pane="work">
-      <div class="wt-add" data-sfx="-mobile"></div>
-      <div id="wt-list-mobile"></div>
-    </div>
-    <div style="padding:.4rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd)">
-      <button onclick="clearDoneTasks()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear done</button>
     </div>
   </div>
 </div>
