@@ -202,6 +202,11 @@
   .wt-edit { padding: .65rem 1.5rem; border-bottom: 0.5px solid var(--ru); background: var(--al); display: flex; flex-direction: column; gap: 6px; }
   .wt-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Geist Mono', monospace; color: var(--if); padding: 0; }
   .wt-empty { padding: .75rem 1.5rem; font-size: 10px; color: var(--if); font-style: italic; }
+  .qt-tag { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; white-space: nowrap; cursor: pointer; flex-shrink: 0; margin-top: 1px; user-select: none; }
+  .qt-tag.empty { color: var(--if); border: 0.5px dashed var(--ru); opacity: 0; transition: opacity .15s; }
+  .qt-item:hover .qt-tag.empty { opacity: 1; }
+  @media (hover: none) { .qt-tag.empty { display: none; } }
+  .qt-tag-in { width: 110px; font-size: 10px; padding: 2px 8px; }
   /* ── QUICK TASK DRAG ── */
   .qt-handle { cursor: grab; color: var(--if); font-size: 11px; line-height: 1; padding: 2px 2px 0; flex-shrink: 0; user-select: none; touch-action: none; letter-spacing: -2px; }
   .qt-handle:hover { color: var(--im); }
@@ -331,8 +336,10 @@
     <div class="tt-pane" data-pane="personal">
       <div class="wt-add-top" style="padding:.7rem 1.5rem;border-bottom:0.5px solid var(--ru)">
         <input id="qt-input" class="wt-text" placeholder="Add personal task..." onkeydown="if(event.key==='Enter')addQT('qt-input')">
+        <input id="qt-tag" class="wt-in" list="qt-tags" placeholder="Tag" style="width:110px;flex:0 0 auto" onkeydown="if(event.key==='Enter')addQT('qt-input')">
         <button class="wt-plus" onclick="addQT('qt-input')" title="Add">+</button>
       </div>
+      <datalist id="qt-tags"></datalist>
       <div id="qt-list"></div>
       <div class="foot-row" style="justify-content:flex-end"><button class="wt-btn" onclick="clearDoneQT()">Clear done</button></div>
     </div>
@@ -1024,14 +1031,40 @@ function renderQuickTasks(){
     const c=document.getElementById(id);
     if(!c)return;
     if(!QT.length){c.innerHTML='<div class="wt-empty">No personal tasks yet.</div>';return;}
-    c.innerHTML=QT.map((t,i)=>`<div class="qt-item" style="display:flex;align-items:flex-start;gap:10px;padding:.55rem 1.5rem .55rem 1.1rem;border-bottom:0.5px solid var(--ru);cursor:pointer;background:var(--p)" onclick="toggleQT(${i})">
+    const tags=[...new Set(QT.map(t=>(t.tag||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+    const dl=document.getElementById('qt-tags');if(dl)dl.innerHTML=tags.map(x=>`<option value="${esc(x)}">`).join('');
+    c.innerHTML=QT.map((t,i)=>{
+      let tagHtml;
+      if(QT_TAG_EDIT===i){
+        tagHtml=`<input class="wt-in qt-tag-in" id="qt-tag-edit" list="qt-tags" value="${esc(t.tag||'')}" placeholder="Tag" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')saveQTTag(${i});if(event.key==='Escape'){QT_TAG_EDIT=null;renderQuickTasks();}" onblur="saveQTTag(${i})">`;
+      }else if(t.tag){
+        const col=qtTagColor(t.tag);
+        tagHtml=`<span class="qt-tag" style="background:${col}1f;color:${col};${t.done?'opacity:.5':''}" title="Click to change tag" onclick="event.stopPropagation();editQTTag(${i})">${esc(t.tag)}</span>`;
+      }else{
+        tagHtml=`<span class="qt-tag empty" title="Add a tag" onclick="event.stopPropagation();editQTTag(${i})">+ tag</span>`;
+      }
+      return `<div class="qt-item" style="display:flex;align-items:flex-start;gap:10px;padding:.55rem 1.5rem .55rem 1.1rem;border-bottom:0.5px solid var(--ru);cursor:pointer;background:var(--p)" onclick="toggleQT(${i})">
       <span class="qt-handle" title="Drag to reorder" onclick="event.stopPropagation()">⋮⋮</span>
       <div style="width:13px;height:13px;border-radius:3px;border:1.5px solid ${t.done?'var(--ac)':'var(--ru)'};background:${t.done?'var(--ac)':'var(--p)'};flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center">
         ${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}
       </div>
       <span style="flex:1;min-width:0;font-size:11px;color:${t.done?'var(--if)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'};line-height:1.5">${esc(t.text)}</span>
-    </div>`).join('');
+      ${tagHtml}
+    </div>`;}).join('');
+    if(QT_TAG_EDIT!==null){const el=document.getElementById('qt-tag-edit');if(el){el.focus();el.select();}}
   });
+}
+let QT_TAG_EDIT=null;
+const QT_TAG_COLORS=['#8B2A1A','#6B8C4A','#4A6FA5','#A0644A','#8B6914','#7A5C8A','#3F7F7A','#B0583A'];
+function qtTagColor(tag){let h=0;for(const ch of tag.toLowerCase())h=(h*31+ch.charCodeAt(0))>>>0;return QT_TAG_COLORS[h%QT_TAG_COLORS.length];}
+function editQTTag(i){QT_TAG_EDIT=i;renderQuickTasks();}
+async function saveQTTag(i){
+  if(QT_TAG_EDIT!==i)return;
+  const el=document.getElementById('qt-tag-edit');
+  QT_TAG_EDIT=null;
+  if(QT[i])QT[i].tag=(el?.value||'').trim();
+  renderQuickTasks();
+  await saveQuickTasks();
 }
 function updateQTCount(){
   const n=QT.filter(t=>!t.done).length;
@@ -1065,8 +1098,11 @@ async function addQT(inputId){
   if(!input)return;
   const text=input.value.trim();
   if(!text)return;
-  QT.push({text,done:false});
+  const tagEl=document.getElementById('qt-tag');
+  const tag=(tagEl?.value||'').trim();
+  QT.push({text,tag,done:false});
   input.value='';
+  if(tagEl)tagEl.value='';
   renderQuickTasks();
   await saveQuickTasks();
 }
