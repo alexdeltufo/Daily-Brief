@@ -170,6 +170,23 @@
   .wk-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
   .wk-x { font-size: 12px; color: var(--if); cursor: pointer; line-height: 1; flex-shrink: 0; }
   .wk-x:hover { color: var(--ac); }
+  /* ── TASK TABS / WORK ── */
+  .tt-tab { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; color: var(--im); border: 0.5px solid var(--ru); border-radius: 20px; padding: 2px 8px; cursor: pointer; font-family: 'Geist Mono', monospace; white-space: nowrap; }
+  .tt-tab.on { background: var(--ink); color: var(--p); border-color: var(--ink); }
+  .wt-pane { display: none; }
+  .wt-pane.on { display: block; }
+  .wt-in { min-width: 0; font-size: 10px; font-family: 'Geist Mono', monospace; color: var(--ink); background: var(--pd); border: 0.5px solid var(--ru); border-radius: 6px; padding: 4px 7px; outline: none; }
+  .wt-in::placeholder { color: var(--if); }
+  .wt-row { display: flex; align-items: flex-start; gap: 8px; border-bottom: 0.5px solid var(--ru); }
+  .wt-box { width: 13px; height: 13px; border-radius: 3px; border: 1.5px solid var(--ru); background: var(--p); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .wt-box.done { border-color: var(--ac); background: var(--ac); }
+  .wt-main { flex: 1; min-width: 0; cursor: pointer; }
+  .wt-name { line-height: 1.5; word-wrap: break-word; }
+  .wt-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 2px; font-size: 9px; letter-spacing: .04em; color: var(--if); }
+  .wt-client { text-transform: uppercase; letter-spacing: .06em; padding: 0 6px; border-radius: 20px; background: var(--al); color: var(--ac); line-height: 1.6; }
+  .wt-link { color: var(--ac); text-decoration: none; }
+  .wt-link:hover { text-decoration: underline; }
+  .wt-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Geist Mono', monospace; color: var(--if); padding: 0; }
   .offline-flag { font-size: 9px; letter-spacing: .05em; text-transform: uppercase; color: #A85A32; background: #FBF0EC; padding: 1px 7px; border-radius: 20px; }
 </style>
 </head>
@@ -192,13 +209,9 @@
     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
     Calendar
   </a>
-  <a class="ql" href="#sec-3">
-    <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-    Tasks
-  </a>
   <a class="ql ql-notes" href="#sec-notes-mobile">
     <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-    Quick Tasks
+    Tasks
   </a>
   <a class="ql ql-notes" href="#sec-meals-mobile">
     <svg viewBox="0 0 24 24"><path d="M3 2v7a3 3 0 0 0 6 0V2"/><line x1="6" y1="9" x2="6" y2="22"/><path d="M18 2c-2 2-3 4-3 7v4h4V2z"/><line x1="17" y1="13" x2="17" y2="22"/></svg>
@@ -266,22 +279,10 @@
     <div class="all-done-banner" id="all-done">All done for today — well earned. ✦</div>
   </div>
 </div>
-<!-- II. CLICKUP -->
-<div class="sec" id="sec-3">
-  <div class="sec-header" onclick="toggleSec('sec-3')">
-    <span class="sec-num">II.</span>
-    <span class="sec-title">ClickUp Tasks</span>
-    <span class="sec-badge" id="task-badge">–</span>
-    <span class="sec-chev">▾</span>
-  </div>
-  <div class="sec-body" id="body-sec-3">
-    <div class="loading" id="task-loading">Fetching tasks<span class="dot">...</span></div>
-  </div>
-</div>
-<!-- III. CALENDAR -->
+<!-- II. CALENDAR -->
 <div class="sec" id="sec-2">
   <div class="sec-header" onclick="toggleSec('sec-2')">
-    <span class="sec-num">III.</span>
+    <span class="sec-num">II.</span>
     <span class="sec-title">Calendar — This Week</span>
     <span class="sec-badge" id="cal-badge">–</span>
     <span class="sec-chev">▾</span>
@@ -934,88 +935,6 @@ async function loadCalendar(){
     container.insertAdjacentHTML('afterbegin',`<div class="err">Could not load calendar — try refreshing.</div>`);
   }
 }
-// ── CLICKUP ──────────────────────────────────────────
-function pillClass(priority,status){if(status==='in progress')return 'p-ip';if(priority==='low')return 'p-lo';return 'p-td';}
-function pillLabel(priority,status){if(status==='in progress')return 'In Progress';if(priority==='urgent'||priority==='high')return priority.charAt(0).toUpperCase()+priority.slice(1);if(priority==='low')return 'Low';return 'To Do';}
-function fmtDue(ms){if(!ms)return null;const d=new Date(parseInt(ms));const today=new Date();if(d.toDateString()===today.toDateString())return'Due today';const tom=new Date(today);tom.setDate(today.getDate()+1);if(d.toDateString()===tom.toDateString())return'Due tomorrow';return'Due '+SMONS[d.getMonth()]+' '+d.getDate();}
-let ALL_TASKS=[];
-function sortTasks(by){
-  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('active',b.dataset.sort===by));
-  let sorted=[...ALL_TASKS];
-  if(by==='status'){
-    const order={'in progress':0,'to do':1,'low':2};
-    sorted.sort((a,b)=>(order[a.status?.status]??9)-(order[b.status?.status]??9));
-  }else if(by==='priority'){
-    const order={'urgent':0,'high':1,'normal':2,'low':3};
-    sorted.sort((a,b)=>(order[a.priority?.priority]??9)-(order[b.priority?.priority]??9));
-  }else if(by==='project'){
-    sorted.sort((a,b)=>(a.list?.name||'').localeCompare(b.list?.name||''));
-  }else if(by==='due'){
-    sorted.sort((a,b)=>{
-      if(!a.due_date&&!b.due_date)return 0;
-      if(!a.due_date)return 1;
-      if(!b.due_date)return -1;
-      return parseInt(a.due_date)-parseInt(b.due_date);
-    });
-  }
-  renderTasks(sorted, by);
-}
-function renderTasks(tasks, by){
-  const container=document.getElementById('body-sec-3');
-  const footer=`<div class="foot-row"><a class="ql" href="https://app.clickup.com/home" target="_blank" style="padding:4px 12px;font-size:10px;"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>All tasks in ClickUp</a></div>`;
-  let html='';
-  tasks.forEach(t=>{
-    const due=fmtDue(t.due_date);
-    const sub=[t.list?.name,due].filter(Boolean).join(' · ');
-    const inProgress=t.status?.status==='in progress';
-    let pillHtml;
-    if(by==='status'){
-      const colors={'in progress':'#f8ae00','pending client':'#e16b16'};
-      const s=t.status?.status||'';
-      const color=colors[s]||'#9B9B9B';
-      const label=s.charAt(0).toUpperCase()+s.slice(1)||'—';
-      pillHtml=`<span class="pill" style="background:${color}22;color:${color}">${label}</span>`;
-    } else if(by==='priority'){
-      const colors={'urgent':'#ff4444','high':'#ff8800','normal':'#378ADD','low':'#9B9B9B'};
-      const p=t.priority?.priority||'';
-      const color=colors[p]||'#9B9B9B';
-      const label=p?p.charAt(0).toUpperCase()+p.slice(1):'—';
-      pillHtml=`<span class="pill" style="background:${color}22;color:${color}">${label}</span>`;
-    } else if(by==='project'){
-      pillHtml=`<span class="pill p-td">${t.list?.name||'—'}</span>`;
-    } else {
-      const color=due==='Due today'?'#ff4444':due==='Due tomorrow'?'#ff8800':'#9B9B9B';
-      pillHtml=`<span class="pill" style="background:${color}22;color:${color}">${due||'No due date'}</span>`;
-    }
-    html+=`<div class="erow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-dasharray="${inProgress?'100':'3 2'}"/></svg><div class="erow-main"><div class="erow-label">${t.name}</div><div class="erow-sub">${sub||'&nbsp;'}</div></div><div class="erow-right">${pillHtml}<a class="tlink" href="${t.url}" target="_blank">Open ↗</a></div></div>`;
-  });
-  let taskList=document.getElementById('task-list');
-  if(!taskList){taskList=document.createElement('div');taskList.id='task-list';container.appendChild(taskList);}
-  taskList.innerHTML=html+footer;
-}
-async function loadTasks(){
-  const container=document.getElementById('body-sec-3');
-  try{
-    const res=await fetch('/api/tasks');
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const tasks=await res.json();
-    document.getElementById('task-loading')?.remove();
-    if(!tasks.length){container.innerHTML='<div class="loading">No open tasks.</div>';document.getElementById('task-badge').textContent='0';return;}
-    ALL_TASKS=tasks;
-    const sortBar=`<div style="display:flex;gap:6px;padding:.5rem 1.5rem;border-bottom:0.5px solid var(--ru);background:var(--pd);flex-wrap:wrap;">
-      <button class="sort-btn active" data-sort="priority" onclick="sortTasks('priority')">Priority</button>
-      <button class="sort-btn" data-sort="status" onclick="sortTasks('status')">Status</button>
-      <button class="sort-btn" data-sort="project" onclick="sortTasks('project')">Project</button>
-      <button class="sort-btn" data-sort="due" onclick="sortTasks('due')">Due Date</button>
-    </div><div id="task-list"></div>`;
-    container.innerHTML=sortBar;
-    sortTasks('priority');
-    document.getElementById('task-badge').textContent=tasks.length;
-  }catch(e){
-    document.getElementById('task-loading').textContent='';
-    container.insertAdjacentHTML('afterbegin',`<div class="err">Could not load tasks — check CLICKUP_API_KEY in Vercel.</div>`);
-  }
-}
 function launchConfetti(){
   const colors=['#A0644A','#6B8C6B','#D4A574','#8B6914','#C4956A','#7A9E7A'];
   for(let i=0;i<120;i++){
@@ -1117,17 +1036,180 @@ async function clearDoneQT(){
   renderQuickTasks();
   await saveQuickTasks();
 }
+// ── WORK TASKS ───────────────────────────────────────
+// Stored separately from personal tasks: /api/quicktasks?list=work
+// Each task: {text, client, due:'YYYY-MM-DD', note, done}
+let WT=[], WT_EDIT=null, TASK_TAB='personal';
+function switchTaskTab(tab){
+  TASK_TAB=tab;
+  document.querySelectorAll('.tt-tab').forEach(b=>b.classList.toggle('on',b.dataset.tt===tab));
+  document.querySelectorAll('.wt-pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===tab));
+  try{localStorage.setItem('db_task_tab',tab);}catch(e){}
+}
+function restoreTaskTab(){
+  let t='personal';
+  try{t=localStorage.getItem('db_task_tab')||'personal';}catch(e){}
+  switchTaskTab(t==='work'?'work':'personal');
+}
+async function loadWorkTasks(){
+  try{
+    const r=await fetch('/api/quicktasks?list=work');
+    const data=await r.json();
+    WT=Array.isArray(data)?data:[];
+  }catch(e){WT=[];}
+  renderWorkTasks();
+}
+async function saveWorkTasks(){
+  try{
+    await fetch('/api/quicktasks?list=work',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(WT)});
+  }catch(e){}
+}
+function wtDayDiff(due){
+  if(!due)return null;
+  const [y,m,d]=due.split('-').map(Number);
+  const t=new Date();t.setHours(0,0,0,0);
+  return Math.round((new Date(y,m-1,d)-t)/86400000);
+}
+function wtDueLabel(due){
+  const n=wtDayDiff(due);
+  if(n===null)return null;
+  const [y,m,d]=due.split('-').map(Number);
+  if(n<0)return{text:'Overdue · '+SMONS[m-1]+' '+d,color:'#C0392B'};
+  if(n===0)return{text:'Today',color:'#C0392B'};
+  if(n===1)return{text:'Tomorrow',color:'#C47A3A'};
+  if(n<7)return{text:SDAYS[new Date(y,m-1,d).getDay()],color:'var(--im)'};
+  return{text:SMONS[m-1]+' '+d,color:'var(--if)'};
+}
+function wtOrder(){
+  return WT.map((t,i)=>i).sort((a,b)=>{
+    const A=WT[a],B=WT[b];
+    if(!!A.done!==!!B.done)return A.done?1:-1;
+    if(A.due&&B.due&&A.due!==B.due)return A.due<B.due?-1:1;
+    if(!!A.due!==!!B.due)return A.due?-1:1;
+    return a-b;
+  });
+}
+function wtClients(){return [...new Set(WT.map(t=>(t.client||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));}
+function wtIsUrl(s){return /^https?:\/\//i.test((s||'').trim());}
+function wtFields(sfx,t,mob){
+  const fs=mob?'11px':'10px';
+  return `<input class="wt-in" id="wt-client${sfx}" list="wt-clients" placeholder="Client" value="${esc(t.client||'')}" style="flex:1 1 90px;font-size:${fs}" onkeydown="if(event.key==='Enter')wtSubmit('${sfx}')">
+      <input class="wt-in" id="wt-due${sfx}" type="date" value="${esc(t.due||'')}" title="Due date" style="flex:1 1 115px;font-size:${fs};padding:4px 5px">`;
+}
+function renderWorkAdd(){
+  document.querySelectorAll('.wt-add').forEach(box=>{
+    if(box.dataset.built)return;
+    const sfx=box.dataset.sfx, mob=sfx==='-mobile', pad=mob?'.6rem 1.5rem':'.5rem .75rem', fs=mob?'11px':'10px';
+    box.innerHTML=`<div style="padding:${pad};border-bottom:0.5px solid var(--ru);display:flex;flex-direction:column;gap:5px">
+      <div style="display:flex;gap:6px;align-items:center">
+        <input id="wt-text${sfx}" placeholder="Add work task..." onkeydown="if(event.key==='Enter')wtSubmit('${sfx}')" style="flex:1;min-width:0;font-size:${fs};font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
+        <button onclick="wtSubmit('${sfx}')" style="font-size:${mob?'16px':'14px'};color:var(--ac);background:none;border:none;cursor:pointer;line-height:1">+</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">${wtFields(sfx,{},mob)}</div>
+      <input class="wt-in" id="wt-note${sfx}" placeholder="Note or link (optional)" style="font-size:${fs}" onkeydown="if(event.key==='Enter')wtSubmit('${sfx}')">
+    </div>`;
+    box.dataset.built='1';
+  });
+}
+function renderWorkTasks(){
+  let dl=document.getElementById('wt-clients');
+  if(!dl){dl=document.createElement('datalist');dl.id='wt-clients';document.body.appendChild(dl);}
+  dl.innerHTML=wtClients().map(c=>`<option value="${esc(c)}">`).join('');
+  const open=WT.filter(t=>!t.done).length;
+  document.querySelectorAll('.wt-count').forEach(el=>el.textContent=open?String(open):'');
+  const order=wtOrder();
+  ['wt-list','wt-list-mobile'].forEach(id=>{
+    const c=document.getElementById(id);
+    if(!c)return;
+    const mob=id.endsWith('mobile'), pad=mob?'.5rem 1.5rem':'.45rem 1rem', fs=mob?'11px':'10px';
+    if(!WT.length){c.innerHTML=`<div style="padding:.5rem 1rem;font-size:10px;color:var(--if);font-style:italic">No work tasks yet</div>`;return;}
+    c.innerHTML=order.map(i=>{
+      const t=WT[i];
+      if(WT_EDIT===i){
+        const sfx='-e'+(mob?'m':'d');
+        return `<div style="padding:${pad};border-bottom:0.5px solid var(--ru);background:var(--al);display:flex;flex-direction:column;gap:5px">
+          <input class="wt-in" id="wt-text${sfx}" value="${esc(t.text)}" style="font-size:${fs}" onkeydown="if(event.key==='Enter')wtSaveEdit(${i},'${sfx}')">
+          <div style="display:flex;flex-wrap:wrap;gap:5px">${wtFields(sfx,t,mob).replace(/wtSubmit\('[^']*'\)/g,`wtSaveEdit(${i},'${sfx}')`)}</div>
+          <input class="wt-in" id="wt-note${sfx}" value="${esc(t.note||'')}" placeholder="Note or link" style="font-size:${fs}" onkeydown="if(event.key==='Enter')wtSaveEdit(${i},'${sfx}')">
+          <div style="display:flex;justify-content:space-between;gap:8px">
+            <button class="wt-btn" style="color:#C0392B" onclick="wtDelete(${i})">Delete</button>
+            <span style="display:flex;gap:12px"><button class="wt-btn" onclick="WT_EDIT=null;renderWorkTasks()">Cancel</button><button class="wt-btn" style="color:var(--ac)" onclick="wtSaveEdit(${i},'${sfx}')">Save</button></span>
+          </div>
+        </div>`;
+      }
+      const due=t.done?null:wtDueLabel(t.due);
+      const note=(t.note||'').trim();
+      const noteHtml=!note?'':wtIsUrl(note)
+        ?`<a class="wt-link" href="${esc(note)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">link ↗</a>`
+        :`<span style="font-style:italic">${esc(note)}</span>`;
+      const bits=[
+        t.client?`<span class="wt-client">${esc(t.client)}</span>`:'',
+        due?`<span style="color:${due.color}">${due.text}</span>`:'',
+        noteHtml
+      ].filter(Boolean).join('');
+      return `<div class="wt-row" style="padding:${pad};${t.done?'opacity:.5':''}">
+        <div class="wt-box ${t.done?'done':''}" onclick="wtToggle(${i})">${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}</div>
+        <div class="wt-main" onclick="WT_EDIT=${i};renderWorkTasks()" title="Tap to edit">
+          <div class="wt-name" style="font-size:${fs};text-decoration:${t.done?'line-through':'none'}">${esc(t.text)}</div>
+          ${bits?`<div class="wt-sub">${bits}</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+function wtRead(sfx){
+  const v=id=>(document.getElementById(id+sfx)?.value||'').trim();
+  return {text:v('wt-text'),client:v('wt-client'),due:v('wt-due'),note:v('wt-note')};
+}
+async function wtSubmit(sfx){
+  const f=wtRead(sfx);
+  if(!f.text){document.getElementById('wt-text'+sfx)?.focus();return;}
+  WT.push({...f,done:false});
+  ['wt-text','wt-client','wt-due','wt-note'].forEach(id=>{const el=document.getElementById(id+sfx);if(el)el.value='';});
+  document.getElementById('wt-text'+sfx)?.focus();
+  renderWorkTasks();
+  await saveWorkTasks();
+}
+async function wtSaveEdit(i,sfx){
+  const f=wtRead(sfx);
+  if(!f.text)return;
+  WT[i]={...WT[i],...f};
+  WT_EDIT=null;
+  renderWorkTasks();
+  await saveWorkTasks();
+}
+async function wtDelete(i){
+  WT.splice(i,1);
+  WT_EDIT=null;
+  renderWorkTasks();
+  await saveWorkTasks();
+}
+async function wtToggle(i){
+  WT[i].done=!WT[i].done;
+  renderWorkTasks();
+  await saveWorkTasks();
+}
+async function clearDoneTasks(){
+  if(TASK_TAB==='work'){
+    WT=WT.filter(t=>!t.done);WT_EDIT=null;
+    renderWorkTasks();
+    await saveWorkTasks();
+  }else{
+    await clearDoneQT();
+  }
+}
 // ── INIT ─────────────────────────────────────────────
 restoreSections();
 restoreSidePanels();
 setHeader();
 buildRoutine();
 loadCalendar();
-loadTasks();
 updateNow();
 setInterval(updateNow, 1000);
 loadWeather();
 loadQuickTasks();
+// panel markup sits below this script, so wait for it
+document.addEventListener('DOMContentLoaded',()=>{renderWorkAdd();restoreTaskTab();loadWorkTasks();});
 loadShopLists();
 loadMeals();
 loadWorkouts();
@@ -1137,18 +1219,27 @@ loadWorkouts();
   <!-- Quick Tasks -->
   <div class="side-panel" id="qt-panel">
     <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-      <span>Quick Tasks</span>
+      <span style="display:flex;align-items:center;gap:4px">
+        <button class="tt-tab on" data-tt="personal" onclick="switchTaskTab('personal')">Personal</button>
+        <button class="tt-tab" data-tt="work" onclick="switchTaskTab('work')">Work <span class="wt-count"></span></button>
+      </span>
       <span style="display:flex;align-items:center;gap:6px">
-        <button onclick="clearDoneQT()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear done</button>
+        <button onclick="clearDoneTasks()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace;white-space:nowrap">Clear</button>
         <button class="sp-toggle" onclick="toggleSidePanel('qt-panel')" title="Minimize">&#9662;</button>
       </span>
     </div>
     <div class="side-panel-body">
-      <div style="display:flex;gap:6px;padding:.5rem .75rem;border-bottom:0.5px solid var(--ru)">
-        <input id="qt-input" placeholder="Add task..." onkeydown="if(event.key==='Enter')addQT('qt-input')" style="flex:1;font-size:10px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
-        <button onclick="addQT('qt-input')" style="font-size:14px;color:var(--ac);background:none;border:none;cursor:pointer;line-height:1">+</button>
+      <div class="wt-pane on" data-pane="personal">
+        <div style="display:flex;gap:6px;padding:.5rem .75rem;border-bottom:0.5px solid var(--ru)">
+          <input id="qt-input" placeholder="Add task..." onkeydown="if(event.key==='Enter')addQT('qt-input')" style="flex:1;font-size:10px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
+          <button onclick="addQT('qt-input')" style="font-size:14px;color:var(--ac);background:none;border:none;cursor:pointer;line-height:1">+</button>
+        </div>
+        <div id="qt-list"></div>
       </div>
-      <div id="qt-list"></div>
+      <div class="wt-pane" data-pane="work">
+        <div class="wt-add" data-sfx=""></div>
+        <div id="wt-list" style="max-height:360px;overflow-y:auto"></div>
+      </div>
     </div>
   </div>
   <!-- Shopping -->
@@ -1202,24 +1293,34 @@ loadWorkouts();
 </div>
 <div class="sec mobile-sec" id="sec-notes-mobile">
   <div class="sec-header" onclick="toggleSec('sec-notes-mobile')">
-    <span class="sec-num">IV.</span>
-    <span class="sec-title">Quick Tasks</span>
+    <span class="sec-num">III.</span>
+    <span class="sec-title">Tasks</span>
     <span class="sec-chev">▾</span>
   </div>
   <div class="sec-body" id="body-sec-notes-mobile">
-    <div style="display:flex;gap:6px;padding:.75rem 1.5rem;border-bottom:0.5px solid var(--ru)">
-      <input id="qt-input-mobile" placeholder="Add task..." onkeydown="if(event.key==='Enter')addQT('qt-input-mobile')" style="flex:1;font-size:11px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
-      <button onclick="addQT('qt-input-mobile')" style="font-size:16px;color:var(--ac);background:none;border:none;cursor:pointer">+</button>
+    <div style="display:flex;gap:4px;padding:.5rem 1.5rem;border-bottom:0.5px solid var(--ru)">
+      <button class="tt-tab on" data-tt="personal" onclick="switchTaskTab('personal')">Personal</button>
+      <button class="tt-tab" data-tt="work" onclick="switchTaskTab('work')">Work <span class="wt-count"></span></button>
     </div>
-    <div id="qt-list-mobile"></div>
+    <div class="wt-pane on" data-pane="personal">
+      <div style="display:flex;gap:6px;padding:.75rem 1.5rem;border-bottom:0.5px solid var(--ru)">
+        <input id="qt-input-mobile" placeholder="Add task..." onkeydown="if(event.key==='Enter')addQT('qt-input-mobile')" style="flex:1;font-size:11px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
+        <button onclick="addQT('qt-input-mobile')" style="font-size:16px;color:var(--ac);background:none;border:none;cursor:pointer">+</button>
+      </div>
+      <div id="qt-list-mobile"></div>
+    </div>
+    <div class="wt-pane" data-pane="work">
+      <div class="wt-add" data-sfx="-mobile"></div>
+      <div id="wt-list-mobile"></div>
+    </div>
     <div style="padding:.4rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd)">
-      <button onclick="clearDoneQT()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear done</button>
+      <button onclick="clearDoneTasks()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear done</button>
     </div>
   </div>
 </div>
 <div class="sec mobile-sec" id="sec-shop-mobile">
   <div class="sec-header" onclick="toggleSec('sec-shop-mobile')">
-    <span class="sec-num">V.</span>
+    <span class="sec-num">IV.</span>
     <span class="sec-title">Shopping</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -1237,7 +1338,7 @@ loadWorkouts();
 </div>
 <div class="sec mobile-sec" id="sec-meals-mobile">
   <div class="sec-header" onclick="toggleSec('sec-meals-mobile')">
-    <span class="sec-num">VI.</span>
+    <span class="sec-num">V.</span>
     <span class="sec-title">This Week's Meals</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -1251,7 +1352,7 @@ loadWorkouts();
 </div>
 <div class="sec mobile-sec" id="sec-workouts-mobile">
   <div class="sec-header" onclick="toggleSec('sec-workouts-mobile')">
-    <span class="sec-num">VII.</span>
+    <span class="sec-num">VI.</span>
     <span class="sec-title">This Week's Workouts</span>
     <span id="wk-offline-mobile"></span>
     <span class="sec-chev">▾</span>
