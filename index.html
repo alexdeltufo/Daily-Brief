@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤎%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🍁%3C/text%3E%3C/svg%3E">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alex's Daily Brief</title>
@@ -936,7 +936,9 @@ function renderRoutine(s,celebrate){
       const w=WK.days[todayMealIdx()];
       if(w&&w.w){
         const col=wkColor(w.w);
-        const label=w.w==='Rest'?'Rest day':esc(w.w)+(w.done?' · done ✓':'');
+        // Upper/Lower get their location from the day type: sub day = home dumbbell, home day = gym
+        const where=/\b(upper|lower)\b/i.test(w.w)?(ROUTINE_MODE==='sub'?' · at home':' · at the gym'):'';
+        const label=w.w==='Rest'?'Rest day':esc(w.w)+where+(w.done?' · done ✓':'');
         mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${col};display:inline-block;flex-shrink:0"></span><span style="font-size:9px;color:var(--im);${w.done?'text-decoration:line-through;opacity:.6':''}">${label}</span></div>`;
       }
     }
