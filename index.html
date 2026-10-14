@@ -30,13 +30,13 @@
   body { font-family: 'Figtree', sans-serif; color: var(--ink); max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 4rem; background: var(--page); }
   .masthead { background: var(--p); border: 0.5px solid var(--ru); border-radius: 16px; padding: 1.75rem 2rem 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
   .masthead::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--ac); }
-  .eyebrow { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--if); margin-bottom: .5rem; }
-  .mh-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink); line-height: 1.1; margin-bottom: .25rem; }
-  .mh-date { font-size: 10px; color: var(--im); letter-spacing: .05em; }
+  .eyebrow { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--if); margin-bottom: .5rem; }
+  .mh-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 33px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink); line-height: 1.1; margin-bottom: .25rem; }
+  .mh-date { font-size: 11px; color: var(--im); letter-spacing: .05em; }
   .mh-meta { display: flex; align-items: center; justify-content: space-between; margin-top: .75rem; padding-top: .75rem; border-top: 0.5px solid var(--ru); }
-  .last-updated { font-size: 10px; color: var(--if); }
+  .last-updated { font-size: 11px; color: var(--if); }
   .quicklinks { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.1rem; }
-  .ql { display: inline-flex; align-items: center; gap: 6px; background: var(--p); border: 0.5px solid var(--ru); border-radius: 20px; padding: 6px 14px; font-size: 11px; letter-spacing: .05em; color: var(--im); text-decoration: none; transition: background .15s, color .15s; font-family: 'DM Mono', monospace; }
+  .ql { display: inline-flex; align-items: center; gap: 6px; background: var(--p); border: 0.5px solid var(--ru); border-radius: 20px; padding: 6px 14px; font-size: 12px; letter-spacing: .05em; color: var(--im); text-decoration: none; transition: background .15s, color .15s; font-family: 'DM Mono', monospace; }
   .ql:hover { background: var(--pd); color: var(--ink); }
   .ql svg { width: 13px; height: 13px; stroke: var(--ac); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
   .ql-notes { display: inline-flex; }
@@ -45,18 +45,18 @@
   .sec { background: var(--p); border: 0.5px solid var(--ru); border-radius: 13px; margin-bottom: .9rem; overflow: hidden; }
   .sec-header { display: flex; align-items: center; gap: 10px; padding: .9rem 1.5rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); cursor: pointer; user-select: none; }
   .sec-header:hover { background: var(--pdd); }
-  .sec-num { font-family: 'Bricolage Grotesque', sans-serif; font-size: 11px; font-style: italic; color: var(--ac); min-width: 20px; }
-  .sec-title { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--im); flex: 1; }
-  .sec-badge { font-size: 10px; color: var(--if); background: #E3D9C6; border-radius: 20px; padding: 1px 8px; }
-  .sec-chev { font-size: 13px; color: var(--if); transition: transform .2s; }
+  .sec-num { font-family: 'Bricolage Grotesque', sans-serif; font-size: 12px; font-style: italic; color: var(--ac); min-width: 20px; }
+  .sec-title { font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--im); flex: 1; }
+  .sec-badge { font-size: 11px; color: var(--if); background: #E3D9C6; border-radius: 20px; padding: 1px 8px; }
+  .sec-chev { font-size: 14px; color: var(--if); transition: transform .2s; }
   .sec-body { padding: 0; }
   .sec-body.closed { display: none; }
   .sec-header.closed .sec-chev { transform: rotate(-90deg); }
   .routine-progress { padding: .65rem 1.5rem; background: #EEECE5; border-bottom: 0.5px solid var(--ru); display: flex; align-items: center; gap: 12px; }
   .progress-bar-wrap { flex: 1; height: 4px; background: var(--ru); border-radius: 2px; overflow: hidden; }
   .progress-bar { height: 100%; background: var(--ac); border-radius: 2px; transition: width .4s ease; }
-  .progress-label { font-size: 10px; color: var(--im); white-space: nowrap; min-width: 52px; text-align: right; }
-  .reset-btn { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--if); background: none; border: none; cursor: pointer; font-family: 'DM Mono', monospace; }
+  .progress-label { font-size: 11px; color: var(--im); white-space: nowrap; min-width: 52px; text-align: right; }
+  .reset-btn { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--if); background: none; border: none; cursor: pointer; font-family: 'DM Mono', monospace; }
   .reset-btn:hover { color: var(--ac); }
   .ritem { display: flex; align-items: flex-start; gap: 14px; padding: .65rem 1.5rem; border-bottom: 0.5px solid var(--ru); cursor: pointer; transition: background .1s; user-select: none; }
   .ritem:last-child { border-bottom: none; }
@@ -66,41 +66,41 @@
   .ritem.done .check-box { background: var(--ac); border-color: var(--ac); }
   .check-box svg { width: 10px; height: 10px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .15s; }
   .ritem.done .check-box svg { opacity: 1; }
-  .rtime { min-width: 42px; font-size: 10px; color: var(--if); font-variant-numeric: tabular-nums; padding-top: 2px; text-align: right; }
+  .rtime { min-width: 42px; font-size: 11px; color: var(--if); font-variant-numeric: tabular-nums; padding-top: 2px; text-align: right; }
   .ritem.done .rtime { color: #BDBDB4; }
   .rcontent { flex: 1; }
-  .rlabel { font-size: 11px; color: var(--ink); line-height: 1.4; transition: color .2s; }
-  .rsub { font-size: 10px; color: var(--im); margin-top: 2px; transition: color .2s; }  .ritem.done .rlabel { color: #AAAAA1; text-decoration: line-through; text-decoration-color: var(--ru); }
+  .rlabel { font-size: 12px; color: var(--ink); line-height: 1.4; transition: color .2s; }
+  .rsub { font-size: 11px; color: var(--im); margin-top: 2px; transition: color .2s; }  .ritem.done .rlabel { color: #AAAAA1; text-decoration: line-through; text-decoration-color: var(--ru); }
   .ritem.done .rsub { color: #BDBDB4; }
-  .all-done-banner { display: none; padding: .7rem 1.5rem; background: var(--al); border-top: 0.5px solid var(--ru); font-size: 12px; color: var(--ac); font-family: 'Bricolage Grotesque', sans-serif; font-style: italic; text-align: center; }
+  .all-done-banner { display: none; padding: .7rem 1.5rem; background: var(--al); border-top: 0.5px solid var(--ru); font-size: 13px; color: var(--ac); font-family: 'Bricolage Grotesque', sans-serif; font-style: italic; text-align: center; }
   .erow { display: flex; align-items: flex-start; gap: 10px; padding: .35rem 1.5rem; border-bottom: 0.5px solid var(--ru); }  .erow svg { width: 15px; height: 15px; stroke: var(--if); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; margin-top: 1px; flex-shrink: 0; }
   .erow-main { flex: 1; min-width: 0; }
-  .erow-label { font-size: 11px; color: var(--ink); line-height: 1.3; }
-  .erow-sub { font-size: 10px; color: var(--im); margin-top: 1px; }
+  .erow-label { font-size: 12px; color: var(--ink); line-height: 1.3; }
+  .erow-sub { font-size: 11px; color: var(--im); margin-top: 1px; }
   .erow-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
-  .day-hdr { padding: .75rem 1.5rem .3rem; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--im); background: #EEECE5; border-bottom: 0.5px solid var(--ru); font-family: 'Figtree', sans-serif; font-weight: 400; }
+  .day-hdr { padding: .75rem 1.5rem .3rem; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--im); background: #EEECE5; border-bottom: 0.5px solid var(--ru); font-family: 'Figtree', sans-serif; font-weight: 400; }
   .day-hdr.today { color: var(--ac); }
-  .pill { display: inline-block; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; font-family: 'DM Mono', monospace; white-space: nowrap; }
+  .pill { display: inline-block; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; font-family: 'DM Mono', monospace; white-space: nowrap; }
   .p-ip { background: #EAF0FC; color: #1A3A7C; }
   .p-lo { background: #EFF5E8; color: #3B5C1A; }
   .p-td { background: #EAE7DF; color: #4A4F46; }
   .p-ev { background: #EAE7DF; color: #4A4F46; }
   .p-alld { background: #EEECE5; color: #A07A2C; }
-  .tlink { font-size: 10px; color: var(--ac); text-decoration: none; }
+  .tlink { font-size: 11px; color: var(--ac); text-decoration: none; }
   .tlink:hover { text-decoration: underline; }
   .foot-row { display: flex; justify-content: flex-end; padding: .5rem 1.5rem; border-top: 0.5px solid var(--ru); background: #EEECE5; }
   .ncard { display: flex; align-items: center; gap: 10px; padding: .7rem 1.5rem; border-bottom: 0.5px solid var(--ru); text-decoration: none; color: inherit; transition: background .12s; }
   .ncard:last-of-type { border-bottom: none; }
   .ncard:hover { background: var(--pd); }
-  .nemoji { font-size: 15px; min-width: 22px; text-align: center; }
-  .ntitle { font-size: 11px; color: var(--ink); flex: 1; }
-  .nws { font-size: 10px; color: var(--if); white-space: nowrap; }
-  .loading { padding: 1rem 1.5rem; font-size: 12px; color: var(--if); font-style: italic; font-family: 'Bricolage Grotesque', sans-serif; }
-  .err { padding: .75rem 1.5rem; font-size: 11px; color: #7A3520; background: #EEF1E8; border-top: 0.5px solid #E8C8B8; }
+  .nemoji { font-size: 16px; min-width: 22px; text-align: center; }
+  .ntitle { font-size: 12px; color: var(--ink); flex: 1; }
+  .nws { font-size: 11px; color: var(--if); white-space: nowrap; }
+  .loading { padding: 1rem 1.5rem; font-size: 13px; color: var(--if); font-style: italic; font-family: 'Bricolage Grotesque', sans-serif; }
+  .err { padding: .75rem 1.5rem; font-size: 12px; color: #7A3520; background: #EEF1E8; border-top: 0.5px solid #E8C8B8; }
   .connect-row { padding: 1rem 1.5rem; display: flex; align-items: center; gap: 12px; }
-  .connect-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--ac); color: white; border-radius: 20px; padding: 7px 16px; font-size: 11px; text-decoration: none; font-family: 'DM Mono', monospace; letter-spacing: .05em; white-space: nowrap; }
+  .connect-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--ac); color: white; border-radius: 20px; padding: 7px 16px; font-size: 12px; text-decoration: none; font-family: 'DM Mono', monospace; letter-spacing: .05em; white-space: nowrap; }
   .connect-btn:hover { background: #7a5c10; }
-  .connect-note { font-size: 12px; color: var(--im); font-family: 'Bricolage Grotesque', sans-serif; font-style: italic; }
+  .connect-note { font-size: 13px; color: var(--im); font-family: 'Bricolage Grotesque', sans-serif; font-style: italic; }
   @keyframes pulse { 0%,100%{opacity:.35}50%{opacity:1} }
   .dot { display: inline-block; animation: pulse 1.2s infinite; }
   ::-webkit-scrollbar { width: 6px; }
@@ -110,29 +110,29 @@
   .now-card { border: 0.5px solid var(--ru); border-radius: 13px; background: var(--p); overflow: hidden; }
   .now-accent { height: 3px; width: 100%; }
   .now-inner { padding: 1.1rem 1.5rem 1.2rem; }
-  .now-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--if); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 6px; }
+  .now-eyebrow { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--if); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 6px; }
   .now-live-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; animation: nowpulse 2s ease-in-out infinite; flex-shrink: 0; }
   @keyframes nowpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
-  .now-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 23px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); line-height: 1.2; margin-bottom: 0.2rem; }
-  .now-desc { font-size: 11px; color: var(--im); line-height: 1.6; margin-bottom: 1rem; }
+  .now-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); line-height: 1.2; margin-bottom: 0.2rem; }
+  .now-desc { font-size: 12px; color: var(--im); line-height: 1.6; margin-bottom: 1rem; }
   .now-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-  .now-window { font-size: 10px; color: var(--im); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .now-window { font-size: 11px; color: var(--im); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .now-progress-wrap { flex: 1; min-width: 80px; }
   .now-progress-track { height: 3px; background: var(--ru); border-radius: 99px; overflow: hidden; }
   .now-progress-fill { height: 100%; border-radius: 99px; transition: width 0.6s ease; }
-  .now-pct { font-size: 10px; color: var(--if); min-width: 28px; text-align: right; font-variant-numeric: tabular-nums; }
-  .now-next { display: flex; align-items: center; gap: 6px; background: var(--pd); border-radius: 8px; padding: 0.45rem 0.875rem; margin-top: 0.85rem; font-size: 11px; color: var(--im); }
+  .now-pct { font-size: 11px; color: var(--if); min-width: 28px; text-align: right; font-variant-numeric: tabular-nums; }
+  .now-next { display: flex; align-items: center; gap: 6px; background: var(--pd); border-radius: 8px; padding: 0.45rem 0.875rem; margin-top: 0.85rem; font-size: 12px; color: var(--im); }
   .now-next strong { color: var(--ink); font-weight: 500; }
-  .now-clock { font-size: 10px; color: var(--if); text-align: right; margin-top: 0.2rem; font-variant-numeric: tabular-nums; }
-  .sort-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--im); background: none; border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 10px; cursor: pointer; font-family: 'Figtree', sans-serif; transition: all .15s; }
+  .now-clock { font-size: 11px; color: var(--if); text-align: right; margin-top: 0.2rem; font-variant-numeric: tabular-nums; }
+  .sort-btn { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--im); background: none; border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 10px; cursor: pointer; font-family: 'Figtree', sans-serif; transition: all .15s; }
   .sort-btn:hover { background: var(--pdd); color: var(--ink); }
   .sort-btn.active { background: var(--ink); color: var(--p); border-color: var(--ink); }
   /* ── SIDE RAIL ── */
   .side-rail { position: fixed; top: 2rem; right: calc((100vw - 720px) / 2 - 220px); width: 200px; display: none; flex-direction: column; gap: 10px; max-height: calc(100vh - 4rem); overflow-y: auto; }
 @media (min-width: 1160px) { .side-rail { display: flex; } }
   .side-panel { background: var(--p); border: 0.5px solid var(--ru); border-radius: 13px; overflow: hidden; flex-shrink: 0; }
-  .side-panel-hdr { padding: .6rem 1rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: var(--im); }
-  .sp-toggle { font-size: 10px; color: var(--if); background: none; border: none; cursor: pointer; line-height: 1; padding: 0; transition: transform .2s; font-family: 'Figtree', sans-serif; }
+  .side-panel-hdr { padding: .6rem 1rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--im); }
+  .sp-toggle { font-size: 11px; color: var(--if); background: none; border: none; cursor: pointer; line-height: 1; padding: 0; transition: transform .2s; font-family: 'Figtree', sans-serif; }
   .sp-toggle:hover { color: var(--ac); }
   .side-panel.collapsed .sp-toggle { transform: rotate(-90deg); }
   .side-panel.collapsed .side-panel-body { display: none; }
@@ -142,95 +142,95 @@
   .meal-row { display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--ru); }
   .meal-row:last-child { border-bottom: none; }
   .meal-row.today { background: #EEECE5; }
-  .meal-day { font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: var(--if); min-width: 26px; flex-shrink: 0; }
+  .meal-day { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--if); min-width: 26px; flex-shrink: 0; }
   .meal-row.today .meal-day { color: var(--ac); }
   .meal-input { flex: 1; min-width: 0; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; outline: none; }
   .meal-input::placeholder { color: var(--if); font-style: italic; }
-  .cook-tag { font-size: 9px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; cursor: pointer; flex-shrink: 0; white-space: nowrap; user-select: none; font-family: 'Figtree', sans-serif; line-height: 1.5; transition: all .12s; }
+  .cook-tag { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; cursor: pointer; flex-shrink: 0; white-space: nowrap; user-select: none; font-family: 'Figtree', sans-serif; line-height: 1.5; transition: all .12s; }
   .cook-tag:hover { filter: brightness(0.94); }
   /* ── WORKOUTS ── */
   .wk-row { display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--ru); }
   .wk-row:last-child { border-bottom: none; }
   .wk-row.today { background: #EEECE5; }
-  .wk-day { font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: var(--if); min-width: 26px; flex-shrink: 0; }
+  .wk-day { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--if); min-width: 26px; flex-shrink: 0; }
   .wk-row.today .wk-day { color: var(--ac); }
   .wk-selwrap { flex: 1; min-width: 0; position: relative; display: flex; }
   .wk-select { flex: 1; min-width: 0; padding: 2px 16px 2px 8px; border: none; border-radius: 20px; cursor: pointer; outline: none; font-family: 'Figtree', sans-serif; line-height: 1.7; appearance: none; -webkit-appearance: none; text-overflow: ellipsis; transition: all .12s; }
   .wk-select:hover { filter: brightness(0.94); }
   .wk-select.empty { font-style: italic; }
-  .wk-caret { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 8px; color: var(--if); pointer-events: none; }
+  .wk-caret { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 9px; color: var(--if); pointer-events: none; }
   .wk-check { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid var(--ru); background: var(--p); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: all .15s; }
   .wk-check.done { background: var(--ac); border-color: var(--ac); }
   .wk-check svg { width: 8px; height: 8px; stroke: white; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
   .wk-check.done svg { opacity: 1; }
   .wk-spacer { width: 15px; flex-shrink: 0; }
   .wk-prog-row { display: flex; align-items: center; gap: 6px; padding: .3rem .75rem; border-bottom: 0.5px solid var(--ru); }
-  .wk-prog-input { flex: 1; min-width: 0; font-size: 10px; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; outline: none; }
+  .wk-prog-input { flex: 1; min-width: 0; font-size: 11px; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; outline: none; }
   .wk-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .wk-x { font-size: 12px; color: var(--if); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .wk-x { font-size: 13px; color: var(--if); cursor: pointer; line-height: 1; flex-shrink: 0; }
   .wk-x:hover { color: var(--ac); }
   /* ── ROUTINE EXTRAS ── */
   .remoji { margin-right: 6px; }
   .rpicks { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; cursor: default; }
-  .rpick { display: flex; align-items: center; gap: 7px; font-size: 10px; color: var(--ink); }
+  .rpick { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--ink); }
   .rpick.done .rpick-text { color: var(--if); text-decoration: line-through; }
   .rpick-box { width: 11px; height: 11px; border-radius: 3px; border: 1.2px solid var(--ru); background: var(--p); flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .rpick-box.done { background: var(--ac); border-color: var(--ac); }
   .rpick-box svg { width: 7px; height: 7px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
   .rpick-text { flex: 1; min-width: 0; cursor: pointer; line-height: 1.4; }
-  .rpick-client { font-size: 8px; letter-spacing: .08em; text-transform: uppercase; color: var(--ac); background: var(--al); padding: 0 6px; border-radius: 20px; margin-left: 4px; }
-  .rpick-x { color: var(--if); cursor: pointer; font-size: 12px; line-height: 1; opacity: 0; transition: opacity .15s; padding: 0 2px; }
+  .rpick-client { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--ac); background: var(--al); padding: 0 6px; border-radius: 20px; margin-left: 4px; }
+  .rpick-x { color: var(--if); cursor: pointer; font-size: 13px; line-height: 1; opacity: 0; transition: opacity .15s; padding: 0 2px; }
   .rpick:hover .rpick-x { opacity: 1; }
   @media (hover: none) { .rpick-x { opacity: 1; } }
-  .rpick-add { align-self: flex-start; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--ac); background: none; border: none; cursor: pointer; font-family: 'Figtree', sans-serif; padding: 2px 0; }
+  .rpick-add { align-self: flex-start; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--ac); background: none; border: none; cursor: pointer; font-family: 'Figtree', sans-serif; padding: 2px 0; }
   .rpick-menu { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; padding: 6px; background: var(--pd); border: 0.5px solid var(--ru); border-radius: 8px; }
-  .rpick-opt { text-align: left; font-size: 10px; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; border-radius: 5px; padding: 5px 6px; cursor: pointer; }
+  .rpick-opt { text-align: left; font-size: 11px; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; border-radius: 5px; padding: 5px 6px; cursor: pointer; }
   .rpick-opt:hover { background: var(--p); }
-  .rpick-empty { font-size: 10px; color: var(--if); font-style: italic; padding: 4px 6px; }
+  .rpick-empty { font-size: 11px; color: var(--if); font-style: italic; padding: 4px 6px; }
   /* ── TASK TABS ── */
   .tt-bar { display: flex; gap: 6px; padding: .6rem 1.5rem; border-bottom: 0.5px solid var(--ru); }
-  .tt-tab { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: none; color: var(--im); border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 11px; cursor: pointer; font-family: 'Figtree', sans-serif; white-space: nowrap; }
+  .tt-tab { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; background: none; color: var(--im); border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 11px; cursor: pointer; font-family: 'Figtree', sans-serif; white-space: nowrap; }
   .tt-tab.on { background: var(--ink); color: var(--p); border-color: var(--ink); }
   .tt-count { opacity: .6; margin-left: 2px; }
   .tt-pane { display: none; }
   .tt-pane.on { display: block; }
   /* ── WORK ── */
   .wt-add { padding: .75rem 1.5rem; border-bottom: 0.5px solid var(--ru); display: flex; flex-direction: column; gap: 6px; }
-  .wt-add-toggle { display: flex; align-items: center; gap: 6px; width: 100%; padding: .55rem 1.5rem; background: var(--pd); border: none; border-bottom: 0.5px solid var(--ru); cursor: pointer; font-family: 'Figtree', sans-serif; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--im); text-align: left; }
+  .wt-add-toggle { display: flex; align-items: center; gap: 6px; width: 100%; padding: .55rem 1.5rem; background: var(--pd); border: none; border-bottom: 0.5px solid var(--ru); cursor: pointer; font-family: 'Figtree', sans-serif; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--im); text-align: left; }
   .wt-add-toggle:hover { background: var(--pdd); color: var(--ink); }
-  #wt-add-icon { font-size: 13px; color: var(--ac); letter-spacing: 0; width: 10px; }
+  #wt-add-icon { font-size: 14px; color: var(--ac); letter-spacing: 0; width: 10px; }
   .wt-add-top { display: flex; gap: 8px; align-items: center; }
-  .wt-text { flex: 1; min-width: 0; font-size: 11px; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; outline: none; }
-  .wt-plus { font-size: 16px; color: var(--ac); background: none; border: none; cursor: pointer; line-height: 1; }
+  .wt-text { flex: 1; min-width: 0; font-size: 12px; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; outline: none; }
+  .wt-plus { font-size: 17px; color: var(--ac); background: none; border: none; cursor: pointer; line-height: 1; }
   .wt-fields { display: flex; flex-wrap: wrap; gap: 6px; }
-  .wt-in { min-width: 0; font-size: 10px; font-family: 'Figtree', sans-serif; color: var(--ink); background: var(--pd); border: 0.5px solid var(--ru); border-radius: 6px; padding: 5px 8px; outline: none; }
+  .wt-in { min-width: 0; font-size: 11px; font-family: 'Figtree', sans-serif; color: var(--ink); background: var(--pd); border: 0.5px solid var(--ru); border-radius: 6px; padding: 5px 8px; outline: none; }
   .wt-in::placeholder { color: var(--if); }
   .wt-row { display: flex; align-items: flex-start; gap: 10px; padding: .55rem 1.5rem; border-bottom: 0.5px solid var(--ru); }
   .wt-row.done { opacity: .5; }
   .wt-box { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--ru); background: var(--p); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .wt-box.done { border-color: var(--ac); background: var(--ac); }
   .wt-main { flex: 1; min-width: 0; cursor: pointer; }
-  .wt-name { font-size: 11px; color: var(--ink); line-height: 1.4; word-wrap: break-word; }
+  .wt-name { font-size: 12px; color: var(--ink); line-height: 1.4; word-wrap: break-word; }
   .wt-row.done .wt-name { text-decoration: line-through; }
-  .wt-note { font-size: 10px; color: var(--if); font-style: italic; margin-top: 2px; }
+  .wt-note { font-size: 11px; color: var(--if); font-style: italic; margin-top: 2px; }
   .wt-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; max-width: 50%; }
-  .wt-client { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; background: var(--al); color: var(--ac); white-space: nowrap; }
-  .wt-link { font-size: 10px; color: var(--ac); text-decoration: none; white-space: nowrap; }
+  .wt-client { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; background: var(--al); color: var(--ac); white-space: nowrap; }
+  .wt-link { font-size: 11px; color: var(--ac); text-decoration: none; white-space: nowrap; }
   .wt-link:hover { text-decoration: underline; }
   .wt-edit { padding: .65rem 1.5rem; border-bottom: 0.5px solid var(--ru); background: var(--al); display: flex; flex-direction: column; gap: 6px; }
-  .wt-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Figtree', sans-serif; color: var(--if); padding: 0; }
-  .wt-empty { padding: .75rem 1.5rem; font-size: 10px; color: var(--if); font-style: italic; }
-  .qt-tag { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; white-space: nowrap; cursor: pointer; flex-shrink: 0; margin-top: 1px; user-select: none; }
+  .wt-btn { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Figtree', sans-serif; color: var(--if); padding: 0; }
+  .wt-empty { padding: .75rem 1.5rem; font-size: 11px; color: var(--if); font-style: italic; }
+  .qt-tag { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; white-space: nowrap; cursor: pointer; flex-shrink: 0; margin-top: 1px; user-select: none; }
   .qt-tag.empty { color: var(--if); border: 0.5px dashed var(--ru); opacity: 0; transition: opacity .15s; }
   .qt-item:hover .qt-tag.empty { opacity: 1; }
   @media (hover: none) { .qt-tag.empty { display: none; } }
-  .qt-tag-in { width: 110px; font-size: 10px; padding: 2px 8px; }
+  .qt-tag-in { width: 110px; font-size: 11px; padding: 2px 8px; }
   /* ── QUICK TASK DRAG ── */
-  .qt-handle { cursor: grab; color: var(--if); font-size: 11px; line-height: 1; padding: 2px 2px 0; flex-shrink: 0; user-select: none; touch-action: none; letter-spacing: -2px; }
+  .qt-handle { cursor: grab; color: var(--if); font-size: 12px; line-height: 1; padding: 2px 2px 0; flex-shrink: 0; user-select: none; touch-action: none; letter-spacing: -2px; }
   .qt-handle:hover { color: var(--im); }
   .qt-ghost { background: var(--al) !important; opacity: .6; }
   .qt-drag { background: var(--p) !important; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
-  .offline-flag { font-size: 9px; letter-spacing: .05em; text-transform: uppercase; color: #5F6F4A; background: #EEF1E8; padding: 1px 7px; border-radius: 20px; }
+  .offline-flag { font-size: 10px; letter-spacing: .05em; text-transform: uppercase; color: #5F6F4A; background: #EEF1E8; padding: 1px 7px; border-radius: 20px; }
 </style>
 </head>
 <body>
@@ -238,7 +238,7 @@
   <div class="eyebrow">Daily Brief</div>
   <div class="mh-title" id="mh-title">Good morning, Alex.</div>
   <div class="mh-date" id="mh-date"></div>
-  <div id="weather-display" style="font-size:10px;color:var(--im);margin-top:4px;letter-spacing:.03em;"></div>
+  <div id="weather-display" style="font-size:11px;color:var(--im);margin-top:4px;letter-spacing:.03em;"></div>
   <div class="mh-meta">
     <span class="last-updated" id="last-updated"></span>
   </div>
@@ -304,7 +304,7 @@
       <div class="now-title" id="cal-event-name">—</div>
       <div class="now-desc" id="cal-event-location" style="display:none;"></div>
     </div>
-    <div class="mo" style="font-size: 11px; color: var(--im); text-align: right; font-family: 'DM Mono', monospace;" id="cal-event-time"></div>
+    <div class="mo" style="font-size: 12px; color: var(--im); text-align: right; font-family: 'DM Mono', monospace;" id="cal-event-time"></div>
   </div>
 </div>
 
@@ -453,7 +453,7 @@ function renderShopItems() {
     if(!c) return;
     const items = shopData[shopTab] || [];
     if (!items.length) {
-      c.innerHTML = '<div style="padding:.6rem 1rem;font-size:10px;color:var(--if);font-style:italic;font-family:\'Bricolage Grotesque\',sans-serif">Nothing here yet.</div>';
+      c.innerHTML = '<div style="padding:.6rem 1rem;font-size:11px;color:var(--if);font-style:italic;font-family:\'Bricolage Grotesque\',sans-serif">Nothing here yet.</div>';
       return;
     }
     c.innerHTML = items.map((item, i) => `
@@ -461,8 +461,8 @@ function renderShopItems() {
         <div onclick="toggleShopItem(${i})" style="width:14px;height:14px;border-radius:3px;border:1.5px solid ${item.done?'var(--ac)':'var(--ru)'};background:${item.done?'var(--ac)':'var(--p)'};cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">
           ${item.done?'<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}
         </div>
-        <span style="flex:1;font-size:10px;color:var(--ink);${item.done?'text-decoration:line-through':''}">${item.text}</span>
-        <span onclick="removeShopItem(${i})" style="font-size:11px;color:var(--if);cursor:pointer;line-height:1">×</span>
+        <span style="flex:1;font-size:11px;color:var(--ink);${item.done?'text-decoration:line-through':''}">${item.text}</span>
+        <span onclick="removeShopItem(${i})" style="font-size:12px;color:var(--if);cursor:pointer;line-height:1">×</span>
       </div>
     `).join('');
   });
@@ -732,7 +732,7 @@ async function loadWeather(){
       const code=d.current.weathercode;
       const icon=weatherIcon(code);
       const cond=weatherLabel(code);
-      document.getElementById('weather-display').innerHTML=`<span style="font-size:14px">${icon}</span> ${temp}°F &nbsp;·&nbsp; ${cond}`;
+      document.getElementById('weather-display').innerHTML=`<span style="font-size:15px">${icon}</span> ${temp}°F &nbsp;·&nbsp; ${cond}`;
     }catch(e){}
   },()=>{});
 }
@@ -920,7 +920,7 @@ function renderRoutine(s,celebrate){
     const evPills=overlapping.map(ev=>{
       const t=fmtTime(ev.start.dateTime);
       const color=ev._calColor||'var(--ac)';
-      return `<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0"></span><span style="font-size:9px;color:var(--im)">${esc(ev.summary||'Event')} · ${t}</span></div>`;
+      return `<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(ev.summary||'Event')} · ${t}</span></div>`;
     }).join('');
     // Tonight's planned dinner, surfaced on the dinner block
     let mealPill='';
@@ -928,7 +928,7 @@ function renderRoutine(s,celebrate){
       const m=MEALS[todayMealIdx()];
       if(m&&(m.meal||m.cook)){
         const ck=cookMeta(m.cook);
-        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${ck.color};display:inline-block;flex-shrink:0"></span><span style="font-size:9px;color:var(--im)">${esc(m.meal)||'Not planned'}${m.cook?' · '+ck.label+' cooking':''}</span></div>`;
+        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${ck.color};display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(m.meal)||'Not planned'}${m.cook?' · '+ck.label+' cooking':''}</span></div>`;
       }
     }
     // Today's workout, surfaced on the Movement block
@@ -939,7 +939,7 @@ function renderRoutine(s,celebrate){
         // Upper/Lower get their location from the day type: sub day = home dumbbell, home day = gym
         const where=/\b(upper|lower)\b/i.test(w.w)?(ROUTINE_MODE==='sub'?' · at home':' · at the gym'):'';
         const label=w.w==='Rest'?'Rest day':esc(w.w)+where+(w.done?' · done ✓':'');
-        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${col};display:inline-block;flex-shrink:0"></span><span style="font-size:9px;color:var(--im);${w.done?'text-decoration:line-through;opacity:.6':''}">${label}</span></div>`;
+        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${col};display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im);${w.done?'text-decoration:line-through;opacity:.6':''}">${label}</span></div>`;
       }
     }
     const[rh,rm]=r.time.split(':').map(Number);
@@ -1073,7 +1073,7 @@ async function loadCalendar(){
     }
     const groups={};
     events.forEach(ev=>{const k=getDateKey(ev);if(!groups[k])groups[k]=[];groups[k].push(ev);});
-    const footHtml=`<div class="foot-row"><a class="ql" href="https://calendar.google.com" target="_blank" style="padding:4px 12px;font-size:10px;"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Open Google Calendar</a></div>`;
+    const footHtml=`<div class="foot-row"><a class="ql" href="https://calendar.google.com" target="_blank" style="padding:4px 12px;font-size:11px;"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>Open Google Calendar</a></div>`;
     let html='',count=0;
     const allDays=[];
     for(let i=0;i<7;i++){const d=new Date(todayStart);d.setDate(d.getDate()+i);allDays.push(d.toISOString().slice(0,10));}
@@ -1088,7 +1088,7 @@ async function loadCalendar(){
         count++;
         const allDay=!ev.start?.dateTime;
         const timeStr=allDay?'All day':fmtTime(ev.start.dateTime)+' – '+fmtTime(ev.end.dateTime);
-        const loc=ev.location?`<br><span style="color:var(--if);font-size:10px">📍 ${ev.location}</span>`:'';
+        const loc=ev.location?`<br><span style="color:var(--if);font-size:11px">📍 ${ev.location}</span>`:'';
         const dot=`<span style="width:8px;height:8px;border-radius:50%;background:${ev._calColor||'var(--ac)'};display:inline-block;flex-shrink:0;margin-top:4px"></span>`;
         html+=`<div class="erow">${dot}<div class="erow-main"><div class="erow-label">${ev.summary||'(No title)'}</div><div class="erow-sub">${timeStr}${loc}</div></div><div class="erow-right"><span class="pill p-ev" style="background:${ev._calColor||'var(--ac)'}22;color:${ev._calColor||'var(--ac)'}">${ev._calName||'Calendar'}</span>${ev.htmlLink?`<a class="tlink" href="${ev.htmlLink}" target="_blank">Open ↗</a>`:''}</div></div>`;
       });
@@ -1147,7 +1147,7 @@ function renderQuickTasks(){
       <div style="width:13px;height:13px;border-radius:3px;border:1.5px solid ${t.done?'var(--ac)':'var(--ru)'};background:${t.done?'var(--ac)':'var(--p)'};flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center">
         ${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}
       </div>
-      <span style="flex:1;min-width:0;font-size:11px;color:${t.done?'var(--if)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'};line-height:1.5">${esc(t.text)}</span>
+      <span style="flex:1;min-width:0;font-size:12px;color:${t.done?'var(--if)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'};line-height:1.5">${esc(t.text)}</span>
       ${tagHtml}
     </div>`;}).join('');
     if(QT_TAG_EDIT!==null){const el=document.getElementById('qt-tag-edit');if(el){el.focus();el.select();}}
@@ -1277,7 +1277,7 @@ function renderWorkTasks(){
     const t=WT[i];
     if(WT_EDIT===i){
       return `<div class="wt-edit">
-        <input class="wt-in" id="wte-text" value="${esc(t.text)}" style="font-size:11px" onkeydown="if(event.key==='Enter')wtSaveEdit(${i})">
+        <input class="wt-in" id="wte-text" value="${esc(t.text)}" style="font-size:12px" onkeydown="if(event.key==='Enter')wtSaveEdit(${i})">
         <div class="wt-fields">
           <input class="wt-in" id="wte-client" list="wt-clients" placeholder="Client" value="${esc(t.client||'')}" style="flex:1 1 120px" onkeydown="if(event.key==='Enter')wtSaveEdit(${i})">
           <input class="wt-in" id="wte-due" type="date" value="${esc(t.due||'')}" style="flex:0 1 140px">
@@ -1353,16 +1353,16 @@ loadWorkouts();
     <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
       <span>Shopping</span>
       <span style="display:flex;align-items:center;gap:4px">
-        <button onclick="switchShopTab('need')" id="shop-tab-need" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--p);border:none;border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Need</button>
-        <button onclick="switchShopTab('want')" id="shop-tab-want" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--im);border:0.5px solid var(--ru);border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Want</button>
+        <button onclick="switchShopTab('need')" id="shop-tab-need" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--p);border:none;border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Need</button>
+        <button onclick="switchShopTab('want')" id="shop-tab-want" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--im);border:0.5px solid var(--ru);border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Want</button>
         <button class="sp-toggle" onclick="toggleSidePanel('shop-panel')" title="Minimize">&#9662;</button>
       </span>
     </div>
     <div class="side-panel-body">
       <div id="shop-items" style="max-height:180px;overflow-y:auto"></div>
       <div style="padding:.5rem .75rem;border-top:0.5px solid var(--ru);display:flex;gap:6px">
-        <input id="shop-input" type="text" placeholder="Add item..." style="flex:1;font-size:10px;font-family:'Figtree',sans-serif;background:var(--pd);border:0.5px solid var(--ru);border-radius:6px;padding:5px 8px;color:var(--ink);outline:none" onkeydown="if(event.key==='Enter')addShopItem()">
-        <button onclick="addShopItem()" style="font-size:11px;background:var(--ac);color:white;border:none;border-radius:6px;width:24px;cursor:pointer">+</button>
+        <input id="shop-input" type="text" placeholder="Add item..." style="flex:1;font-size:11px;font-family:'Figtree',sans-serif;background:var(--pd);border:0.5px solid var(--ru);border-radius:6px;padding:5px 8px;color:var(--ink);outline:none" onkeydown="if(event.key==='Enter')addShopItem()">
+        <button onclick="addShopItem()" style="font-size:12px;background:var(--ac);color:white;border:none;border-radius:6px;width:24px;cursor:pointer">+</button>
       </div>
     </div>
   </div>
@@ -1371,13 +1371,13 @@ loadWorkouts();
     <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
       <span>This Week's Meals</span>
       <span style="display:flex;align-items:center;gap:6px">
-        <button onclick="clearMeals()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Clear</button>
+        <button onclick="clearMeals()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Clear</button>
         <button class="sp-toggle" onclick="toggleSidePanel('meals-panel')" title="Minimize">&#9662;</button>
       </span>
     </div>
     <div class="side-panel-body">
       <div id="meals-list"></div>
-      <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary"></div>
+      <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:10px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary"></div>
     </div>
   </div>
   <!-- This Week's Workouts -->
@@ -1386,14 +1386,14 @@ loadWorkouts();
       <span>This Week's Workouts</span>
       <span style="display:flex;align-items:center;gap:6px">
         <span id="wk-offline"></span>
-        <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Edit</button>
+        <button onclick="wkToggleEdit()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Edit</button>
         <button class="sp-toggle" onclick="toggleSidePanel('workouts-panel')" title="Minimize">&#9662;</button>
       </span>
     </div>
     <div class="side-panel-body">
       <div id="wk-prog" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
       <div id="wk-list"></div>
-      <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em" id="wk-summary"></div>
+      <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:10px;letter-spacing:.05em" id="wk-summary"></div>
     </div>
   </div>
 </div>
@@ -1405,12 +1405,12 @@ loadWorkouts();
   </div>
   <div class="sec-body" id="body-sec-shop-mobile">
     <div style="padding:.5rem 1.5rem;border-bottom:0.5px solid var(--ru);display:flex;gap:6px">
-      <input id="shop-input-mobile" type="text" placeholder="Add item..." onkeydown="if(event.key==='Enter')addShopItem('shop-input-mobile')" style="flex:1;font-size:11px;font-family:'Figtree',sans-serif;color:var(--ink);background:none;border:none;outline:none;">
-      <button onclick="addShopItem('shop-input-mobile')" style="font-size:16px;color:var(--ac);background:none;border:none;cursor:pointer">+</button>
+      <input id="shop-input-mobile" type="text" placeholder="Add item..." onkeydown="if(event.key==='Enter')addShopItem('shop-input-mobile')" style="flex:1;font-size:12px;font-family:'Figtree',sans-serif;color:var(--ink);background:none;border:none;outline:none;">
+      <button onclick="addShopItem('shop-input-mobile')" style="font-size:17px;color:var(--ac);background:none;border:none;cursor:pointer">+</button>
     </div>
     <div style="display:flex;gap:4px;padding:.5rem 1.5rem;border-bottom:0.5px solid var(--ru)">
-      <button onclick="switchShopTab('need')" id="shop-tab-need-mobile" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--p);border:none;border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Need</button>
-      <button onclick="switchShopTab('want')" id="shop-tab-want-mobile" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--im);border:0.5px solid var(--ru);border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Want</button>
+      <button onclick="switchShopTab('need')" id="shop-tab-need-mobile" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--p);border:none;border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Need</button>
+      <button onclick="switchShopTab('want')" id="shop-tab-want-mobile" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--im);border:0.5px solid var(--ru);border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Want</button>
     </div>
     <div id="shop-items-mobile"></div>
   </div>
@@ -1424,8 +1424,8 @@ loadWorkouts();
   <div class="sec-body" id="body-sec-meals-mobile">
     <div id="meals-list-mobile"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd)">
-      <span style="font-size:9px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary-mobile"></span>
-      <button onclick="clearMeals()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Clear</button>
+      <span style="font-size:10px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary-mobile"></span>
+      <button onclick="clearMeals()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Clear</button>
     </div>
   </div>
 </div>
@@ -1438,11 +1438,11 @@ loadWorkouts();
   </div>
   <div class="sec-body" id="body-sec-workouts-mobile">
     <div style="display:flex;justify-content:flex-end;padding:.4rem 1.5rem;border-bottom:0.5px solid var(--ru);background:var(--pd)">
-      <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Edit program</button>
+      <button onclick="wkToggleEdit()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Edit program</button>
     </div>
     <div id="wk-prog-mobile" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
     <div id="wk-list-mobile"></div>
-    <div style="padding:.5rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:9px;letter-spacing:.05em" id="wk-summary-mobile"></div>
+    <div style="padding:.5rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:10px;letter-spacing:.05em" id="wk-summary-mobile"></div>
   </div>
 </div>
 </body>
