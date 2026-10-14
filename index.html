@@ -7,31 +7,31 @@
 <title>Alex's Daily Brief</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Geist+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..600&family=Figtree:wght@300..600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
  <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
   --p: #FFFFFF;
-  --pd: #F2EEE8;
-  --pdd: #EDE8E0;
-  --ink: #2A2A25;
-  --im: #7A7570;
-  --if: #B0ABA4;
-  --ac: #8B2A1A;
-  --al: #F5EAE4;
-  --ru: #E8E4DC;
-  --page: #FFFFFF;
-  --cook-alex: #8B2A1A;
-  --cook-gabe: #4A6FA5;
-  --cook-both: #6B8C4A;
+  --pd: #F3F1EC;
+  --pdd: #ECE9E2;
+  --ink: #1F2420;
+  --im: #6E726B;
+  --if: #A9ADA5;
+  --ac: #5F6F4A;
+  --al: #EEF1E8;
+  --ru: #E4E2DB;
+  --page: #FAF9F6;
+  --cook-alex: #5F6F4A;
+  --cook-gabe: #56708A;
+  --cook-both: #A07A2C;
 }
 
   html { background: var(--page); min-height: 100vh; }
-  body { font-family: 'Geist Mono', monospace; color: var(--ink); max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 4rem; background: var(--page); }
+  body { font-family: 'Figtree', sans-serif; color: var(--ink); max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 4rem; background: var(--page); }
   .masthead { background: var(--p); border: 0.5px solid var(--ru); border-radius: 16px; padding: 1.75rem 2rem 1.5rem; margin-bottom: 1rem; position: relative; overflow: hidden; }
   .masthead::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--ac); }
   .eyebrow { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--if); margin-bottom: .5rem; }
-  .mh-title { font-family: 'EB Garamond', serif; font-size: 30px; font-weight: 400; color: var(--ink); line-height: 1.1; margin-bottom: .25rem; }
+  .mh-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink); line-height: 1.1; margin-bottom: .25rem; }
   .mh-date { font-size: 10px; color: var(--im); letter-spacing: .05em; }
   .mh-meta { display: flex; align-items: center; justify-content: space-between; margin-top: .75rem; padding-top: .75rem; border-top: 0.5px solid var(--ru); }
   .last-updated { font-size: 10px; color: var(--if); }
@@ -45,14 +45,14 @@
   .sec { background: var(--p); border: 0.5px solid var(--ru); border-radius: 13px; margin-bottom: .9rem; overflow: hidden; }
   .sec-header { display: flex; align-items: center; gap: 10px; padding: .9rem 1.5rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); cursor: pointer; user-select: none; }
   .sec-header:hover { background: var(--pdd); }
-  .sec-num { font-family: 'EB Garamond', serif; font-size: 11px; font-style: italic; color: var(--ac); min-width: 20px; }
+  .sec-num { font-family: 'Bricolage Grotesque', sans-serif; font-size: 11px; font-style: italic; color: var(--ac); min-width: 20px; }
   .sec-title { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: var(--im); flex: 1; }
   .sec-badge { font-size: 10px; color: var(--if); background: #E3D9C6; border-radius: 20px; padding: 1px 8px; }
   .sec-chev { font-size: 13px; color: var(--if); transition: transform .2s; }
   .sec-body { padding: 0; }
   .sec-body.closed { display: none; }
   .sec-header.closed .sec-chev { transform: rotate(-90deg); }
-  .routine-progress { padding: .65rem 1.5rem; background: #F0EAE0; border-bottom: 0.5px solid var(--ru); display: flex; align-items: center; gap: 12px; }
+  .routine-progress { padding: .65rem 1.5rem; background: #EEECE5; border-bottom: 0.5px solid var(--ru); display: flex; align-items: center; gap: 12px; }
   .progress-bar-wrap { flex: 1; height: 4px; background: var(--ru); border-radius: 2px; overflow: hidden; }
   .progress-bar { height: 100%; background: var(--ac); border-radius: 2px; transition: width .4s ease; }
   .progress-label { font-size: 10px; color: var(--im); white-space: nowrap; min-width: 52px; text-align: right; }
@@ -60,47 +60,47 @@
   .reset-btn:hover { color: var(--ac); }
   .ritem { display: flex; align-items: flex-start; gap: 14px; padding: .65rem 1.5rem; border-bottom: 0.5px solid var(--ru); cursor: pointer; transition: background .1s; user-select: none; }
   .ritem:last-child { border-bottom: none; }
-  .ritem:hover { background: #F0EAE0; }
-  .ritem.done { background: #F0EAE0; }
+  .ritem:hover { background: #EEECE5; }
+  .ritem.done { background: #EEECE5; }
   .check-box { width: 17px; height: 17px; border-radius: 4px; border: 1.5px solid var(--ru); background: var(--p); display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; margin-top: 2px; }
   .ritem.done .check-box { background: var(--ac); border-color: var(--ac); }
   .check-box svg { width: 10px; height: 10px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .15s; }
   .ritem.done .check-box svg { opacity: 1; }
   .rtime { min-width: 42px; font-size: 10px; color: var(--if); font-variant-numeric: tabular-nums; padding-top: 2px; text-align: right; }
-  .ritem.done .rtime { color: #C0B8AE; }
+  .ritem.done .rtime { color: #BDBDB4; }
   .rcontent { flex: 1; }
   .rlabel { font-size: 11px; color: var(--ink); line-height: 1.4; transition: color .2s; }
-  .rsub { font-size: 10px; color: var(--im); margin-top: 2px; transition: color .2s; }  .ritem.done .rlabel { color: #B0A89E; text-decoration: line-through; text-decoration-color: var(--ru); }
-  .ritem.done .rsub { color: #C0B8AE; }
-  .all-done-banner { display: none; padding: .7rem 1.5rem; background: var(--al); border-top: 0.5px solid var(--ru); font-size: 12px; color: var(--ac); font-family: 'EB Garamond', serif; font-style: italic; text-align: center; }
+  .rsub { font-size: 10px; color: var(--im); margin-top: 2px; transition: color .2s; }  .ritem.done .rlabel { color: #AAAAA1; text-decoration: line-through; text-decoration-color: var(--ru); }
+  .ritem.done .rsub { color: #BDBDB4; }
+  .all-done-banner { display: none; padding: .7rem 1.5rem; background: var(--al); border-top: 0.5px solid var(--ru); font-size: 12px; color: var(--ac); font-family: 'Bricolage Grotesque', sans-serif; font-style: italic; text-align: center; }
   .erow { display: flex; align-items: flex-start; gap: 10px; padding: .35rem 1.5rem; border-bottom: 0.5px solid var(--ru); }  .erow svg { width: 15px; height: 15px; stroke: var(--if); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; margin-top: 1px; flex-shrink: 0; }
   .erow-main { flex: 1; min-width: 0; }
   .erow-label { font-size: 11px; color: var(--ink); line-height: 1.3; }
   .erow-sub { font-size: 10px; color: var(--im); margin-top: 1px; }
   .erow-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
-  .day-hdr { padding: .75rem 1.5rem .3rem; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--im); background: #F0EAE0; border-bottom: 0.5px solid var(--ru); font-family: 'Geist Mono', monospace; font-weight: 400; }
+  .day-hdr { padding: .75rem 1.5rem .3rem; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--im); background: #EEECE5; border-bottom: 0.5px solid var(--ru); font-family: 'Figtree', sans-serif; font-weight: 400; }
   .day-hdr.today { color: var(--ac); }
   .pill { display: inline-block; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; font-family: 'DM Mono', monospace; white-space: nowrap; }
   .p-ip { background: #EAF0FC; color: #1A3A7C; }
   .p-lo { background: #EFF5E8; color: #3B5C1A; }
-  .p-td { background: #EDE6D8; color: #5C5044; }
-  .p-ev { background: #EDE6D8; color: #5C5044; }
-  .p-alld { background: #F0EAE0; color: #8B6914; }
+  .p-td { background: #EAE7DF; color: #4A4F46; }
+  .p-ev { background: #EAE7DF; color: #4A4F46; }
+  .p-alld { background: #EEECE5; color: #A07A2C; }
   .tlink { font-size: 10px; color: var(--ac); text-decoration: none; }
   .tlink:hover { text-decoration: underline; }
-  .foot-row { display: flex; justify-content: flex-end; padding: .5rem 1.5rem; border-top: 0.5px solid var(--ru); background: #F0EAE0; }
+  .foot-row { display: flex; justify-content: flex-end; padding: .5rem 1.5rem; border-top: 0.5px solid var(--ru); background: #EEECE5; }
   .ncard { display: flex; align-items: center; gap: 10px; padding: .7rem 1.5rem; border-bottom: 0.5px solid var(--ru); text-decoration: none; color: inherit; transition: background .12s; }
   .ncard:last-of-type { border-bottom: none; }
   .ncard:hover { background: var(--pd); }
   .nemoji { font-size: 15px; min-width: 22px; text-align: center; }
   .ntitle { font-size: 11px; color: var(--ink); flex: 1; }
   .nws { font-size: 10px; color: var(--if); white-space: nowrap; }
-  .loading { padding: 1rem 1.5rem; font-size: 12px; color: var(--if); font-style: italic; font-family: 'EB Garamond', serif; }
-  .err { padding: .75rem 1.5rem; font-size: 11px; color: #7A3520; background: #FBF0EC; border-top: 0.5px solid #E8C8B8; }
+  .loading { padding: 1rem 1.5rem; font-size: 12px; color: var(--if); font-style: italic; font-family: 'Bricolage Grotesque', sans-serif; }
+  .err { padding: .75rem 1.5rem; font-size: 11px; color: #7A3520; background: #EEF1E8; border-top: 0.5px solid #E8C8B8; }
   .connect-row { padding: 1rem 1.5rem; display: flex; align-items: center; gap: 12px; }
   .connect-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--ac); color: white; border-radius: 20px; padding: 7px 16px; font-size: 11px; text-decoration: none; font-family: 'DM Mono', monospace; letter-spacing: .05em; white-space: nowrap; }
   .connect-btn:hover { background: #7a5c10; }
-  .connect-note { font-size: 12px; color: var(--im); font-family: 'EB Garamond', serif; font-style: italic; }
+  .connect-note { font-size: 12px; color: var(--im); font-family: 'Bricolage Grotesque', sans-serif; font-style: italic; }
   @keyframes pulse { 0%,100%{opacity:.35}50%{opacity:1} }
   .dot { display: inline-block; animation: pulse 1.2s infinite; }
   ::-webkit-scrollbar { width: 6px; }
@@ -113,7 +113,7 @@
   .now-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--if); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 6px; }
   .now-live-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; animation: nowpulse 2s ease-in-out infinite; flex-shrink: 0; }
   @keyframes nowpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
-  .now-title { font-family: 'EB Garamond', serif; font-size: 22px; font-weight: 400; color: var(--ink); line-height: 1.2; margin-bottom: 0.2rem; }
+  .now-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 23px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); line-height: 1.2; margin-bottom: 0.2rem; }
   .now-desc { font-size: 11px; color: var(--im); line-height: 1.6; margin-bottom: 1rem; }
   .now-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
   .now-window { font-size: 10px; color: var(--im); font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -124,7 +124,7 @@
   .now-next { display: flex; align-items: center; gap: 6px; background: var(--pd); border-radius: 8px; padding: 0.45rem 0.875rem; margin-top: 0.85rem; font-size: 11px; color: var(--im); }
   .now-next strong { color: var(--ink); font-weight: 500; }
   .now-clock { font-size: 10px; color: var(--if); text-align: right; margin-top: 0.2rem; font-variant-numeric: tabular-nums; }
-  .sort-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--im); background: none; border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 10px; cursor: pointer; font-family: 'Geist Mono', monospace; transition: all .15s; }
+  .sort-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--im); background: none; border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 10px; cursor: pointer; font-family: 'Figtree', sans-serif; transition: all .15s; }
   .sort-btn:hover { background: var(--pdd); color: var(--ink); }
   .sort-btn.active { background: var(--ink); color: var(--p); border-color: var(--ink); }
   /* ── SIDE RAIL ── */
@@ -132,7 +132,7 @@
 @media (min-width: 1160px) { .side-rail { display: flex; } }
   .side-panel { background: var(--p); border: 0.5px solid var(--ru); border-radius: 13px; overflow: hidden; flex-shrink: 0; }
   .side-panel-hdr { padding: .6rem 1rem; background: var(--pd); border-bottom: 0.5px solid var(--ru); font-size: 9px; letter-spacing: .15em; text-transform: uppercase; color: var(--im); }
-  .sp-toggle { font-size: 10px; color: var(--if); background: none; border: none; cursor: pointer; line-height: 1; padding: 0; transition: transform .2s; font-family: 'Geist Mono', monospace; }
+  .sp-toggle { font-size: 10px; color: var(--if); background: none; border: none; cursor: pointer; line-height: 1; padding: 0; transition: transform .2s; font-family: 'Figtree', sans-serif; }
   .sp-toggle:hover { color: var(--ac); }
   .side-panel.collapsed .sp-toggle { transform: rotate(-90deg); }
   .side-panel.collapsed .side-panel-body { display: none; }
@@ -141,21 +141,21 @@
   /* ── MEALS ── */
   .meal-row { display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--ru); }
   .meal-row:last-child { border-bottom: none; }
-  .meal-row.today { background: #F0EAE0; }
+  .meal-row.today { background: #EEECE5; }
   .meal-day { font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: var(--if); min-width: 26px; flex-shrink: 0; }
   .meal-row.today .meal-day { color: var(--ac); }
-  .meal-input { flex: 1; min-width: 0; font-family: 'Geist Mono', monospace; color: var(--ink); background: none; border: none; outline: none; }
+  .meal-input { flex: 1; min-width: 0; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; outline: none; }
   .meal-input::placeholder { color: var(--if); font-style: italic; }
-  .cook-tag { font-size: 9px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; cursor: pointer; flex-shrink: 0; white-space: nowrap; user-select: none; font-family: 'Geist Mono', monospace; line-height: 1.5; transition: all .12s; }
+  .cook-tag { font-size: 9px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; cursor: pointer; flex-shrink: 0; white-space: nowrap; user-select: none; font-family: 'Figtree', sans-serif; line-height: 1.5; transition: all .12s; }
   .cook-tag:hover { filter: brightness(0.94); }
   /* ── WORKOUTS ── */
   .wk-row { display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--ru); }
   .wk-row:last-child { border-bottom: none; }
-  .wk-row.today { background: #F0EAE0; }
+  .wk-row.today { background: #EEECE5; }
   .wk-day { font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: var(--if); min-width: 26px; flex-shrink: 0; }
   .wk-row.today .wk-day { color: var(--ac); }
   .wk-selwrap { flex: 1; min-width: 0; position: relative; display: flex; }
-  .wk-select { flex: 1; min-width: 0; padding: 2px 16px 2px 8px; border: none; border-radius: 20px; cursor: pointer; outline: none; font-family: 'Geist Mono', monospace; line-height: 1.7; appearance: none; -webkit-appearance: none; text-overflow: ellipsis; transition: all .12s; }
+  .wk-select { flex: 1; min-width: 0; padding: 2px 16px 2px 8px; border: none; border-radius: 20px; cursor: pointer; outline: none; font-family: 'Figtree', sans-serif; line-height: 1.7; appearance: none; -webkit-appearance: none; text-overflow: ellipsis; transition: all .12s; }
   .wk-select:hover { filter: brightness(0.94); }
   .wk-select.empty { font-style: italic; }
   .wk-caret { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 8px; color: var(--if); pointer-events: none; }
@@ -165,7 +165,7 @@
   .wk-check.done svg { opacity: 1; }
   .wk-spacer { width: 15px; flex-shrink: 0; }
   .wk-prog-row { display: flex; align-items: center; gap: 6px; padding: .3rem .75rem; border-bottom: 0.5px solid var(--ru); }
-  .wk-prog-input { flex: 1; min-width: 0; font-size: 10px; font-family: 'Geist Mono', monospace; color: var(--ink); background: none; border: none; outline: none; }
+  .wk-prog-input { flex: 1; min-width: 0; font-size: 10px; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; outline: none; }
   .wk-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
   .wk-x { font-size: 12px; color: var(--if); cursor: pointer; line-height: 1; flex-shrink: 0; }
   .wk-x:hover { color: var(--ac); }
@@ -182,28 +182,28 @@
   .rpick-x { color: var(--if); cursor: pointer; font-size: 12px; line-height: 1; opacity: 0; transition: opacity .15s; padding: 0 2px; }
   .rpick:hover .rpick-x { opacity: 1; }
   @media (hover: none) { .rpick-x { opacity: 1; } }
-  .rpick-add { align-self: flex-start; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--ac); background: none; border: none; cursor: pointer; font-family: 'Geist Mono', monospace; padding: 2px 0; }
+  .rpick-add { align-self: flex-start; font-size: 9px; letter-spacing: .08em; text-transform: uppercase; color: var(--ac); background: none; border: none; cursor: pointer; font-family: 'Figtree', sans-serif; padding: 2px 0; }
   .rpick-menu { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; padding: 6px; background: var(--pd); border: 0.5px solid var(--ru); border-radius: 8px; }
-  .rpick-opt { text-align: left; font-size: 10px; font-family: 'Geist Mono', monospace; color: var(--ink); background: none; border: none; border-radius: 5px; padding: 5px 6px; cursor: pointer; }
+  .rpick-opt { text-align: left; font-size: 10px; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; border-radius: 5px; padding: 5px 6px; cursor: pointer; }
   .rpick-opt:hover { background: var(--p); }
   .rpick-empty { font-size: 10px; color: var(--if); font-style: italic; padding: 4px 6px; }
   /* ── TASK TABS ── */
   .tt-bar { display: flex; gap: 6px; padding: .6rem 1.5rem; border-bottom: 0.5px solid var(--ru); }
-  .tt-tab { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: none; color: var(--im); border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 11px; cursor: pointer; font-family: 'Geist Mono', monospace; white-space: nowrap; }
+  .tt-tab { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: none; color: var(--im); border: 0.5px solid var(--ru); border-radius: 20px; padding: 3px 11px; cursor: pointer; font-family: 'Figtree', sans-serif; white-space: nowrap; }
   .tt-tab.on { background: var(--ink); color: var(--p); border-color: var(--ink); }
   .tt-count { opacity: .6; margin-left: 2px; }
   .tt-pane { display: none; }
   .tt-pane.on { display: block; }
   /* ── WORK ── */
   .wt-add { padding: .75rem 1.5rem; border-bottom: 0.5px solid var(--ru); display: flex; flex-direction: column; gap: 6px; }
-  .wt-add-toggle { display: flex; align-items: center; gap: 6px; width: 100%; padding: .55rem 1.5rem; background: var(--pd); border: none; border-bottom: 0.5px solid var(--ru); cursor: pointer; font-family: 'Geist Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--im); text-align: left; }
+  .wt-add-toggle { display: flex; align-items: center; gap: 6px; width: 100%; padding: .55rem 1.5rem; background: var(--pd); border: none; border-bottom: 0.5px solid var(--ru); cursor: pointer; font-family: 'Figtree', sans-serif; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--im); text-align: left; }
   .wt-add-toggle:hover { background: var(--pdd); color: var(--ink); }
   #wt-add-icon { font-size: 13px; color: var(--ac); letter-spacing: 0; width: 10px; }
   .wt-add-top { display: flex; gap: 8px; align-items: center; }
-  .wt-text { flex: 1; min-width: 0; font-size: 11px; font-family: 'Geist Mono', monospace; color: var(--ink); background: none; border: none; outline: none; }
+  .wt-text { flex: 1; min-width: 0; font-size: 11px; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; outline: none; }
   .wt-plus { font-size: 16px; color: var(--ac); background: none; border: none; cursor: pointer; line-height: 1; }
   .wt-fields { display: flex; flex-wrap: wrap; gap: 6px; }
-  .wt-in { min-width: 0; font-size: 10px; font-family: 'Geist Mono', monospace; color: var(--ink); background: var(--pd); border: 0.5px solid var(--ru); border-radius: 6px; padding: 5px 8px; outline: none; }
+  .wt-in { min-width: 0; font-size: 10px; font-family: 'Figtree', sans-serif; color: var(--ink); background: var(--pd); border: 0.5px solid var(--ru); border-radius: 6px; padding: 5px 8px; outline: none; }
   .wt-in::placeholder { color: var(--if); }
   .wt-row { display: flex; align-items: flex-start; gap: 10px; padding: .55rem 1.5rem; border-bottom: 0.5px solid var(--ru); }
   .wt-row.done { opacity: .5; }
@@ -218,7 +218,7 @@
   .wt-link { font-size: 10px; color: var(--ac); text-decoration: none; white-space: nowrap; }
   .wt-link:hover { text-decoration: underline; }
   .wt-edit { padding: .65rem 1.5rem; border-bottom: 0.5px solid var(--ru); background: var(--al); display: flex; flex-direction: column; gap: 6px; }
-  .wt-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Geist Mono', monospace; color: var(--if); padding: 0; }
+  .wt-btn { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Figtree', sans-serif; color: var(--if); padding: 0; }
   .wt-empty { padding: .75rem 1.5rem; font-size: 10px; color: var(--if); font-style: italic; }
   .qt-tag { font-size: 9px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; white-space: nowrap; cursor: pointer; flex-shrink: 0; margin-top: 1px; user-select: none; }
   .qt-tag.empty { color: var(--if); border: 0.5px dashed var(--ru); opacity: 0; transition: opacity .15s; }
@@ -230,7 +230,7 @@
   .qt-handle:hover { color: var(--im); }
   .qt-ghost { background: var(--al) !important; opacity: .6; }
   .qt-drag { background: var(--p) !important; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
-  .offline-flag { font-size: 9px; letter-spacing: .05em; text-transform: uppercase; color: #A85A32; background: #FBF0EC; padding: 1px 7px; border-radius: 20px; }
+  .offline-flag { font-size: 9px; letter-spacing: .05em; text-transform: uppercase; color: #5F6F4A; background: #EEF1E8; padding: 1px 7px; border-radius: 20px; }
 </style>
 </head>
 <body>
@@ -453,7 +453,7 @@ function renderShopItems() {
     if(!c) return;
     const items = shopData[shopTab] || [];
     if (!items.length) {
-      c.innerHTML = '<div style="padding:.6rem 1rem;font-size:10px;color:var(--if);font-style:italic;font-family:\'EB Garamond\',serif">Nothing here yet.</div>';
+      c.innerHTML = '<div style="padding:.6rem 1rem;font-size:10px;color:var(--if);font-style:italic;font-family:\'Bricolage Grotesque\',sans-serif">Nothing here yet.</div>';
       return;
     }
     c.innerHTML = items.map((item, i) => `
@@ -507,7 +507,7 @@ const COOKS=[
   {id:'alex', label:'Alex', color:'var(--cook-alex)'},
   {id:'gabe', label:'Gabe', color:'var(--cook-gabe)'},
   {id:'both', label:'Both', color:'var(--cook-both)'},
-  {id:'out',  label:'Out',  color:'#8A7B5C'},
+  {id:'out',  label:'Out',  color:'#857A62'},
 ];
 function blankMeals(){return MEAL_DAYS.map(d=>({day:d,meal:'',cook:''}));}
 let MEALS=blankMeals();
@@ -590,7 +590,7 @@ function clearMeals(){
 }
 // ── THIS WEEK'S WORKOUTS ──────────────────────────────
 const WK_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const WK_COLORS=['#8B2A1A','#4A6FA5','#6B8C4A','#C47A3A','#A8206A','#1A9E8A','#8A7B5C'];
+const WK_COLORS=['#5F6F4A','#56708A','#6E7F4F','#C08A4A','#A8206A','#3F6E6A','#857A62'];
 const DEFAULT_PROGRAM=['Upper Lift','Lower Lift','Long Run','Yoga','Zone 2'];
 let WK=wkBlank();
 let wkEditing=false, wkOffline=false;
@@ -600,7 +600,7 @@ function wkBlank(){
 }
 function wkColor(name){
   if(!name)return 'var(--if)';
-  if(name==='Rest')return '#8A7B5C';
+  if(name==='Rest')return '#857A62';
   const i=WK.program.indexOf(name);
   return i>=0?WK_COLORS[i%WK_COLORS.length]:'var(--im)';
 }
@@ -709,7 +709,7 @@ function renderWorkouts(){
   const placed=new Set(scheduled.map(d=>d.w));
   const unscheduled=WK.program.filter(n=>!placed.has(n));
   const bits=[`<span style="color:var(--im)">${done} of ${scheduled.length} done</span>`];
-  if(unscheduled.length)bits.push(`<span style="color:#A85A32">Unscheduled: ${unscheduled.map(esc).join(', ')}</span>`);
+  if(unscheduled.length)bits.push(`<span style="color:#5F6F4A">Unscheduled: ${unscheduled.map(esc).join(', ')}</span>`);
   ['wk-summary','wk-summary-mobile'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.innerHTML=bits.join(' · ');
@@ -766,24 +766,29 @@ function weatherLabel(code){
 // The whole day lives here. Edit times, emojis, or descriptions in one place;
 // the routine list and the Now card both read from it.
 const ROUTINES={
+  // Home days: 6:30 rise, workout first (gym or blue dumbbell), laptop stays closed until it's done.
   home:[
-    {id:'morning', time:'7:30',  emoji:'☕',   label:'Morning',      sub:'Coffee, breakfast, no phone',    color:'#C47A3A'},
-    {id:'workam',  time:'9:00',  emoji:'💻',   label:'Work',         sub:'Email and quick tasks first',    color:'#1A9E8A', work:true},
-    {id:'walk',    time:'12:00', emoji:'🌿',   label:'Walk + lunch', sub:'Get outside',                    color:'#8A9A3A'},
-    {id:'workpm',  time:'13:00', emoji:'💻',   label:'Work',         sub:'Bigger tasks',                   color:'#1A9E8A', work:true},
-    {id:'move',    time:'17:00', emoji:'🧘‍♀️', label:'Movement',     sub:'Lift, walk, or yoga',            color:'#C0392B'},
-    {id:'dinner',  time:'18:30', emoji:'🍲',   label:'Dinner',       sub:'Cook and eat',                   color:'#8A9A3A'},
-    {id:'wind',    time:'20:00', emoji:'📖',   label:'Wind down',    sub:'Read, relax, screens off by 10', color:'#4A6FA5'},
-    {id:'sleep',   time:'22:30', emoji:'🌙',   label:'Sleep',        sub:'',                               color:'#4A4A7A'},
+    {id:'rise',    time:'6:30',  emoji:'☕️', label:'Rise + prep',  sub:'Coffee, water, workout clothes on', color:'#C08A4A'},
+    {id:'move',    time:'7:00',  emoji:'🍃', label:'Workout',      sub:'Gym or dumbbell · 4pm if missed', color:'#7C8F6A'},
+    {id:'morning', time:'8:30',  emoji:'🚿',   label:'Shower + breakfast', sub:'No phone, no laptop yet',     color:'#C08A4A'},
+    {id:'workam',  time:'9:15',  emoji:'💻',   label:'Work',         sub:'Deep work while you\'re fresh',  color:'#3F6E6A', work:true},
+    {id:'walk',    time:'12:00', emoji:'🌿',   label:'Walk + lunch', sub:'Get outside',                    color:'#8A8F55'},
+    {id:'workpm',  time:'13:00', emoji:'💻',   label:'Work',         sub:'Calls, admin, lighter tasks',    color:'#3F6E6A', work:true},
+    {id:'dinner',  time:'18:30', emoji:'🍲',   label:'Dinner',       sub:'Cook and eat',                   color:'#8A8F55'},
+    {id:'wind',    time:'20:00', emoji:'📖',   label:'Wind down',    sub:'Prep tomorrow · screens off by 10', color:'#56708A'},
+    {id:'sleep',   time:'22:30', emoji:'🌙',   label:'Sleep',        sub:'',                               color:'#4B4E66'},
   ],
+  // Sub days: 6:30 rise, 20 min home lift, out the door 7:45, school 8:30–3:15, 2 hrs client work after.
   sub:[
-    {id:'morning', time:'6:30',  emoji:'☕',   label:'Morning',      sub:'Coffee, breakfast, out the door', color:'#C47A3A'},
-    {id:'subbing', time:'7:30',  emoji:'🍎',   label:'Subbing',      sub:'School day',                      color:'#A0644A'},
-    {id:'workpm',  time:'15:30', emoji:'💻',   label:'Work',         sub:'One or two tasks',                color:'#1A9E8A', work:true},
-    {id:'move',    time:'17:00', emoji:'🧘‍♀️', label:'Movement',     sub:'Lift, walk, or yoga',             color:'#C0392B'},
-    {id:'dinner',  time:'18:30', emoji:'🍲',   label:'Dinner',       sub:'Cook and eat',                    color:'#8A9A3A'},
-    {id:'wind',    time:'20:00', emoji:'📖',   label:'Wind down',    sub:'Read, relax, screens off by 10',  color:'#4A6FA5'},
-    {id:'sleep',   time:'22:30', emoji:'🌙',   label:'Sleep',        sub:'',                                color:'#4A4A7A'},
+    {id:'rise',    time:'6:30',  emoji:'☕️', label:'Rise + prep',  sub:'Coffee, water, workout clothes on', color:'#C08A4A'},
+    {id:'move',    time:'7:00',  emoji:'🍃', label:'Workout',      sub:'20 min dumbbell circuit · 4pm if missed', color:'#7C8F6A'},
+    {id:'morning', time:'7:20',  emoji:'🚿',   label:'Get ready',    sub:'Shower, dress, grab lunch', color:'#C08A4A'},
+    {id:'subbing', time:'7:45',  emoji:'🍎',   label:'Subbing',      sub:'Leave 7:45 · school 8:30–3:15',   color:'#9C6B52'},
+    {id:'commute', time:'15:15', emoji:'🚗',   label:'Drive home',   sub:'Decompress, no phone',            color:'#9C6B52'},
+    {id:'workpm',  time:'16:15', emoji:'💻',   label:'Work',         sub:'2 hrs client work',               color:'#3F6E6A', work:true},
+    {id:'dinner',  time:'18:30', emoji:'🍲',   label:'Dinner',       sub:'Cook and eat',                    color:'#8A8F55'},
+    {id:'wind',    time:'20:00', emoji:'📖',   label:'Wind down',    sub:'Pack lunch, lay out clothes · screens off by 10', color:'#56708A'},
+    {id:'sleep',   time:'22:30', emoji:'🌙',   label:'Sleep',        sub:'',                                color:'#4B4E66'},
   ],
 };
 let ROUTINE_MODE='home', ROUTINE=ROUTINES.home, NOW_BLOCKS=[];
@@ -1019,8 +1024,8 @@ function updateCalendarWidget(events){
       :start.toDateString()===new Date(now.getTime()+86400000).toDateString()?`Tomorrow · ${timeStr}`
       :`${start.toLocaleDateString([],{weekday:'short'})} · ${timeStr}`;
     document.getElementById('cal-eyebrow-text').textContent=isActive?'calendar · now':'calendar · next up';
-    document.getElementById('cal-live-dot').style.background=next._calColor||'#1D9E75';
-    document.getElementById('cal-top-bar').style.background=next._calColor||'#1D9E75';
+    document.getElementById('cal-live-dot').style.background=next._calColor||'#4F8A6A';
+    document.getElementById('cal-top-bar').style.background=next._calColor||'#4F8A6A';
     nameEl.textContent=next.summary;
     nameEl.style.fontStyle='normal';
     nameEl.style.color='';
@@ -1094,7 +1099,7 @@ async function loadCalendar(){
   }
 }
 function launchConfetti(){
-  const colors=['#A0644A','#6B8C6B','#D4A574','#8B6914','#C4956A','#7A9E7A'];
+  const colors=['#9C6B52','#6B8C6B','#D4A574','#A07A2C','#C4956A','#7A9E7A'];
   for(let i=0;i<120;i++){
     const el=document.createElement('div');
     el.style.cssText=`position:fixed;top:-10px;left:${Math.random()*100}vw;width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:${Math.random()>0.5?'50%':'2px'};opacity:1;z-index:9999;pointer-events:none;`;
@@ -1147,7 +1152,7 @@ function renderQuickTasks(){
   });
 }
 let QT_TAG_EDIT=null;
-const QT_TAG_COLORS=['#8B2A1A','#6B8C4A','#4A6FA5','#A0644A','#8B6914','#7A5C8A','#3F7F7A','#B0583A'];
+const QT_TAG_COLORS=['#5F6F4A','#6E7F4F','#56708A','#9C6B52','#A07A2C','#7A5C8A','#3F7F7A','#B0583A'];
 function qtTagColor(tag){let h=0;for(const ch of tag.toLowerCase())h=(h*31+ch.charCodeAt(0))>>>0;return QT_TAG_COLORS[h%QT_TAG_COLORS.length];}
 function editQTTag(i){QT_TAG_EDIT=i;renderQuickTasks();}
 async function saveQTTag(i){
@@ -1230,9 +1235,9 @@ function wtDueLabel(due){
   const [y,m,d]=due.split('-').map(Number);
   const t=new Date();t.setHours(0,0,0,0);
   const n=Math.round((new Date(y,m-1,d)-t)/86400000);
-  if(n<0)return{text:'Overdue · '+SMONS[m-1]+' '+d,color:'#C0392B'};
-  if(n===0)return{text:'Today',color:'#C0392B'};
-  if(n===1)return{text:'Tomorrow',color:'#C47A3A'};
+  if(n<0)return{text:'Overdue · '+SMONS[m-1]+' '+d,color:'#B5543C'};
+  if(n===0)return{text:'Today',color:'#B5543C'};
+  if(n===1)return{text:'Tomorrow',color:'#C08A4A'};
   if(n<7)return{text:SDAYS[new Date(y,m-1,d).getDay()],color:'#7A7570'};
   return{text:SMONS[m-1]+' '+d,color:'#9B9B9B'};
 }
@@ -1277,7 +1282,7 @@ function renderWorkTasks(){
           <input class="wt-in" id="wte-note" placeholder="Note or link" value="${esc(t.note||'')}" style="flex:2 1 180px" onkeydown="if(event.key==='Enter')wtSaveEdit(${i})">
         </div>
         <div style="display:flex;justify-content:space-between">
-          <button class="wt-btn" style="color:#C0392B" onclick="wtDelete(${i})">Delete</button>
+          <button class="wt-btn" style="color:#B5543C" onclick="wtDelete(${i})">Delete</button>
           <span style="display:flex;gap:14px"><button class="wt-btn" onclick="WT_EDIT=null;renderWorkTasks()">Cancel</button><button class="wt-btn" style="color:var(--ac)" onclick="wtSaveEdit(${i})">Save</button></span>
         </div>
       </div>`;
@@ -1346,15 +1351,15 @@ loadWorkouts();
     <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
       <span>Shopping</span>
       <span style="display:flex;align-items:center;gap:4px">
-        <button onclick="switchShopTab('need')" id="shop-tab-need" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--p);border:none;border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Geist Mono',monospace">Need</button>
-        <button onclick="switchShopTab('want')" id="shop-tab-want" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--im);border:0.5px solid var(--ru);border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Geist Mono',monospace">Want</button>
+        <button onclick="switchShopTab('need')" id="shop-tab-need" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--p);border:none;border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Need</button>
+        <button onclick="switchShopTab('want')" id="shop-tab-want" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--im);border:0.5px solid var(--ru);border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Want</button>
         <button class="sp-toggle" onclick="toggleSidePanel('shop-panel')" title="Minimize">&#9662;</button>
       </span>
     </div>
     <div class="side-panel-body">
       <div id="shop-items" style="max-height:180px;overflow-y:auto"></div>
       <div style="padding:.5rem .75rem;border-top:0.5px solid var(--ru);display:flex;gap:6px">
-        <input id="shop-input" type="text" placeholder="Add item..." style="flex:1;font-size:10px;font-family:'Geist Mono',monospace;background:var(--pd);border:0.5px solid var(--ru);border-radius:6px;padding:5px 8px;color:var(--ink);outline:none" onkeydown="if(event.key==='Enter')addShopItem()">
+        <input id="shop-input" type="text" placeholder="Add item..." style="flex:1;font-size:10px;font-family:'Figtree',sans-serif;background:var(--pd);border:0.5px solid var(--ru);border-radius:6px;padding:5px 8px;color:var(--ink);outline:none" onkeydown="if(event.key==='Enter')addShopItem()">
         <button onclick="addShopItem()" style="font-size:11px;background:var(--ac);color:white;border:none;border-radius:6px;width:24px;cursor:pointer">+</button>
       </div>
     </div>
@@ -1364,7 +1369,7 @@ loadWorkouts();
     <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
       <span>This Week's Meals</span>
       <span style="display:flex;align-items:center;gap:6px">
-        <button onclick="clearMeals()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear</button>
+        <button onclick="clearMeals()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Clear</button>
         <button class="sp-toggle" onclick="toggleSidePanel('meals-panel')" title="Minimize">&#9662;</button>
       </span>
     </div>
@@ -1379,7 +1384,7 @@ loadWorkouts();
       <span>This Week's Workouts</span>
       <span style="display:flex;align-items:center;gap:6px">
         <span id="wk-offline"></span>
-        <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Edit</button>
+        <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Edit</button>
         <button class="sp-toggle" onclick="toggleSidePanel('workouts-panel')" title="Minimize">&#9662;</button>
       </span>
     </div>
@@ -1398,12 +1403,12 @@ loadWorkouts();
   </div>
   <div class="sec-body" id="body-sec-shop-mobile">
     <div style="padding:.5rem 1.5rem;border-bottom:0.5px solid var(--ru);display:flex;gap:6px">
-      <input id="shop-input-mobile" type="text" placeholder="Add item..." onkeydown="if(event.key==='Enter')addShopItem('shop-input-mobile')" style="flex:1;font-size:11px;font-family:'Geist Mono',monospace;color:var(--ink);background:none;border:none;outline:none;">
+      <input id="shop-input-mobile" type="text" placeholder="Add item..." onkeydown="if(event.key==='Enter')addShopItem('shop-input-mobile')" style="flex:1;font-size:11px;font-family:'Figtree',sans-serif;color:var(--ink);background:none;border:none;outline:none;">
       <button onclick="addShopItem('shop-input-mobile')" style="font-size:16px;color:var(--ac);background:none;border:none;cursor:pointer">+</button>
     </div>
     <div style="display:flex;gap:4px;padding:.5rem 1.5rem;border-bottom:0.5px solid var(--ru)">
-      <button onclick="switchShopTab('need')" id="shop-tab-need-mobile" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--p);border:none;border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Geist Mono',monospace">Need</button>
-      <button onclick="switchShopTab('want')" id="shop-tab-want-mobile" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--im);border:0.5px solid var(--ru);border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Geist Mono',monospace">Want</button>
+      <button onclick="switchShopTab('need')" id="shop-tab-need-mobile" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:var(--ink);color:var(--p);border:none;border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Need</button>
+      <button onclick="switchShopTab('want')" id="shop-tab-want-mobile" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;background:none;color:var(--im);border:0.5px solid var(--ru);border-radius:20px;padding:2px 8px;cursor:pointer;font-family:'Figtree',sans-serif">Want</button>
     </div>
     <div id="shop-items-mobile"></div>
   </div>
@@ -1418,7 +1423,7 @@ loadWorkouts();
     <div id="meals-list-mobile"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd)">
       <span style="font-size:9px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary-mobile"></span>
-      <button onclick="clearMeals()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Clear</button>
+      <button onclick="clearMeals()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Clear</button>
     </div>
   </div>
 </div>
@@ -1431,7 +1436,7 @@ loadWorkouts();
   </div>
   <div class="sec-body" id="body-sec-workouts-mobile">
     <div style="display:flex;justify-content:flex-end;padding:.4rem 1.5rem;border-bottom:0.5px solid var(--ru);background:var(--pd)">
-      <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Geist Mono',monospace">Edit program</button>
+      <button onclick="wkToggleEdit()" style="font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Edit program</button>
     </div>
     <div id="wk-prog-mobile" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
     <div id="wk-list-mobile"></div>
