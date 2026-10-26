@@ -215,9 +215,9 @@
       </div>
       ${rows}
       <div class="inc-actions">
-        <button class="inc-btn" data-form="hours">+ Web hours</button>
-        <button class="inc-btn" data-form="payment">+ Payment</button>
-        <button class="inc-btn" data-form="contract">+ Contract</button>
+        <button class="inc-btn" data-form="hours">+ Hourly</button>
+        <button class="inc-btn" data-form="payment">+ One-time</button>
+        <button class="inc-btn" data-form="contract">+ Project</button>
         <button class="inc-btn" data-form="settings" style="margin-left:auto">Settings</button>
       </div>
       ${form ? formHtml(form) : ''}
@@ -245,13 +245,13 @@
         <div class="r"><input id="f-name" placeholder="Client / project"><select id="f-status">${statusOpts('pending')}</select></div>
         <div class="inc-sub">Payment milestones — only what you'll actually be paid each month.</div>
         <div id="f-ms">${msRow('Deposit')}${msRow('Milestone')}${msRow('Final')}</div>
-        <div class="r"><button class="inc-btn" data-addms="1">+ Milestone</button><button class="inc-btn pri" data-submit="contract">Add contract</button><button class="inc-btn" data-form="">Cancel</button></div>
+        <div class="r"><button class="inc-btn" data-addms="1">+ Milestone</button><button class="inc-btn pri" data-submit="contract">Add project</button><button class="inc-btn" data-form="">Cancel</button></div>
         <div class="inc-err" id="f-err"></div></div>`;
     if (f === 'settings') return `<div class="inc-form">
         <div class="r"><label>Gross goal <input id="s-goal" type="number" value="${S.goal}"></label><label>Take-home goal <input id="s-th" type="number" value="${S.takeHomeGoal}"></label></div>
         <div class="r"><label>Sub day rate <input id="s-sub" type="number" value="${S.subRate}"></label><label>Avg web rate <input id="s-web" type="number" value="${S.webRate}"></label></div>
         <div class="r"><label>Freelance tax % <input id="s-tax" type="number" value="${Math.round(S.taxRate * 100)}"></label><label>Sub withholding % <input id="s-wh" type="number" value="${Math.round(S.subWithholding * 100)}"></label></div>
-        ${D.recurring.map(r => `<div class="r"><label>${esc(r.name)} <input data-rec="${r.id}" type="number" value="${r.amount}"></label><label>until <select data-recto="${r.id}"><option value="">ongoing</option>${monthOpts(r.to)}</select></label></div>`).join('')}
+        ${D.recurring.map(r => `<div class="r"><label>${esc(r.name)} <input data-rec="${r.id}" type="number" value="${r.amount}"></label><label>from <select data-recfrom="${r.id}">${[-6,-5,-4,-3,-2,-1,0,1,2,3].map(n => addM(ym(new Date()), n)).map(m => `<option value="${m}"${m === r.from ? ' selected' : ''}>${mName(m)} ${m.slice(0, 4)}</option>`).join('')}</select></label><label>until <select data-recto="${r.id}"><option value="">ongoing</option>${monthOpts(r.to)}</select></label></div>`).join('')}
         <div class="r"><button class="inc-btn pri" data-submit="settings">Save</button><button class="inc-btn" data-form="">Cancel</button></div></div>`;
     return '';
   }
@@ -297,7 +297,7 @@
       D.items.push({ id: uid(), name, note: '', amount: amt, month: $('#f-month').value, status: $('#f-status').value, freelance: $('#f-free').checked });
     } else if (kind === 'contract') {
       const name = $('#f-name').value.trim(), status = $('#f-status').value;
-      if (!name) return err('Name the contract first.');
+      if (!name) return err('Name the project first.');
       const ms = [...body.querySelectorAll('.ms')].map(r => ({ n: r.querySelector('.ms-name').value.trim(), a: +r.querySelector('.ms-amt').value, m: r.querySelector('.ms-month').value })).filter(x => x.a > 0);
       if (!ms.length) return err('Add at least one milestone amount.');
       const total = ms.reduce((s, x) => s + x.a, 0);
@@ -308,6 +308,7 @@
       S.subRate = +$('#s-sub').value || S.subRate; S.webRate = +$('#s-web').value || S.webRate;
       S.taxRate = (+$('#s-tax').value || 28) / 100; S.subWithholding = (+$('#s-wh').value || 0) / 100;
       body.querySelectorAll('[data-rec]').forEach(i => { const r = D.recurring.find(x => x.id === i.dataset.rec); r.amount = +i.value || 0; });
+      body.querySelectorAll('[data-recfrom]').forEach(s => { const r = D.recurring.find(x => x.id === s.dataset.recfrom); r.from = s.value; });
       body.querySelectorAll('[data-recto]').forEach(s => { const r = D.recurring.find(x => x.id === s.dataset.recto); r.to = s.value || undefined; });
     }
     form = null; save(); render();
