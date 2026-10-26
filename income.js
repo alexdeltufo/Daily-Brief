@@ -20,7 +20,7 @@
   .s-planned{border:1.5px dashed var(--if)}
   .inc-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--im);margin:.4rem 0 .2rem}
   .inc-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;margin-right:4px}
-  .inc-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;padding:.5rem 1.5rem 1rem}
+  .inc-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px;padding:.5rem 1.5rem 1rem}
   .inc-tile{background:var(--pd);border-radius:8px;padding:.6rem .8rem}
   .inc-tile .l{font-size:11px;color:var(--im)}
   .inc-tile .v{font-size:17px;font-weight:500;margin-top:2px}
@@ -58,7 +58,7 @@
   const STATUSES = ['planned', 'pending', 'expected', 'paid'];
   const LABEL = { planned: 'Planned', pending: 'Pending', expected: 'Expected', paid: 'Paid' };
   const KEY_LS = 'income_key';
-  const money = v => '$' + Math.round(v).toLocaleString();
+  const money = v => (v < 0 ? '−' : '') + '$' + Math.abs(Math.round(v)).toLocaleString();
   const uid = () => Math.random().toString(36).slice(2, 9);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const ym = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
@@ -108,6 +108,7 @@
       if (!r.ok) throw new Error((await r.json()).error || 'error');
       const { income } = await r.json();
       D = income || JSON.parse(JSON.stringify(SEED));
+      if (!D.expenses) D.expenses = [];
       if (!income) save();
       render();
     } catch (e) {
@@ -147,6 +148,12 @@
     return rows;
   }
 
+  function expRows(m) {
+    return D.expenses.filter(e => e.monthly ? e.from <= m : e.month === m);
+  }
+  function expTotal(m) { return expRows(m).reduce((s, e) => s + e.amount, 0); }
+  function takeHomeOf(t) { const S = D.settings; return t.locked - t.free * S.taxRate - t.sub * S.subWithholding; }
+
   function totals(m) {
     const t = { paid: 0, expected: 0, pending: 0, planned: 0, freePaid: 0, free: 0, sub: 0 };
     monthRows(m).forEach(r => {
@@ -171,7 +178,7 @@
   function render() {
     const S = D.settings, t = totals(cur);
     const gap = Math.max(0, S.goal - t.locked - t.pending);
-    const takeHome = t.locked - t.free * S.taxRate - t.sub * S.subWithholding;
+    const takeHome = takeHomeOf(t), spend = expTotal(cur), left = takeHome - spend;
     document.getElementById('inc-badge').textContent = money(t.locked) + ' / ' + money(S.goal);
 
     const rows = monthRows(cur).map(r => `
@@ -183,9 +190,16 @@
         ${r.rec || r.sub ? '<span style="width:18px"></span>' : `<button class="inc-x" data-del="${r.id}" aria-label="Remove">×</button>`}
       </div>`).join('');
 
+    const exps = expRows(cur).map(e => `
+      <div class="inc-row">
+        <div class="nm">${esc(e.name)} <span class="nt">· ${e.monthly ? 'every month' : 'this month only'}</span></div>
+        <span class="amt">−${money(e.amount)}</span>
+        <button class="inc-x" data-delx="${e.id}" aria-label="Remove">×</button>
+      </div>`).join('');
+
     const ahead = [0, 1, 2].map(n => {
       const m = addM(cur, n + 1), a = totals(m);
-      return `<div><div class="m">${mName(m)}</div>${bar(a, S.goal)}<div class="t">${money(a.locked)} <span class="nt" style="color:var(--if)">· ${money(a.all)} if all lands</span></div></div>`;
+      return `<div><div class="m">${mName(m)}</div>${bar(a, S.goal)}<div class="t">${money(a.locked)} <span class="nt" style="color:var(--if)">· ${money(a.all)} if all lands</span></div><div class="nt" style="color:var(--im);font-size:11px">${money(takeHomeOf(a) - expTotal(m))} left after expenses</div></div>`;
     }).join('');
 
     body.innerHTML = `
@@ -212,12 +226,16 @@
         <div class="inc-tile"><div class="l">Move to tax savings</div><div class="v">${money(t.freePaid * S.taxRate)}</div></div>
         <div class="inc-tile"><div class="l">Still to fill</div><div class="v">${money(gap)}</div></div>
         <div class="inc-tile"><div class="l">Web hours needed</div><div class="v">~${Math.ceil(gap / S.webRate)}</div></div>
+        <div class="inc-tile"><div class="l">Left after expenses</div><div class="v" style="color:${left < 0 ? '#7A3520' : 'var(--ac)'}">${money(left)}</div></div>
       </div>
       ${rows}
+      <div class="inc-row" style="background:#EEECE5"><div class="nm" style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--im)">Expenses</div><span class="amt">−${money(spend)}</span><span style="width:18px"></span></div>
+      ${exps || '<div class="inc-row"><div class="nm nt" style="color:var(--if)">No expenses yet. Add rent, bills, subscriptions.</div></div>'}
       <div class="inc-actions">
         <button class="inc-btn" data-form="hours">+ Hourly</button>
         <button class="inc-btn" data-form="payment">+ One-time</button>
         <button class="inc-btn" data-form="contract">+ Project</button>
+        <button class="inc-btn" data-form="expense">+ Expense</button>
         <button class="inc-btn" data-form="settings" style="margin-left:auto">Settings</button>
       </div>
       ${form ? formHtml(form) : ''}
@@ -247,6 +265,10 @@
         <div id="f-ms">${msRow('Deposit')}${msRow('Milestone')}${msRow('Final')}</div>
         <div class="r"><button class="inc-btn" data-addms="1">+ Milestone</button><button class="inc-btn pri" data-submit="contract">Add project</button><button class="inc-btn" data-form="">Cancel</button></div>
         <div class="inc-err" id="f-err"></div></div>`;
+    if (f === 'expense') return `<div class="inc-form"><div class="r">
+        <input id="f-name" placeholder="What (e.g. Rent, Car insurance)"><input id="f-amt" type="number" min="0" placeholder="Amount"></div>
+        <div class="r"><label><input id="f-monthly" type="checkbox" checked> Every month</label><select id="f-month">${monthOpts(cur)}</select></div>
+        <div class="r"><button class="inc-btn pri" data-submit="expense">Add</button><button class="inc-btn" data-form="">Cancel</button></div><div class="inc-err" id="f-err"></div></div>`;
     if (f === 'settings') return `<div class="inc-form">
         <div class="r"><label>Gross goal <input id="s-goal" type="number" value="${S.goal}"></label><label>Take-home goal <input id="s-th" type="number" value="${S.takeHomeGoal}"></label></div>
         <div class="r"><label>Sub day rate <input id="s-sub" type="number" value="${S.subRate}"></label><label>Avg web rate <input id="s-web" type="number" value="${S.webRate}"></label></div>
@@ -277,6 +299,11 @@
       if (!confirm(`Remove "${it.name}" (${money(it.amount)})?`)) return;
       D.items = D.items.filter(i => i !== it); save(); render();
     });
+    body.querySelectorAll('[data-delx]').forEach(b => b.onclick = () => {
+      const e = D.expenses.find(x => x.id === b.dataset.delx);
+      if (!confirm(`Remove "${e.name}" (${money(e.amount)})${e.monthly ? ' from every month' : ''}?`)) return;
+      D.expenses = D.expenses.filter(x => x !== e); save(); render();
+    });
     body.querySelectorAll('[data-form]').forEach(b => b.onclick = () => { form = b.dataset.form || null; render(); });
     const addms = body.querySelector('[data-addms]');
     if (addms) addms.onclick = () => body.querySelector('#f-ms').insertAdjacentHTML('beforeend', msRow('Milestone'));
@@ -302,6 +329,11 @@
       if (!ms.length) return err('Add at least one milestone amount.');
       const total = ms.reduce((s, x) => s + x.a, 0);
       ms.forEach(x => D.items.push({ id: uid(), name: `${name} · ${x.n}`, note: `of ${money(total)}`, amount: x.a, month: x.m, status, freelance: true }));
+    } else if (kind === 'expense') {
+      const name = $('#f-name').value.trim(), amt = +$('#f-amt').value, monthly = $('#f-monthly').checked, m = $('#f-month').value;
+      if (!name) return err('Name the expense first.');
+      if (!(amt > 0)) return err('Enter an amount.');
+      D.expenses.push(monthly ? { id: uid(), name, amount: amt, monthly: true, from: m } : { id: uid(), name, amount: amt, monthly: false, month: m });
     } else if (kind === 'settings') {
       const S = D.settings;
       S.goal = +$('#s-goal').value || S.goal; S.takeHomeGoal = +$('#s-th').value || S.takeHomeGoal;
