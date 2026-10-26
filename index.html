@@ -171,6 +171,12 @@
   .wk-x:hover { color: var(--ac); }
   /* ── ROUTINE EXTRAS ── */
   .remoji { margin-right: 6px; }
+  .rpick-add-personal { opacity: 0; transition: opacity .15s; }
+  .ritem:hover .rpick-add-personal, .rpicks:has(.rpick) .rpick-add-personal, .rpicks:has(.rpick-menu) .rpick-add-personal { opacity: 1; }
+  @media (hover: none) { .rpick-add-personal { opacity: 1; } }
+  .ritem { position: relative; }
+  .rpicks:not(:has(.rpick)):not(:has(.rpick-menu)) { margin-top: 0; }
+  .rpicks:not(:has(.rpick)):not(:has(.rpick-menu)) .rpick-add-personal { position: absolute; right: 1.5rem; top: .7rem; margin: 0; }
   .rpicks { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; cursor: default; }
   .rpick { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--ink); }
   .rpick.done .rpick-text { color: var(--if); text-decoration: line-through; }
@@ -862,7 +868,7 @@ async function setDayMode(mode){
   await saveState(s);
 }
 // ── Work tasks inside work blocks
-function wtById(id){return WT.find(t=>t.id===id);}
+function wtById(id){return String(id).startsWith('p_')?QT.find(t=>t.id===id):WT.find(t=>t.id===id);}
 function togglePickMenu(blockId){PICK_OPEN=PICK_OPEN===blockId?null:blockId;renderRoutine();}
 async function addPick(blockId,taskId){
   const s=await loadState();
@@ -882,6 +888,7 @@ async function togglePickedTask(taskId){
   const t=wtById(taskId);
   if(!t)return;
   t.done=!t.done;
+  if(String(taskId).startsWith('p_')){renderQuickTasks();await saveQuickTasks();return;}
   renderWorkTasks();   // also repaints the routine
   await saveWorkTasks();
 }
@@ -891,15 +898,16 @@ function pickHtml(r,s){
   let html='<div class="rpicks" onclick="event.stopPropagation()">';
   html+=picked.map(t=>`<div class="rpick ${t.done?'done':''}">
       <span class="rpick-box ${t.done?'done':''}" onclick="togglePickedTask('${t.id}')">${t.done?'<svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>':''}</span>
-      <span class="rpick-text" onclick="togglePickedTask('${t.id}')">${esc(t.text)}${t.client?` <span class="rpick-client">${esc(t.client)}</span>`:''}</span>
+      <span class="rpick-text" onclick="togglePickedTask('${t.id}')">${esc(t.text)}${(t.client||t.tag)?` <span class="rpick-client">${esc(t.client||t.tag)}</span>`:''}</span>
       <span class="rpick-x" title="Remove from this block" onclick="removePick('${r.id}','${t.id}')">×</span>
     </div>`).join('');
   if(PICK_OPEN===r.id){
-    const open=WT.filter(t=>!t.done&&t.id&&!pickedIds.has(t.id));
-    html+=`<div class="rpick-menu">${open.length?open.map(t=>`<button class="rpick-opt" onclick="addPick('${r.id}','${t.id}')">${esc(t.text)}${t.client?` <span class="rpick-client">${esc(t.client)}</span>`:''}</button>`).join(''):'<div class="rpick-empty">No open work tasks to add.</div>'}
+    const src=r.work?WT:QT;
+    const open=src.filter(t=>!t.done&&t.id&&!pickedIds.has(t.id));
+    html+=`<div class="rpick-menu">${open.length?open.map(t=>`<button class="rpick-opt" onclick="addPick('${r.id}','${t.id}')">${esc(t.text)}${(t.client||t.tag)?` <span class="rpick-client">${esc(t.client||t.tag)}</span>`:''}</button>`).join(''):`<div class="rpick-empty">No open ${r.work?'work':'personal'} tasks to add.</div>`}
       <button class="rpick-add" onclick="togglePickMenu('${r.id}')">Close</button></div>`;
   }else{
-    html+=`<button class="rpick-add" onclick="togglePickMenu('${r.id}')">+ add task</button>`;
+    html+=`<button class="rpick-add${r.work?'':' rpick-add-personal'}" onclick="togglePickMenu('${r.id}')">${r.work?'+ add task':'+ add personal task'}</button>`;
   }
   return html+'</div>';
 }
@@ -946,7 +954,7 @@ function renderRoutine(s,celebrate){
     }
     const[rh,rm]=r.time.split(':').map(Number);
     const disp=(rh%12||12)+(rm?':'+String(rm).padStart(2,'0'):'')+(rh<12?'am':'pm');
-    return `<div class="ritem${done?' done':''}" id="ri-${r.id}" onclick="toggleItem('${r.id}')"><div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div><div class="rtime">${disp}</div><div class="rcontent"><div class="rlabel">${r.emoji?`<span class="remoji">${r.emoji}</span>`:''}${r.label}</div>${r.sub?`<div class="rsub">${r.sub}</div>`:''}${evPills}${mealPill}${r.work?pickHtml(r,s):''}</div></div>`;
+    return `<div class="ritem${done?' done':''}" id="ri-${r.id}" onclick="toggleItem('${r.id}')"><div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div><div class="rtime">${disp}</div><div class="rcontent"><div class="rlabel">${r.emoji?`<span class="remoji">${r.emoji}</span>`:''}${r.label}</div>${r.sub?`<div class="rsub">${r.sub}</div>`:''}${evPills}${mealPill}${pickHtml(r,s)}</div></div>`;
   }).join('');
   updateProgress(s.checked,celebrate);
 }
@@ -1118,7 +1126,10 @@ async function loadQuickTasks(){
   try{
     const r=await fetch('/api/quicktasks');
     QT=await r.json();
+    let added=false;
+    QT.forEach(t=>{if(!t.id){t.id='p_'+Math.random().toString(36).slice(2,9);added=true;}});
     renderQuickTasks();
+    if(added)saveQuickTasks();
   }catch(e){}
 }
 async function saveQuickTasks(){
@@ -1128,6 +1139,7 @@ async function saveQuickTasks(){
 }
 function renderQuickTasks(){
   updateQTCount();
+  if(RSTATE)renderRoutine();
   ['qt-list'].forEach(id=>{
     const c=document.getElementById(id);
     if(!c)return;
@@ -1201,7 +1213,7 @@ async function addQT(inputId){
   if(!text)return;
   const tagEl=document.getElementById('qt-tag');
   const tag=(tagEl?.value||'').trim();
-  QT.push({text,tag,done:false});
+  QT.push({id:'p_'+Math.random().toString(36).slice(2,9),text,tag,done:false});
   input.value='';
   if(tagEl)tagEl.value='';
   renderQuickTasks();
