@@ -3,7 +3,8 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  const KEY = req.query?.list === 'work' ? 'dailybrief_worktasks' : 'dailybrief_quicktasks';
+  const list = req.query?.list;
+  const KEY = list === 'work' ? 'dailybrief_worktasks' : list === 'tags' ? 'dailybrief_qttags' : 'dailybrief_quicktasks';
 
   if (req.method === 'GET') {
     const r = await fetch(`${url}/get/${KEY}`, {
