@@ -366,7 +366,8 @@
     <div class="foot-row" style="justify-content:flex-end"><button class="wt-btn" onclick="wtClearDone()">Clear done</button></div>
     </div>
     <div class="tt-pane" data-pane="personal">
-      <div class="wt-add-top" style="padding:.7rem 1.5rem;border-bottom:0.5px solid var(--ru)">
+      <button class="wt-add-toggle" onclick="qtToggleAdd()"><span id="qt-add-icon">+</span> <span id="qt-add-label">New task</span></button>
+      <div class="wt-add-top" id="qt-add" style="display:none;padding:.7rem 1.5rem;border-bottom:0.5px solid var(--ru)">
         <input id="qt-input" class="wt-text" placeholder="Add personal task..." onkeydown="if(event.key==='Enter')addQT('qt-input')">
         <select id="qt-tag" class="wt-in" style="width:110px;flex:0 0 auto"><option value="">No tag</option></select>
         <button class="wt-plus" onclick="addQT('qt-input')" title="Add">+</button>
@@ -1330,6 +1331,15 @@ function wtSetAddOpen(open,focus){
   try{localStorage.setItem('db_wt_add_open',open?'1':'0');}catch(e){}
   if(open&&focus)document.getElementById('wt-text').focus();
 }
+function qtSetAddOpen(open,focus){
+  document.getElementById('qt-add').style.display=open?'flex':'none';
+  document.getElementById('qt-add-icon').textContent=open?'−':'+';
+  document.getElementById('qt-add-label').textContent=open?'Hide':'New task';
+  try{localStorage.setItem('db_qt_add_open',open?'1':'0');}catch(e){}
+  if(open&&focus)document.getElementById('qt-input').focus();
+}
+function qtToggleAdd(){qtSetAddOpen(document.getElementById('qt-add').style.display==='none',true);}
+try{if(localStorage.getItem('db_qt_add_open')==='1')qtSetAddOpen(true,false);}catch(e){}
 function wtToggleAdd(){wtSetAddOpen(document.getElementById('wt-add').style.display==='none',true);}
 function wtIsUrl(s){return /^https?:\/\//i.test((s||'').trim());}
 function renderWorkTasks(){
