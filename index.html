@@ -368,12 +368,12 @@
     <div class="tt-pane" data-pane="personal">
       <div class="wt-add-top" style="padding:.7rem 1.5rem;border-bottom:0.5px solid var(--ru)">
         <input id="qt-input" class="wt-text" placeholder="Add personal task..." onkeydown="if(event.key==='Enter')addQT('qt-input')">
-        <input id="qt-tag" class="wt-in" list="qt-tags" placeholder="Tag" style="width:110px;flex:0 0 auto" onkeydown="if(event.key==='Enter')addQT('qt-input')">
+        <select id="qt-tag" class="wt-in" style="width:110px;flex:0 0 auto"><option value="">No tag</option></select>
         <button class="wt-plus" onclick="addQT('qt-input')" title="Add">+</button>
       </div>
-      <datalist id="qt-tags"></datalist>
       <div id="qt-list"></div>
-      <div class="foot-row" style="justify-content:flex-end"><button class="wt-btn" onclick="clearDoneQT()">Clear done</button></div>
+      <div id="qt-tag-editor" style="display:none;border-top:0.5px solid var(--ru)"></div>
+      <div class="foot-row" style="justify-content:space-between"><button class="wt-btn" id="qt-tag-edit-btn" onclick="qtToggleTagEdit()">Edit tags</button><button class="wt-btn" onclick="clearDoneQT()">Clear done</button></div>
     </div>
   </div>
 </div>
@@ -598,7 +598,9 @@ function clearMeals(){
 }
 // ── THIS WEEK'S WORKOUTS ──────────────────────────────
 const WK_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-const WK_COLORS=['#5F6F4A','#56708A','#6E7F4F','#C08A4A','#A8206A','#3F6E6A','#857A62'];
+// Shared tag palette: 9 clearly different hues, handed out in order (no repeats until the 10th item).
+const TAG_PALETTE=['#5F6F4A','#4F6FA0','#B0583A','#A07A2C','#7A5C8A','#2F7F86','#B5546E','#7C8F2E','#5A5F9C'];
+const WK_COLORS=TAG_PALETTE;
 const DEFAULT_PROGRAM=['Upper Lift','Lower Lift','Long Run','Yoga','Zone 2'];
 let WK=wkBlank();
 let wkEditing=false, wkOffline=false;
@@ -1122,10 +1124,63 @@ function launchConfetti(){
 }
 // ── QUICK TASKS ───────────────────────────────────────
 let QT=[];
+// Personal tags: a fixed list (like the workout program), stored in Redis via /api/quicktasks?list=tags
+let QTAGS=[], qtTagEditing=false;
+async function loadQTags(){
+  try{const r=await fetch('/api/quicktasks?list=tags');const d=await r.json();QTAGS=Array.isArray(d)?d:[];}catch(e){QTAGS=[];}
+  if(!QTAGS.length){ // first run: adopt whatever tags are already on tasks
+    QTAGS=[...new Set(QT.map(t=>(t.tag||'').trim()).filter(Boolean))];
+    if(QTAGS.length)saveQTags();
+  }
+  renderQTagPicker();renderQuickTasks();
+}
+async function saveQTags(){
+  try{await fetch('/api/quicktasks?list=tags',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(QTAGS)});}catch(e){}
+}
+function qtTagOptions(sel){
+  return `<option value="">No tag</option>`+QTAGS.map(n=>`<option value="${esc(n)}"${n===sel?' selected':''}>${esc(n)}</option>`).join('');
+}
+function renderQTagPicker(){
+  const el=document.getElementById('qt-tag');if(!el)return;
+  const v=el.value;el.innerHTML=qtTagOptions(v);
+  renderQTagEditor();
+}
+function renderQTagEditor(){
+  const c=document.getElementById('qt-tag-editor');if(!c)return;
+  if(!qtTagEditing){c.style.display='none';c.innerHTML='';return;}
+  c.style.display='block';
+  c.innerHTML=QTAGS.map((n,i)=>`<div class="wk-prog-row" style="padding:.35rem 1.5rem">
+      <span class="wk-dot" style="background:${TAG_PALETTE[i%TAG_PALETTE.length]}"></span>
+      <input class="wk-prog-input" value="${esc(n)}" onchange="qtTagRename(${i},this.value)" onkeydown="if(event.key==='Enter')this.blur()">
+      <span class="wk-x" onclick="qtTagRemove(${i})">×</span></div>`).join('')
+    +`<div class="wk-prog-row" style="padding:.35rem 1.5rem">
+      <span class="wk-dot" style="background:var(--ru)"></span>
+      <input class="wk-prog-input" id="qt-tag-new" placeholder="Add tag..." onkeydown="if(event.key==='Enter')qtTagAdd()">
+      <span class="wk-x" onclick="qtTagAdd()" style="color:var(--ac)">+</span></div>`;
+}
+function qtToggleTagEdit(){qtTagEditing=!qtTagEditing;const b=document.getElementById('qt-tag-edit-btn');if(b)b.textContent=qtTagEditing?'Done':'Edit tags';renderQTagEditor();}
+function qtTagAdd(){
+  const el=document.getElementById('qt-tag-new');const v=(el?.value||'').trim().slice(0,24);
+  if(!v||QTAGS.includes(v))return;
+  QTAGS.push(v);saveQTags();renderQTagPicker();renderQuickTasks();
+  const n=document.getElementById('qt-tag-new');if(n)n.focus();
+}
+function qtTagRename(i,val){
+  const old=QTAGS[i],nv=val.trim().slice(0,24);
+  if(!nv||nv===old||QTAGS.includes(nv))return renderQTagEditor();
+  QTAGS[i]=nv;QT.forEach(t=>{if(t.tag===old)t.tag=nv;});
+  saveQTags();saveQuickTasks();renderQTagPicker();renderQuickTasks();
+}
+function qtTagRemove(i){
+  const name=QTAGS[i];
+  QTAGS.splice(i,1);QT.forEach(t=>{if(t.tag===name)t.tag='';});
+  saveQTags();saveQuickTasks();renderQTagPicker();renderQuickTasks();
+}
 async function loadQuickTasks(){
   try{
     const r=await fetch('/api/quicktasks');
     QT=await r.json();
+    loadQTags();
     let added=false;
     QT.forEach(t=>{if(!t.id){t.id='p_'+Math.random().toString(36).slice(2,9);added=true;}});
     renderQuickTasks();
@@ -1144,12 +1199,10 @@ function renderQuickTasks(){
     const c=document.getElementById(id);
     if(!c)return;
     if(!QT.length){c.innerHTML='<div class="wt-empty">No personal tasks yet.</div>';return;}
-    const tags=[...new Set(QT.map(t=>(t.tag||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-    const dl=document.getElementById('qt-tags');if(dl)dl.innerHTML=tags.map(x=>`<option value="${esc(x)}">`).join('');
     c.innerHTML=QT.map((t,i)=>{
       let tagHtml;
       if(QT_TAG_EDIT===i){
-        tagHtml=`<input class="wt-in qt-tag-in" id="qt-tag-edit" list="qt-tags" value="${esc(t.tag||'')}" placeholder="Tag" onclick="event.stopPropagation()" onkeydown="if(event.key==='Enter')saveQTTag(${i});if(event.key==='Escape'){QT_TAG_EDIT=null;renderQuickTasks();}" onblur="saveQTTag(${i})">`;
+        tagHtml=`<select class="wt-in qt-tag-in" id="qt-tag-edit" onclick="event.stopPropagation()" onchange="saveQTTag(${i})" onkeydown="if(event.key==='Escape'){QT_TAG_EDIT=null;renderQuickTasks();}" onblur="saveQTTag(${i})">${qtTagOptions(t.tag||'')}</select>`;
       }else if(t.tag){
         const col=qtTagColor(t.tag);
         tagHtml=`<span class="qt-tag" style="background:${col}1f;color:${col};${t.done?'opacity:.5':''}" title="Click to change tag" onclick="event.stopPropagation();editQTTag(${i})">${esc(t.tag)}</span>`;
@@ -1164,12 +1217,11 @@ function renderQuickTasks(){
       <span style="flex:1;min-width:0;font-size:12px;color:${t.done?'var(--if)':'var(--ink)'};text-decoration:${t.done?'line-through':'none'};line-height:1.5">${esc(t.text)}</span>
       ${tagHtml}
     </div>`;}).join('');
-    if(QT_TAG_EDIT!==null){const el=document.getElementById('qt-tag-edit');if(el){el.focus();el.select();}}
+    if(QT_TAG_EDIT!==null){const el=document.getElementById('qt-tag-edit');if(el)el.focus();}
   });
 }
 let QT_TAG_EDIT=null;
-const QT_TAG_COLORS=['#5F6F4A','#6E7F4F','#56708A','#9C6B52','#A07A2C','#7A5C8A','#3F7F7A','#B0583A'];
-function qtTagColor(tag){let h=0;for(const ch of tag.toLowerCase())h=(h*31+ch.charCodeAt(0))>>>0;return QT_TAG_COLORS[h%QT_TAG_COLORS.length];}
+function qtTagColor(tag){const i=QTAGS.indexOf(tag);return i>=0?TAG_PALETTE[i%TAG_PALETTE.length]:'#857A62';}
 function editQTTag(i){QT_TAG_EDIT=i;renderQuickTasks();}
 async function saveQTTag(i){
   if(QT_TAG_EDIT!==i)return;
