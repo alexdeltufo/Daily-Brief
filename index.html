@@ -171,12 +171,13 @@
   .wk-x:hover { color: var(--ac); }
   /* ── ROUTINE EXTRAS ── */
   .remoji { margin-right: 6px; }
-  .rpick-add-personal { opacity: 0; transition: opacity .15s; }
+  .ritem { position: relative; }
+  .ritem:has(.rpick-add-personal) .rcontent { padding-right: 30px; }
+  .rpicks:not(:has(.rpick)):not(:has(.rpick-menu)) { margin-top: 0; }
+  .rpick-add-personal { position: absolute; right: 1.25rem; top: .6rem; width: 22px; height: 22px; border-radius: 50%; border: 0.5px solid var(--ru); background: var(--p); color: var(--ac); font-size: 14px; line-height: 1; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .15s, background .15s; }
+  .rpick-add-personal:hover { background: var(--al); }
   .ritem:hover .rpick-add-personal, .rpicks:has(.rpick) .rpick-add-personal, .rpicks:has(.rpick-menu) .rpick-add-personal { opacity: 1; }
   @media (hover: none) { .rpick-add-personal { opacity: 1; } }
-  .ritem { position: relative; }
-  .rpicks:not(:has(.rpick)):not(:has(.rpick-menu)) { margin-top: 0; }
-  .rpicks:not(:has(.rpick)):not(:has(.rpick-menu)) .rpick-add-personal { position: absolute; right: 1.5rem; top: .7rem; margin: 0; }
   .rpicks { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; cursor: default; }
   .rpick { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--ink); }
   .rpick.done .rpick-text { color: var(--if); text-decoration: line-through; }
@@ -910,7 +911,8 @@ function pickHtml(r,s){
     html+=`<div class="rpick-menu">${open.length?open.map(t=>`<button class="rpick-opt" onclick="addPick('${r.id}','${t.id}')">${esc(t.text)}${(t.client||t.tag)?` <span class="rpick-client">${esc(t.client||t.tag)}</span>`:''}</button>`).join(''):`<div class="rpick-empty">No open ${r.work?'work':'personal'} tasks to add.</div>`}
       <button class="rpick-add" onclick="togglePickMenu('${r.id}')">Close</button></div>`;
   }else{
-    html+=`<button class="rpick-add${r.work?'':' rpick-add-personal'}" onclick="togglePickMenu('${r.id}')">${r.work?'+ add task':'+ add personal task'}</button>`;
+    html+=r.work?`<button class="rpick-add" onclick="togglePickMenu('${r.id}')">+ add task</button>`
+      :`<button class="rpick-add-personal" title="Add personal task" aria-label="Add personal task" onclick="togglePickMenu('${r.id}')">+</button>`;
   }
   return html+'</div>';
 }
