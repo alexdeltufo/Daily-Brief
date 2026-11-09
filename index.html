@@ -148,6 +148,15 @@
   .meal-input::placeholder { color: var(--if); font-style: italic; }
   .cook-tag { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; padding: 2px 7px; border-radius: 20px; cursor: pointer; flex-shrink: 0; white-space: nowrap; user-select: none; font-family: 'Figtree', sans-serif; line-height: 1.5; transition: all .12s; }
   .cook-tag:hover { filter: brightness(0.94); }
+  .rec-btn { display: inline-flex; cursor: pointer; flex-shrink: 0; padding: 2px; opacity: .35; transition: opacity .15s; }
+  .rec-btn svg { width: 12px; height: 12px; stroke: var(--im); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .meal-row:hover .rec-btn { opacity: .7; }
+  .rec-btn.has { opacity: 1; }
+  .rec-btn.has svg { stroke: var(--ac); }
+  .rec-edit { display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--ru); background: #EEECE5; }
+  .rec-input { flex: 1; min-width: 0; font-size: 11px; font-family: 'Figtree', sans-serif; color: var(--ink); background: var(--p); border: 0.5px solid var(--ru); border-radius: 6px; padding: 4px 8px; outline: none; }
+  .rec-act { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Figtree', sans-serif; color: var(--ac); text-decoration: none; padding: 0; white-space: nowrap; }
+  .rec-x { color: var(--if); font-size: 13px; letter-spacing: 0; }
   /* ── WORKOUTS ── */
   .wk-row { display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--ru); }
   .wk-row:last-child { border-bottom: none; }
@@ -546,7 +555,8 @@ const COOKS=[
   {id:'both', label:'Both', color:'var(--cook-both)'},
   {id:'out',  label:'Out',  color:'#857A62'},
 ];
-function blankMeals(){return MEAL_DAYS.map(d=>({day:d,meal:'',cook:''}));}
+function blankMeals(){return MEAL_DAYS.map(d=>({day:d,meal:'',cook:'',url:''}));}
+let REC_OPEN=null; // which day's recipe-link editor is open
 let MEALS=blankMeals();
 function mondayKey(){
   const d=new Date();
@@ -582,8 +592,13 @@ function renderMeals(){
       return `<div class="meal-row${i===t?' today':''}" style="padding:${mob?'.5rem 1.5rem':'.4rem .75rem'}">
         <span class="meal-day">${m.day}</span>
         <input class="meal-input" style="font-size:${mob?'11px':'10px'}" value="${esc(m.meal)}" placeholder="add a meal" oninput="setMeal(${i},this.value)" onblur="flushMeals()" onkeydown="if(event.key==='Enter')this.blur()">
+        <span class="rec-btn${m.url?' has':''}" onclick="toggleRecipe(${i})" title="${m.url?'Recipe linked':'Add recipe link'}"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
         <span class="cook-tag" onclick="cycleCook(${i})" title="Tap to change who's cooking" style="background:${on?ck.color+'22':'transparent'};color:${on?ck.color:'var(--if)'};border:0.5px solid ${on?'transparent':'var(--ru)'}">${ck.label}</span>
-      </div>`;
+      </div>${REC_OPEN===i?`<div class="rec-edit" style="padding:${mob?'.4rem 1.5rem .6rem':'.3rem .75rem .5rem'}">
+        <input class="rec-input" id="rec-in-${mob?'m':'d'}" value="${esc(m.url||'')}" placeholder="Paste recipe link..." onkeydown="if(event.key==='Enter')saveRecipe(${i},this.value);if(event.key==='Escape')toggleRecipe(${i})">
+        <button class="rec-act" onclick="saveRecipe(${i},this.previousElementSibling.value)">Save</button>
+        ${m.url?`<a class="rec-act" href="${esc(m.url)}" target="_blank" rel="noopener">Open ↗</a><button class="rec-act rec-x" onclick="saveRecipe(${i},'')" title="Remove link">×</button>`:''}
+      </div>`:''}`;
     }).join('');
   });
   const counts=MEALS.reduce((a,m)=>{if(m.cook)a[m.cook]=(a[m.cook]||0)+1;return a;},{});
@@ -618,6 +633,18 @@ function cycleCook(i){
   MEALS[i].cook=COOKS[(idx+1)%COOKS.length].id;
   renderMeals();
   saveMeals();
+}
+function toggleRecipe(i){
+  REC_OPEN=REC_OPEN===i?null:i;
+  renderMeals();
+  if(REC_OPEN!==null)setTimeout(()=>{const el=[...document.querySelectorAll('.rec-input')].find(e=>e.offsetParent);el&&el.focus();},0);
+}
+function saveRecipe(i,val){
+  let v=(val||'').trim();
+  if(v&&!/^https?:\/\//i.test(v))v='https://'+v;
+  MEALS[i].url=v;
+  REC_OPEN=null;
+  renderMeals();buildRoutine();saveMeals();
 }
 function clearMeals(){
   if(!confirm('Clear all meals for this week?'))return;
@@ -1017,7 +1044,7 @@ function renderRoutine(s,celebrate){
       const m=MEALS[todayMealIdx()];
       if(m&&(m.meal||m.cook)){
         const ck=cookMeta(m.cook);
-        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${ck.color};display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(m.meal)||'Not planned'}${m.cook?' · '+ck.label+' cooking':''}</span></div>`;
+        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${ck.color};display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(m.meal)||'Not planned'}${m.cook?' · '+ck.label+' cooking':''}${m.url?` · <a href="${esc(m.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--ac)">recipe ↗</a>`:''}</span></div>`;
       }
     }
     // This week's MTEL focus, surfaced on the study block
