@@ -167,6 +167,16 @@
   .wk-prog-row { display: flex; align-items: center; gap: 6px; padding: .3rem .75rem; border-bottom: 0.5px solid var(--ru); }
   .wk-prog-input { flex: 1; min-width: 0; font-size: 11px; font-family: 'Figtree', sans-serif; color: var(--ink); background: none; border: none; outline: none; }
   .wk-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .wl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; padding: 1rem 1.5rem; }
+  .wl-chip { display: flex; align-items: center; gap: 10px; padding: .65rem .85rem; border: 0.5px solid var(--ru); border-radius: 12px; background: var(--p); cursor: pointer; user-select: none; font-size: 13px; color: var(--ink); transition: background .15s, border-color .15s; }
+  .wl-chip:hover { background: #EEECE5; }
+  .wl-circle { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--ru); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s; }
+  .wl-circle svg { width: 10px; height: 10px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+  .wl-chip.done { background: #EEECE5; border-color: transparent; color: #AAAAA1; text-decoration: line-through; text-decoration-color: var(--ru); }
+  .wl-chip.done .wl-circle { background: var(--ac); border-color: var(--ac); }
+  .wl-chip.done .wl-circle svg { opacity: 1; }
+  .wl-empty { grid-column: 1 / -1; font-size: 12px; color: var(--im); }
+  .wl-hint { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--if); }
   .wk-x { font-size: 13px; color: var(--if); cursor: pointer; line-height: 1; flex-shrink: 0; }
   .wk-x:hover { color: var(--ac); }
   /* ── ROUTINE EXTRAS ── */
@@ -255,10 +265,6 @@
     <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
     Routine
   </a>
-  <a class="ql" href="#sec-week">
-    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="10" y2="9"/></svg>
-    This Week
-  </a>
   <a class="ql" href="#sec-work">
     <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
     Tasks
@@ -327,7 +333,7 @@
 <div class="sec" id="sec-1">
   <div class="sec-header" onclick="toggleSec('sec-1')">
     <span class="sec-num">I.</span>
-    <span class="sec-title">Daily Routine</span>
+    <span class="sec-title">Routine</span>
     <span class="sec-badge" id="routine-badge">0 / 8</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -335,7 +341,9 @@
     <div class="tt-bar">
       <button class="tt-tab rmode-tab on" data-mode="home" onclick="setDayMode('home')">🏡 Home day</button>
       <button class="tt-tab rmode-tab" data-mode="sub" onclick="setDayMode('sub')">🍎 Sub day</button>
+      <button class="tt-tab wl-tab" onclick="setRoutineView('week')">🗓️ This Week <span class="tt-count" id="wl-badge"></span></button>
     </div>
+    <div id="routine-pane">
     <div class="routine-progress">
       <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar" style="width:0%"></div></div>
       <span class="progress-label" id="progress-label">0 of 8</span>
@@ -343,31 +351,23 @@
     </div>
     <div id="routine-items"></div>
     <div class="all-done-banner" id="all-done">All done for today — well earned. ✦</div>
-  </div>
-</div>
-<!-- II. THIS WEEK -->
-<div class="sec" id="sec-week">
-  <div class="sec-header" onclick="toggleSec('sec-week')">
-    <span class="sec-num">II.</span>
-    <span class="sec-title">This Week</span>
-    <span class="sec-badge" id="wl-badge">–</span>
-    <span class="sec-chev">▾</span>
-  </div>
-  <div class="sec-body" id="body-sec-week">
-    <div class="routine-progress">
-      <div class="progress-bar-wrap"><div class="progress-bar" id="wl-bar" style="width:0%"></div></div>
-      <span class="progress-label" id="wl-label">0 of 0 this week</span>
     </div>
-    <div id="wl-items"></div>
-    <div id="wl-edit" style="display:none;border-top:0.5px solid var(--ru)"></div>
-    <div class="all-done-banner" id="wl-done" style="display:none">Week's done. ✦</div>
-    <div class="foot-row" style="justify-content:flex-start"><button class="wt-btn" id="wl-edit-btn" onclick="wlToggleEdit()">Edit list</button></div>
+    <div id="week-pane" style="display:none">
+      <div class="routine-progress">
+        <div class="progress-bar-wrap"><div class="progress-bar" id="wl-bar" style="width:0%"></div></div>
+        <span class="progress-label" id="wl-label">0 of 0 this week</span>
+      </div>
+      <div class="wl-grid" id="wl-items"></div>
+      <div id="wl-edit" style="display:none;border-top:0.5px solid var(--ru)"></div>
+      <div class="all-done-banner" id="wl-done" style="display:none">Week's done. ✦</div>
+      <div class="foot-row" style="justify-content:space-between"><span class="wl-hint">Resets every Monday</span><button class="wt-btn" id="wl-edit-btn" onclick="wlToggleEdit()">Edit list</button></div>
+    </div>
   </div>
 </div>
-<!-- III. TASKS -->
+<!-- II. TASKS -->
 <div class="sec" id="sec-work">
   <div class="sec-header" onclick="toggleSec('sec-work')">
-    <span class="sec-num">III.</span>
+    <span class="sec-num">II.</span>
     <span class="sec-title">Tasks</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -411,7 +411,7 @@
 <!-- III. CALENDAR -->
 <div class="sec" id="sec-2">
   <div class="sec-header" onclick="toggleSec('sec-2')">
-    <span class="sec-num">IV.</span>
+    <span class="sec-num">III.</span>
     <span class="sec-title">Calendar — This Week</span>
     <span class="sec-badge" id="cal-badge">–</span>
     <span class="sec-chev">▾</span>
@@ -870,11 +870,30 @@ function computeNowBlocks(){
     end:i<ROUTINE.length-1?routineTimeToHour(ROUTINE[i+1].time):routineTimeToHour(ROUTINE[0].time)+24,
   }));
 }
+let ROUTINE_VIEW='day'; // 'day' (home/sub routine) or 'week' (weekly checklist)
 function applyRoutineMode(mode){
   ROUTINE_MODE=ROUTINES[mode]?mode:'home';
   ROUTINE=ROUTINES[ROUTINE_MODE];
   computeNowBlocks();
-  document.querySelectorAll('.rmode-tab').forEach(b=>b.classList.toggle('on',b.dataset.mode===ROUTINE_MODE));
+  paintRoutineView();
+}
+function paintRoutineView(){
+  const wk=ROUTINE_VIEW==='week';
+  document.querySelectorAll('.rmode-tab').forEach(b=>b.classList.toggle('on',!wk&&b.dataset.mode===ROUTINE_MODE));
+  document.querySelector('.wl-tab')?.classList.toggle('on',wk);
+  const rp=document.getElementById('routine-pane'),wp=document.getElementById('week-pane');
+  if(rp)rp.style.display=wk?'none':'';
+  if(wp)wp.style.display=wk?'':'none';
+  paintRoutineBadge();
+}
+function paintRoutineBadge(){
+  const b=document.getElementById('routine-badge');
+  if(b)b.textContent=(ROUTINE_VIEW==='week'?b.dataset.week:b.dataset.day)||'–';
+}
+function setRoutineView(v){
+  ROUTINE_VIEW=v==='week'?'week':'day';
+  try{localStorage.setItem('db_routine_view',ROUTINE_VIEW);}catch(e){}
+  paintRoutineView();
 }
 computeNowBlocks();
 const RKEY='dailybrief_routine';
@@ -899,7 +918,8 @@ function updateProgress(checked,celebrate){
   const total=ROUTINE.length,done=ROUTINE.filter(r=>checked[r.id]).length;
   document.getElementById('progress-bar').style.width=Math.round(done/total*100)+'%';
   document.getElementById('progress-label').textContent=done+' of '+total;
-  document.getElementById('routine-badge').textContent=done+' / '+total;
+  document.getElementById('routine-badge').dataset.day=done+' / '+total;
+  paintRoutineBadge();
   const all=done===total;
   document.getElementById('all-done').style.display=all?'block':'none';
   if(all&&celebrate)launchConfetti();
@@ -917,6 +937,7 @@ async function resetRoutine(){
   await saveState(s);
 }
 async function setDayMode(mode){
+  setRoutineView('day');
   const s=await loadState();
   s.mode=mode;
   PICK_OPEN=null;
@@ -1496,12 +1517,13 @@ function renderWeekly(celebrate){
   const c=document.getElementById('wl-items');
   c.innerHTML=WL.items.map(it=>{
     const done=!!WL.done[it.id];
-    return `<div class="ritem${done?' done':''}" onclick="wlToggle('${it.id}')"><div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div><div class="rcontent"><div class="rlabel">${esc(it.label)}</div></div></div>`;
-  }).join('')||'<div class="ritem" style="cursor:default"><div class="rsub">Nothing on the list. Tap Edit list to add some.</div></div>';
+    return `<div class="wl-chip${done?' done':''}" onclick="wlToggle('${it.id}')"><span class="wl-circle"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></span><span>${esc(it.label)}</span></div>`;
+  }).join('')||'<div class="wl-empty">Nothing on the list. Tap Edit list to add some.</div>';
   const total=WL.items.length, n=WL.items.filter(it=>WL.done[it.id]).length;
   document.getElementById('wl-bar').style.width=(total?Math.round(n/total*100):0)+'%';
   document.getElementById('wl-label').textContent=n+' of '+total+' this week';
-  document.getElementById('wl-badge').textContent=n+' / '+total;
+  document.getElementById('wl-badge').textContent=n+'/'+total;
+  document.getElementById('routine-badge').dataset.week=n+' / '+total;paintRoutineBadge();
   const all=total>0&&n===total;
   document.getElementById('wl-done').style.display=all?'block':'none';
   if(all&&celebrate)launchConfetti();
@@ -1534,6 +1556,7 @@ loadShopLists();
 loadMeals();
 loadWorkouts();
 loadWeekly();
+try{setRoutineView(localStorage.getItem('db_routine_view')||'day');}catch(e){}
 
 </script>
 <div class="side-rail">
@@ -1588,7 +1611,7 @@ loadWeekly();
 </div>
 <div class="sec mobile-sec" id="sec-shop-mobile">
   <div class="sec-header" onclick="toggleSec('sec-shop-mobile')">
-    <span class="sec-num">V.</span>
+    <span class="sec-num">IV.</span>
     <span class="sec-title">Shopping</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -1606,7 +1629,7 @@ loadWeekly();
 </div>
 <div class="sec mobile-sec" id="sec-meals-mobile">
   <div class="sec-header" onclick="toggleSec('sec-meals-mobile')">
-    <span class="sec-num">VI.</span>
+    <span class="sec-num">V.</span>
     <span class="sec-title">This Week's Meals</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -1620,7 +1643,7 @@ loadWeekly();
 </div>
 <div class="sec mobile-sec" id="sec-workouts-mobile">
   <div class="sec-header" onclick="toggleSec('sec-workouts-mobile')">
-    <span class="sec-num">VII.</span>
+    <span class="sec-num">VI.</span>
     <span class="sec-title">This Week's Workouts</span>
     <span id="wk-offline-mobile"></span>
     <span class="sec-chev">▾</span>
