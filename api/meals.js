@@ -1,6 +1,6 @@
 // api/meals.js — This Week's Meals
 //
-// GET  /api/meals             -> { week, meals: [{day,meal,cook} x7] }
+// GET  /api/meals             -> { week, meals: [{day,meal,cook,url} x7] }  (url = recipe link)
 // GET  /api/meals?debug=1     -> what's actually stored in Upstash right now
 // GET  /api/meals?selftest=1  -> server-side write -> read round trip (no client involved)
 // POST /api/meals             <- { week, meals: [{day,meal,cook} x7] }
@@ -35,7 +35,8 @@ function normalize(obj, week) {
       return {
         day,
         meal: typeof row.meal === 'string' ? row.meal.trim().slice(0, 120) : '',
-        cook: COOKS.includes(row.cook) ? row.cook : ''
+        cook: COOKS.includes(row.cook) ? row.cook : '',
+        url: typeof row.url === 'string' && /^https?:\/\//i.test(row.url.trim()) ? row.url.trim().slice(0, 500) : ''
       };
     })
   };
