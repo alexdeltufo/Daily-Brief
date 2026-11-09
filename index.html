@@ -221,6 +221,12 @@
   .tt-count { opacity: .6; margin-left: 2px; }
   .tt-pane { display: none; }
   .tt-pane.on { display: block; }
+  .fm-pane { display: none; }
+  .fm-pane.on { display: block; }
+  .fm-only { display: none; }
+  .fm-only.on { display: inline-block; }
+  #fm-panel .tt-bar { gap: 4px; }
+  #fm-panel .tt-tab { font-size: 9px; padding: 3px 8px; letter-spacing: .08em; }
   /* ── WORK ── */
   .wt-add { padding: .75rem 1.5rem; border-bottom: 0.5px solid var(--ru); display: flex; flex-direction: column; gap: 6px; }
   .wt-add-toggle { display: flex; align-items: center; gap: 6px; width: 100%; padding: .55rem 1.5rem; background: var(--pd); border: none; border-bottom: 0.5px solid var(--ru); cursor: pointer; font-family: 'Figtree', sans-serif; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--im); text-align: left; }
@@ -291,13 +297,9 @@
     <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     Shopping
   </a>
-  <a class="ql ql-notes" href="#sec-meals-mobile">
+  <a class="ql ql-notes" href="#sec-fm-mobile">
     <svg viewBox="0 0 24 24"><path d="M3 2v7a3 3 0 0 0 6 0V2"/><line x1="6" y1="9" x2="6" y2="22"/><path d="M18 2c-2 2-3 4-3 7v4h4V2z"/><line x1="17" y1="13" x2="17" y2="22"/></svg>
-    Meals
-  </a>
-  <a class="ql ql-notes" href="#sec-workouts-mobile">
-    <svg viewBox="0 0 24 24"><path d="M6.5 6.5h11"/><path d="M6.5 17.5h11"/><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/></svg>
-    Workouts
+    Food + Movement
   </a>
 </div>
 <!-- TOP WIDGETS -->
@@ -655,6 +657,13 @@ function clearMeals(){
   renderMeals();
   saveMeals();
 }
+// ── FOOD + MOVEMENT tabs (meals / workouts share one panel)
+function setFmTab(t){
+  t=t==='move'?'move':'meals';
+  try{localStorage.setItem('db_fm_tab',t);}catch(e){}
+  document.querySelectorAll('.fm-tab').forEach(b=>b.classList.toggle('on',b.dataset.fm===t));
+  document.querySelectorAll('.fm-pane,.fm-only').forEach(p=>p.classList.toggle('on',p.dataset.fm===t));
+}
 // ── THIS WEEK'S WORKOUTS ──────────────────────────────
 const WK_DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 // Shared tag palette: 9 clearly different hues, handed out in order (no repeats until the 10th item).
@@ -779,6 +788,7 @@ function renderWorkouts(){
   const unscheduled=WK.program.filter(n=>!placed.has(n));
   const bits=[`<span style="color:var(--im)">${done} of ${scheduled.length} done</span>`];
   if(unscheduled.length)bits.push(`<span style="color:#5F6F4A">Unscheduled: ${unscheduled.map(esc).join(', ')}</span>`);
+  document.querySelectorAll('.fm-wk-count').forEach(el=>el.textContent=scheduled.length?done+'/'+scheduled.length:'');
   ['wk-summary','wk-summary-mobile'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.innerHTML=bits.join(' · ');
@@ -1586,6 +1596,8 @@ loadShopLists();
 loadMeals();
 loadWorkouts();
 loadWeekly();
+// panel markup sits below this script, so wait for the page
+document.addEventListener('DOMContentLoaded',()=>{let t='meals';try{t=localStorage.getItem('db_fm_tab')||'meals';}catch(e){}setFmTab(t);});
 try{setRoutineView(localStorage.getItem('db_routine_view')||'day');}catch(e){}
 
 </script>
@@ -1609,33 +1621,30 @@ try{setRoutineView(localStorage.getItem('db_routine_view')||'day');}catch(e){}
     </div>
   </div>
   <!-- This Week's Meals -->
-  <div class="side-panel" id="meals-panel">
+  <div class="side-panel" id="fm-panel">
     <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-      <span>This Week's Meals</span>
-      <span style="display:flex;align-items:center;gap:6px">
-        <button onclick="clearMeals()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Clear</button>
-        <button class="sp-toggle" onclick="toggleSidePanel('meals-panel')" title="Minimize">&#9662;</button>
-      </span>
-    </div>
-    <div class="side-panel-body">
-      <div id="meals-list"></div>
-      <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:10px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary"></div>
-    </div>
-  </div>
-  <!-- This Week's Workouts -->
-  <div class="side-panel" id="workouts-panel">
-    <div class="side-panel-hdr" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-      <span>This Week's Workouts</span>
+      <span>Food + Movement</span>
       <span style="display:flex;align-items:center;gap:6px">
         <span id="wk-offline"></span>
-        <button onclick="wkToggleEdit()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Edit</button>
-        <button class="sp-toggle" onclick="toggleSidePanel('workouts-panel')" title="Minimize">&#9662;</button>
+        <button class="fm-only" data-fm="meals" onclick="clearMeals()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Clear</button>
+        <button class="fm-only" data-fm="move" onclick="wkToggleEdit()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Edit</button>
+        <button class="sp-toggle" onclick="toggleSidePanel('fm-panel')" title="Minimize">&#9662;</button>
       </span>
     </div>
     <div class="side-panel-body">
-      <div id="wk-prog" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
-      <div id="wk-list"></div>
-      <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:10px;letter-spacing:.05em" id="wk-summary"></div>
+      <div class="tt-bar" style="padding:.5rem .75rem">
+        <button class="tt-tab fm-tab" data-fm="meals" onclick="setFmTab('meals')">Meals</button>
+        <button class="tt-tab fm-tab" data-fm="move" onclick="setFmTab('move')">Workouts <span class="tt-count fm-wk-count"></span></button>
+      </div>
+      <div class="fm-pane" data-fm="meals">
+        <div id="meals-list"></div>
+        <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:10px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary"></div>
+      </div>
+      <div class="fm-pane" data-fm="move">
+        <div id="wk-prog" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
+        <div id="wk-list"></div>
+        <div style="padding:.4rem .75rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:10px;letter-spacing:.05em" id="wk-summary"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1657,34 +1666,33 @@ try{setRoutineView(localStorage.getItem('db_routine_view')||'day');}catch(e){}
     <div id="shop-items-mobile"></div>
   </div>
 </div>
-<div class="sec mobile-sec" id="sec-meals-mobile">
-  <div class="sec-header" onclick="toggleSec('sec-meals-mobile')">
+<div class="sec mobile-sec" id="sec-fm-mobile">
+  <div class="sec-header" onclick="toggleSec('sec-fm-mobile')">
     <span class="sec-num">V.</span>
-    <span class="sec-title">This Week's Meals</span>
-    <span class="sec-chev">▾</span>
-  </div>
-  <div class="sec-body" id="body-sec-meals-mobile">
-    <div id="meals-list-mobile"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd)">
-      <span style="font-size:10px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary-mobile"></span>
-      <button onclick="clearMeals()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Clear</button>
-    </div>
-  </div>
-</div>
-<div class="sec mobile-sec" id="sec-workouts-mobile">
-  <div class="sec-header" onclick="toggleSec('sec-workouts-mobile')">
-    <span class="sec-num">VI.</span>
-    <span class="sec-title">This Week's Workouts</span>
+    <span class="sec-title">Food + Movement</span>
     <span id="wk-offline-mobile"></span>
     <span class="sec-chev">▾</span>
   </div>
-  <div class="sec-body" id="body-sec-workouts-mobile">
-    <div style="display:flex;justify-content:flex-end;padding:.4rem 1.5rem;border-bottom:0.5px solid var(--ru);background:var(--pd)">
-      <button onclick="wkToggleEdit()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Edit program</button>
+  <div class="sec-body" id="body-sec-fm-mobile">
+    <div class="tt-bar" style="padding:.6rem 1.5rem">
+        <button class="tt-tab fm-tab" data-fm="meals" onclick="setFmTab('meals')">Meals</button>
+        <button class="tt-tab fm-tab" data-fm="move" onclick="setFmTab('move')">Workouts <span class="tt-count fm-wk-count"></span></button>
+      </div>
+    <div class="fm-pane" data-fm="meals">
+      <div id="meals-list-mobile"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd)">
+        <span style="font-size:10px;letter-spacing:.05em;text-transform:uppercase" id="meals-summary-mobile"></span>
+        <button onclick="clearMeals()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Clear</button>
+      </div>
     </div>
-    <div id="wk-prog-mobile" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
-    <div id="wk-list-mobile"></div>
-    <div style="padding:.5rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd);font-size:10px;letter-spacing:.05em" id="wk-summary-mobile"></div>
+    <div class="fm-pane" data-fm="move">
+      <div id="wk-prog-mobile" style="display:none;background:var(--pd);border-bottom:0.5px solid var(--ru)"></div>
+      <div id="wk-list-mobile"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 1.5rem;border-top:0.5px solid var(--ru);background:var(--pd)">
+        <span style="font-size:10px;letter-spacing:.05em" id="wk-summary-mobile"></span>
+        <button onclick="wkToggleEdit()" style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--if);background:none;border:none;cursor:pointer;font-family:'Figtree',sans-serif">Edit program</button>
+      </div>
+    </div>
   </div>
 </div>
 <script src="/income.js"></script>
