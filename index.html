@@ -255,13 +255,17 @@
     <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
     Routine
   </a>
-  <a class="ql" href="#sec-2">
-    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    Calendar
-  </a>
   <a class="ql" href="#sec-work">
     <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
     Tasks
+  </a>
+  <a class="ql" href="#sec-income">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    Income
+  </a>
+  <a class="ql" href="#sec-2">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Calendar
   </a>
   <a class="ql ql-notes" href="#sec-shop-mobile">
     <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
@@ -778,31 +782,57 @@ function weatherLabel(code){
 // The whole day lives here. Edit times, emojis, or descriptions in one place;
 // the routine list and the Now card both read from it.
 const ROUTINES={
-  // Home days: 7:00 wake, slow morning, work, laptop closes at 4 for the workout, then shower.
+  // Home days: 7:00 wake, slow morning, work, laptop closes at 4 for the workout, gym 4–5:30, shower 5:30, MTEL study 6–7, dinner 7.
   home:[
-    {id:'rise',    time:'7:00',  emoji:'☕️', label:'Slow morning',   sub:'Coffee, breakfast, get dressed, no laptop', color:'#C08A4A'},
-    {id:'workam',  time:'8:30',  emoji:'🪴',   label:'Morning work',   sub:'Deep work while you\'re fresh',     color:'#3F6E6A', work:true},
-    {id:'walk',    time:'12:00', emoji:'🌳',   label:'Walk + lunch',   sub:'Get outside',                       color:'#8A8F55'},
-    {id:'workpm',  time:'13:00', emoji:'🪴',   label:'Afternoon work', sub:'Calls, admin, lighter tasks',       color:'#3F6E6A', work:true},
-    {id:'move',    time:'16:00', emoji:'🌱',   label:'Workout',        sub:'Laptop closes at 4',                color:'#7C8F6A'},
-    {id:'shower',  time:'17:15', emoji:'🫧',   label:'Shower + reset', sub:'',                                  color:'#C08A4A'},
-    {id:'dinner',  time:'18:30', emoji:'🕯️',   label:'Dinner',         sub:'Cook and eat',                      color:'#8A8F55'},
-    {id:'wind',    time:'20:00', emoji:'🍵',   label:'Wind down',      sub:'Nightly tea, prep tomorrow · screens off by 10', color:'#56708A'},
+    {id:'rise',    time:'7:00',  emoji:'☕️', label:'Slow Morning',   sub:'Coffee, breakfast, get dressed, no laptop', color:'#C08A4A'},
+    {id:'workam',  time:'8:30',  emoji:'🪴',   label:'Morning Work',   sub:'Deep work while you\'re fresh',     color:'#3F6E6A', work:true},
+    {id:'walk',    time:'12:00', emoji:'🌳',   label:'Walk + Lunch',   sub:'Get outside',                       color:'#8A8F55'},
+    {id:'workpm',  time:'13:00', emoji:'🪴',   label:'Afternoon Work', sub:'Calls, admin, lighter tasks',       color:'#3F6E6A', work:true},
+    {id:'move',    time:'16:00', emoji:'🔥',   label:'Workout',        sub:'Laptop closes at 4',                color:'#7C8F6A'},
+    {id:'shower',  time:'17:30', emoji:'✨',   label:'Shower + Reset', sub:'30 min',                            color:'#C08A4A'},
+    {id:'study',   time:'18:00', emoji:'📚',   label:'MTEL Study',     sub:'1 hr · Study.com videos',           color:'#7A6A8F'},
+    {id:'dinner',  time:'19:00', emoji:'🕯️',   label:'Dinner',         sub:'Cook and eat',                      color:'#8A8F55'},
+    {id:'wind',    time:'20:00', emoji:'🍵',   label:'Wind Down',      sub:'Nightly tea, prep tomorrow · screens off by 10', color:'#56708A'},
     {id:'sleep',   time:'22:30', emoji:'🌙',   label:'Sleep',          sub:'',                                  color:'#4B4E66'},
   ],
-  // Sub days: 7:00 wake, out the door 7:45, school 8:30–3:15, workout at 4, shower, then 2 hrs client work.
+  // Sub days: 7:00 wake, out the door 7:30, school 8:30–3:15, workout at 4, shower 4:30, 2 hrs client work at 5, MTEL flashcards at 8.
   sub:[
-    {id:'rise',    time:'7:00',  emoji:'☕️', label:'Rise + prep',    sub:'Coffee, breakfast, get dressed, pack bag', color:'#C08A4A'},
-    {id:'subbing', time:'7:45',  emoji:'🍎',   label:'Subbing',        sub:'School 8:30–3:15',                  color:'#9C6B52'},
-    {id:'commute', time:'15:15', emoji:'🍂',   label:'Drive home',     sub:'Decompress, no phone',              color:'#9C6B52'},
-    {id:'move',    time:'16:00', emoji:'🌱',   label:'Workout',        sub:'20 min, change and go',             color:'#7C8F6A'},
-    {id:'shower',  time:'16:20', emoji:'🫧',   label:'Shower + reset', sub:'',                                  color:'#C08A4A'},
-    {id:'workpm',  time:'16:45', emoji:'🪴',   label:'Work',           sub:'2 hrs client work',                 color:'#3F6E6A', work:true},
-    {id:'dinner',  time:'18:45', emoji:'🕯️',   label:'Dinner',         sub:'Cook and eat',                      color:'#8A8F55'},
-    {id:'wind',    time:'20:00', emoji:'🍵',   label:'Wind down',      sub:'Nightly tea, pack lunch, lay out clothes · screens off by 10', color:'#56708A'},
+    {id:'rise',    time:'7:00',  emoji:'☕️', label:'Rise + Prep',    sub:'Coffee, breakfast, get dressed, pack bag', color:'#C08A4A'},
+    {id:'subbing', time:'7:30',  emoji:'🍎',   label:'Subbing',        sub:'School 8:30–3:15',                  color:'#9C6B52'},
+    {id:'commute', time:'15:30', emoji:'🍂',   label:'Drive Home',     sub:'Decompress, no phone',              color:'#9C6B52'},
+    {id:'move',    time:'16:00', emoji:'⚡️',   label:'Quick Workout',  sub:'20 min, change and go',             color:'#7C8F6A'},
+    {id:'shower',  time:'16:30', emoji:'✨',   label:'Shower + Reset', sub:'',                                  color:'#C08A4A'},
+    {id:'workpm',  time:'17:00', emoji:'🪴',   label:'Work',           sub:'2 hrs client work',                 color:'#3F6E6A', work:true},
+    {id:'dinner',  time:'19:00', emoji:'🕯️',   label:'Dinner',         sub:'Cook and eat',                      color:'#8A8F55'},
+    {id:'study',   time:'20:00', emoji:'📚',   label:'MTEL Flashcards', sub:'20–30 min, then done',             color:'#7A6A8F'},
+    {id:'wind',    time:'20:30', emoji:'🍵',   label:'Wind Down',      sub:'Nightly tea, pack lunch, lay out clothes · screens off by 10', color:'#56708A'},
     {id:'sleep',   time:'22:30', emoji:'🌙',   label:'Sleep',          sub:'',                                  color:'#4B4E66'},
   ],
 };
+// ── MTEL study plan (from the MTEL Study Schedule doc). Week = Sunday it starts.
+// Edit test names/dates here if you rebook.
+const MTEL_PLAN=[
+  {wk:'2026-11-08', main:'Comm & Literacy', head:'GC Math', note:'Baseline practice test'},
+  {wk:'2026-11-15', main:'Comm & Literacy', head:'GC Math', note:'Full practice test Mon–Tue · TEST Sat Nov 21'},
+  {wk:'2026-11-22', main:'GC Multi-Subject', head:'GC Math', note:'Baseline practice test'},
+  {wk:'2026-11-29', main:'GC Multi-Subject', head:'GC Math'},
+  {wk:'2026-12-06', main:'GC Multi-Subject', head:'Foundations of Reading'},
+  {wk:'2026-12-13', main:'GC Multi-Subject', note:'Full practice test Mon–Tue · TEST Fri Dec 18'},
+  {wk:'2026-12-20', main:'GC Math', head:'Foundations of Reading', note:'Baseline practice test'},
+  {wk:'2026-12-27', main:'GC Math', head:'Foundations of Reading'},
+  {wk:'2027-01-03', main:'GC Math', head:'Foundations of Reading', note:'Half practice test'},
+  {wk:'2027-01-10', main:'GC Math', head:'Foundations of Reading'},
+  {wk:'2027-01-17', main:'GC Math', note:'Full practice test Mon–Tue · TEST Fri Jan 22'},
+  {wk:'2027-01-24', main:'Foundations of Reading', note:'Baseline practice test'},
+  {wk:'2027-01-31', main:'Foundations of Reading'},
+  {wk:'2027-02-07', main:'Foundations of Reading', note:'Half practice test'},
+  {wk:'2027-02-14', main:'Foundations of Reading', note:'Full practice test Mon–Tue · TEST Fri Feb 19'},
+];
+function mtelThisWeek(){
+  const d=new Date();d.setDate(d.getDate()-d.getDay());
+  const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  return MTEL_PLAN.find(w=>w.wk===k)||null;
+}
 let ROUTINE_MODE='home', ROUTINE=ROUTINES.home, NOW_BLOCKS=[];
 let TODAY_EVENTS=[];
 let RSTATE=null, PICK_OPEN=null;
@@ -944,6 +974,14 @@ function renderRoutine(s,celebrate){
       if(m&&(m.meal||m.cook)){
         const ck=cookMeta(m.cook);
         mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${ck.color};display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(m.meal)||'Not planned'}${m.cook?' · '+ck.label+' cooking':''}</span></div>`;
+      }
+    }
+    // This week's MTEL focus, surfaced on the study block
+    if(r.id==='study'){
+      const w=mtelThisWeek();
+      if(w){
+        const txt=w.main+(w.head?' · head start: '+w.head:'')+(w.note?' · '+w.note:'');
+        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#7A6A8F;display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(txt)}</span></div>`;
       }
     }
     // Today's workout, surfaced on the Movement block
