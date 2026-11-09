@@ -153,7 +153,7 @@
   .meal-row:hover .rec-btn { opacity: .7; }
   .rec-btn.has { opacity: 1; }
   .rec-btn.has svg { stroke: var(--ac); width: 13px; height: 13px; stroke-width: 2.2; }
-  .rec-edit-btn svg { width: 11px; height: 11px; }
+  .rec-ico { width: 12px; height: 12px; stroke: var(--if); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
   .rec-edit { display: flex; align-items: center; gap: 8px; border-bottom: 0.5px solid var(--ru); background: #EEECE5; }
   .rec-input { flex: 1; min-width: 0; font-size: 11px; font-family: 'Figtree', sans-serif; color: var(--ink); background: var(--p); border: 0.5px solid var(--ru); border-radius: 6px; padding: 4px 8px; outline: none; }
   .rec-act { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Figtree', sans-serif; color: var(--ac); text-decoration: none; padding: 0; white-space: nowrap; }
@@ -559,7 +559,6 @@ const COOKS=[
   {id:'out',  label:'Out',  color:'#857A62'},
 ];
 function blankMeals(){return MEAL_DAYS.map(d=>({day:d,meal:'',cook:'',url:''}));}
-let REC_OPEN=null; // which day's recipe-link editor is open
 let MEALS=blankMeals();
 function mondayKey(){
   const d=new Date();
@@ -594,16 +593,14 @@ function renderMeals(){
       const on=!!m.cook;
       return `<div class="meal-row${i===t?' today':''}" style="padding:${mob?'.5rem 1.5rem':'.4rem .75rem'}">
         <span class="meal-day">${m.day}</span>
-        <input class="meal-input" style="font-size:${mob?'11px':'10px'}" value="${esc(m.meal)}" placeholder="add a meal" oninput="setMeal(${i},this.value)" onblur="flushMeals()" onkeydown="if(event.key==='Enter')this.blur()">
-        ${m.url
-          ?`<span class="rec-btn rec-edit-btn" onclick="toggleRecipe(${i})" title="Edit recipe link"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span><a class="rec-btn has" href="${esc(m.url)}" target="_blank" rel="noopener" title="Open recipe"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>`
-          :`<span class="rec-btn" onclick="toggleRecipe(${i})" title="Add recipe link"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>`}
+        <input class="meal-input" style="font-size:${mob?'11px':'10px'}" value="${esc(m.meal)}" placeholder="add a meal" oninput="setMeal(${i},this.value)" onfocus="recShow(this)" onblur="flushMeals();recMaybeHide(this)" onkeydown="if(event.key==='Enter')this.blur()">
+        ${m.url?`<a class="rec-btn has" href="${esc(m.url)}" target="_blank" rel="noopener" title="Open recipe"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></a>`:''}
         <span class="cook-tag" onclick="cycleCook(${i})" title="Tap to change who's cooking" style="background:${on?ck.color+'22':'transparent'};color:${on?ck.color:'var(--if)'};border:0.5px solid ${on?'transparent':'var(--ru)'}">${ck.label}</span>
-      </div>${REC_OPEN===i?`<div class="rec-edit" style="padding:${mob?'.4rem 1.5rem .6rem':'.3rem .75rem .5rem'}">
-        <input class="rec-input" id="rec-in-${mob?'m':'d'}" value="${esc(m.url||'')}" placeholder="Paste recipe link..." onkeydown="if(event.key==='Enter')saveRecipe(${i},this.value);if(event.key==='Escape')toggleRecipe(${i})">
-        <button class="rec-act" onclick="saveRecipe(${i},this.previousElementSibling.value)">Save</button>
-        ${m.url?`<button class="rec-act rec-x" onclick="saveRecipe(${i},'')" title="Remove link">×</button>`:''}
-      </div>`:''}`;
+      </div><div class="rec-edit" style="display:none;padding:${mob?'.4rem 1.5rem .6rem':'.3rem .75rem .5rem'}">
+        <svg class="rec-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <input class="rec-input" value="${esc(m.url||'')}" placeholder="Recipe link (optional)" onblur="recMaybeHide(this)" onkeydown="if(event.key==='Enter')saveRecipe(${i},this.value);if(event.key==='Escape')this.blur()" onchange="saveRecipe(${i},this.value)">
+        ${m.url?`<button class="rec-act rec-x" onmousedown="event.preventDefault()" onclick="saveRecipe(${i},'')" title="Remove link">×</button>`:''}
+      </div>`;
     }).join('');
   });
   const counts=MEALS.reduce((a,m)=>{if(m.cook)a[m.cook]=(a[m.cook]||0)+1;return a;},{});
@@ -639,16 +636,27 @@ function cycleCook(i){
   renderMeals();
   saveMeals();
 }
-function toggleRecipe(i){
-  REC_OPEN=REC_OPEN===i?null:i;
-  renderMeals();
-  if(REC_OPEN!==null)setTimeout(()=>{const el=[...document.querySelectorAll('.rec-input')].find(e=>e.offsetParent);el&&el.focus();},0);
+// The link bar opens under a meal while you're editing that meal's name,
+// and closes once focus leaves both the name and the bar.
+function recShow(input){
+  document.querySelectorAll('.rec-edit').forEach(b=>b.style.display='none');
+  const bar=input.closest('.meal-row').nextElementSibling;
+  if(bar)bar.style.display='flex';
+}
+function recMaybeHide(el){
+  const row=el.closest('.meal-row')||el.closest('.rec-edit').previousElementSibling;
+  const bar=row.nextElementSibling;
+  setTimeout(()=>{
+    const a=document.activeElement;
+    if(a&&(row.contains(a)||bar.contains(a)))return;
+    bar.style.display='none';
+  },0);
 }
 function saveRecipe(i,val){
   let v=(val||'').trim();
   if(v&&!/^https?:\/\//i.test(v))v='https://'+v;
+  if(MEALS[i].url===v)return;
   MEALS[i].url=v;
-  REC_OPEN=null;
   renderMeals();buildRoutine();saveMeals();
 }
 function clearMeals(){
