@@ -255,6 +255,10 @@
     <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
     Routine
   </a>
+  <a class="ql" href="#sec-week">
+    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="10" y2="9"/></svg>
+    This Week
+  </a>
   <a class="ql" href="#sec-work">
     <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
     Tasks
@@ -341,10 +345,29 @@
     <div class="all-done-banner" id="all-done">All done for today — well earned. ✦</div>
   </div>
 </div>
-<!-- II. TASKS -->
+<!-- II. THIS WEEK -->
+<div class="sec" id="sec-week">
+  <div class="sec-header" onclick="toggleSec('sec-week')">
+    <span class="sec-num">II.</span>
+    <span class="sec-title">This Week</span>
+    <span class="sec-badge" id="wl-badge">–</span>
+    <span class="sec-chev">▾</span>
+  </div>
+  <div class="sec-body" id="body-sec-week">
+    <div class="routine-progress">
+      <div class="progress-bar-wrap"><div class="progress-bar" id="wl-bar" style="width:0%"></div></div>
+      <span class="progress-label" id="wl-label">0 of 0 this week</span>
+    </div>
+    <div id="wl-items"></div>
+    <div id="wl-edit" style="display:none;border-top:0.5px solid var(--ru)"></div>
+    <div class="all-done-banner" id="wl-done" style="display:none">Week's done. ✦</div>
+    <div class="foot-row" style="justify-content:flex-start"><button class="wt-btn" id="wl-edit-btn" onclick="wlToggleEdit()">Edit list</button></div>
+  </div>
+</div>
+<!-- III. TASKS -->
 <div class="sec" id="sec-work">
   <div class="sec-header" onclick="toggleSec('sec-work')">
-    <span class="sec-num">II.</span>
+    <span class="sec-num">III.</span>
     <span class="sec-title">Tasks</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -388,7 +411,7 @@
 <!-- III. CALENDAR -->
 <div class="sec" id="sec-2">
   <div class="sec-header" onclick="toggleSec('sec-2')">
-    <span class="sec-num">III.</span>
+    <span class="sec-num">IV.</span>
     <span class="sec-title">Calendar — This Week</span>
     <span class="sec-badge" id="cal-badge">–</span>
     <span class="sec-chev">▾</span>
@@ -1444,6 +1467,55 @@ async function wtSaveEdit(i){
 async function wtDelete(i){WT.splice(i,1);WT_EDIT=null;renderWorkTasks();await saveWorkTasks();}
 async function wtToggle(i){WT[i].done=!WT[i].done;renderWorkTasks();await saveWorkTasks();}
 async function wtClearDone(){WT=WT.filter(t=>!t.done);WT_EDIT=null;renderWorkTasks();await saveWorkTasks();}
+// ── THIS WEEK (weekly checklist, resets every Monday) ─
+const WL_DEFAULT=['📚 2-hr MTEL Block','💍 Wedding Planning','🧹 Clean House','🛒 Grocery Shop'];
+let WL=null, wlEditing=false;
+function wlBlank(items){return{week:mondayKey(),items:(items||WL_DEFAULT).map((l,i)=>({id:'w'+Date.now().toString(36)+i,label:l})),done:{}};}
+async function loadWeekly(){
+  try{
+    const r=await fetch('/api/weekly');
+    const d=await r.json();
+    if(d&&Array.isArray(d.items)){
+      // New week: keep the list, clear the checks
+      WL=d.week===mondayKey()?{...d,done:d.done||{}}:{week:mondayKey(),items:d.items,done:{}};
+      if(d.week!==mondayKey())saveWeekly();
+    }else{WL=wlBlank();saveWeekly();}
+  }catch(e){WL=WL||wlBlank();}
+  renderWeekly();
+}
+async function saveWeekly(){
+  try{await fetch('/api/weekly',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(WL)});}catch(e){}
+}
+function wlToggle(id){WL.done[id]=!WL.done[id];renderWeekly(true);saveWeekly();}
+function wlToggleEdit(){wlEditing=!wlEditing;renderWeekly();}
+function wlRename(id,val){const it=WL.items.find(x=>x.id===id);const v=val.trim().slice(0,40);if(!it||!v)return;it.label=v;renderWeekly();saveWeekly();}
+function wlRemove(id){WL.items=WL.items.filter(x=>x.id!==id);delete WL.done[id];renderWeekly();saveWeekly();}
+function wlAdd(){const el=document.getElementById('wl-add');const v=(el&&el.value||'').trim().slice(0,40);if(!v)return;WL.items.push({id:'w'+Date.now().toString(36),label:v});renderWeekly();saveWeekly();setTimeout(()=>document.getElementById('wl-add')?.focus(),0);}
+function renderWeekly(celebrate){
+  if(!WL)return;
+  const c=document.getElementById('wl-items');
+  c.innerHTML=WL.items.map(it=>{
+    const done=!!WL.done[it.id];
+    return `<div class="ritem${done?' done':''}" onclick="wlToggle('${it.id}')"><div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div><div class="rcontent"><div class="rlabel">${esc(it.label)}</div></div></div>`;
+  }).join('')||'<div class="ritem" style="cursor:default"><div class="rsub">Nothing on the list. Tap Edit list to add some.</div></div>';
+  const total=WL.items.length, n=WL.items.filter(it=>WL.done[it.id]).length;
+  document.getElementById('wl-bar').style.width=(total?Math.round(n/total*100):0)+'%';
+  document.getElementById('wl-label').textContent=n+' of '+total+' this week';
+  document.getElementById('wl-badge').textContent=n+' / '+total;
+  const all=total>0&&n===total;
+  document.getElementById('wl-done').style.display=all?'block':'none';
+  if(all&&celebrate)launchConfetti();
+  const e=document.getElementById('wl-edit');
+  document.getElementById('wl-edit-btn').textContent=wlEditing?'Done editing':'Edit list';
+  if(!wlEditing){e.style.display='none';e.innerHTML='';return;}
+  e.style.display='block';
+  e.innerHTML=WL.items.map(it=>`<div class="wk-prog-row" style="padding:.4rem 1.5rem">
+      <input class="wk-prog-input" value="${esc(it.label)}" onchange="wlRename('${it.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" style="font-size:12px">
+      <span class="wk-x" onclick="wlRemove('${it.id}')">×</span></div>`).join('')
+    +`<div class="wk-prog-row" style="padding:.4rem 1.5rem;border-bottom:none">
+      <input class="wk-prog-input" id="wl-add" placeholder="Add weekly item..." onkeydown="if(event.key==='Enter')wlAdd()" style="font-size:12px">
+      <span class="wk-x" onclick="wlAdd()" style="color:var(--ac)">+</span></div>`;
+}
 // ── INIT ─────────────────────────────────────────────
 restoreSections();
 restoreSidePanels();
@@ -1461,6 +1533,7 @@ try{switchTaskTab(localStorage.getItem('db_task_tab')==='personal'?'personal':'w
 loadShopLists();
 loadMeals();
 loadWorkouts();
+loadWeekly();
 
 </script>
 <div class="side-rail">
@@ -1515,7 +1588,7 @@ loadWorkouts();
 </div>
 <div class="sec mobile-sec" id="sec-shop-mobile">
   <div class="sec-header" onclick="toggleSec('sec-shop-mobile')">
-    <span class="sec-num">IV.</span>
+    <span class="sec-num">V.</span>
     <span class="sec-title">Shopping</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -1533,7 +1606,7 @@ loadWorkouts();
 </div>
 <div class="sec mobile-sec" id="sec-meals-mobile">
   <div class="sec-header" onclick="toggleSec('sec-meals-mobile')">
-    <span class="sec-num">V.</span>
+    <span class="sec-num">VI.</span>
     <span class="sec-title">This Week's Meals</span>
     <span class="sec-chev">▾</span>
   </div>
@@ -1547,7 +1620,7 @@ loadWorkouts();
 </div>
 <div class="sec mobile-sec" id="sec-workouts-mobile">
   <div class="sec-header" onclick="toggleSec('sec-workouts-mobile')">
-    <span class="sec-num">VI.</span>
+    <span class="sec-num">VII.</span>
     <span class="sec-title">This Week's Workouts</span>
     <span id="wk-offline-mobile"></span>
     <span class="sec-chev">▾</span>
