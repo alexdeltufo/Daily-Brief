@@ -871,7 +871,7 @@ const ROUTINES={
     {id:'shower',  time:'17:30', emoji:'✨',   label:'Shower + Reset', sub:'30 min',                            color:'#C08A4A'},
     {id:'study',   time:'18:00', emoji:'📚',   label:'MTEL Study',     sub:'1 hr · Study.com videos',           color:'#7A6A8F'},
     {id:'dinner',  time:'19:00', emoji:'🕯️',   label:'Dinner',         sub:'Cook and eat',                      color:'#8A8F55'},
-    {id:'wind',    time:'20:00', emoji:'🍵',   label:'Wind Down',      sub:'Nightly tea, prep tomorrow · screens off by 10', color:'#56708A'},
+    {id:'wind',    time:'20:00', emoji:'🍵',   label:'Wind Down',      sub:'Nightly tea, prep tomorrow · Screens off by 10', color:'#56708A'},
     {id:'sleep',   time:'22:30', emoji:'🌙',   label:'Sleep',          sub:'',                                  color:'#4B4E66'},
   ],
   // Sub days: 7:00 wake, out the door 7:30, school 8:30–3:15, workout at 4, shower 4:30, 2 hrs client work at 5, MTEL flashcards at 8.
@@ -884,7 +884,7 @@ const ROUTINES={
     {id:'workpm',  time:'17:00', emoji:'🪴',   label:'Work',           sub:'2 hrs client work',                 color:'#3F6E6A', work:true},
     {id:'dinner',  time:'19:00', emoji:'🕯️',   label:'Dinner',         sub:'Cook and eat',                      color:'#8A8F55'},
     {id:'study',   time:'20:00', emoji:'📚',   label:'MTEL Flashcards', sub:'20–30 min, then done',             color:'#7A6A8F'},
-    {id:'wind',    time:'20:30', emoji:'🍵',   label:'Wind Down',      sub:'Nightly tea, pack lunch, lay out clothes · screens off by 10', color:'#56708A'},
+    {id:'wind',    time:'20:30', emoji:'🍵',   label:'Wind Down',      sub:'Nightly tea, pack lunch, lay out clothes · Screens off by 10', color:'#56708A'},
     {id:'sleep',   time:'22:30', emoji:'🌙',   label:'Sleep',          sub:'',                                  color:'#4B4E66'},
   ],
 };
@@ -1073,14 +1073,14 @@ function renderRoutine(s,celebrate){
       const m=MEALS[todayMealIdx()];
       if(m&&(m.meal||m.cook)){
         const ck=cookMeta(m.cook);
-        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${ck.color};display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(m.meal)||'Not planned'}${m.cook?' · '+ck.label+' cooking':''}${m.url?` · <a href="${esc(m.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--ac)">recipe ↗</a>`:''}</span></div>`;
+        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${ck.color};display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(m.meal)||'Not planned'}${m.cook?' · '+ck.label+' cooking':''}${m.url?` · <a href="${esc(m.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" style="color:var(--ac)">Recipe ↗</a>`:''}</span></div>`;
       }
     }
     // This week's MTEL focus, surfaced on the study block
     if(r.id==='study'){
       const w=mtelThisWeek();
       if(w){
-        const txt=w.main+(w.head?' · head start: '+w.head:'')+(w.note?' · '+w.note:'');
+        const txt=w.main+(w.head?' · Head start: '+w.head:'')+(w.note?' · '+w.note:'');
         mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#7A6A8F;display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(txt)}</span></div>`;
       }
     }
@@ -1090,8 +1090,8 @@ function renderRoutine(s,celebrate){
       if(w&&w.w){
         const col=wkColor(w.w);
         // Upper/Lower get their location from the day type: sub day = home dumbbell, home day = gym
-        const where=/\b(upper|lower)\b/i.test(w.w)?(ROUTINE_MODE==='sub'?' · at home':' · at the gym'):'';
-        const label=w.w==='Rest'?'Rest day':esc(w.w)+where+(w.done?' · done ✓':'');
+        const where=/\b(upper|lower)\b/i.test(w.w)?(ROUTINE_MODE==='sub'?' · At home':' · At the gym'):'';
+        const label=w.w==='Rest'?'Rest day':esc(w.w)+where+(w.done?' · Done ✓':'');
         mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${col};display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im);${w.done?'text-decoration:line-through;opacity:.6':''}">${label}</span></div>`;
       }
     }
