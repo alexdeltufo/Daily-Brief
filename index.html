@@ -247,7 +247,14 @@
   .wt-row.done .wt-name { text-decoration: line-through; }
   .wt-note { font-size: 11px; color: var(--if); font-style: italic; margin-top: 2px; }
   .wt-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; max-width: 50%; }
-  .wt-client { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; background: var(--al); color: var(--ac); white-space: nowrap; }
+  .wt-client-col { flex: 0 0 150px; width: 150px; min-width: 0; display: flex; margin-top: -1px; }
+  .wt-client { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; background: var(--al); color: var(--ac); white-space: nowrap; max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .wt-status { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; white-space: nowrap; cursor: pointer; border: 1px solid transparent; font-family: inherit; line-height: 1.4; user-select: none; }
+  .wt-status.s-todo { background: transparent; border: 1px dashed var(--ru); color: var(--if); }
+  .wt-status.s-progress { background: #E4ECF0; color: #4A6B7C; }
+  .wt-status.s-waiting { background: #F3E9D8; color: #A0742F; }
+  .wt-status.s-review { background: #ECE6F0; color: #7A6A8F; }
+  @media (max-width: 600px) { .wt-client-col { flex-basis: 92px; } }
   .wt-link { font-size: 11px; color: var(--ac); text-decoration: none; white-space: nowrap; }
   .wt-link:hover { text-decoration: underline; }
   .wt-edit { padding: .65rem 1.5rem; border-bottom: 0.5px solid var(--ru); background: var(--al); display: flex; flex-direction: column; gap: 6px; }
@@ -398,6 +405,7 @@
       <div class="wt-fields">
         <input class="wt-in" id="wt-client" list="wt-clients" placeholder="Client" style="flex:1 1 120px" onkeydown="if(event.key==='Enter')wtSubmit()">
         <input class="wt-in" id="wt-due" type="date" title="Due date" style="flex:0 1 140px">
+        <select class="wt-in" id="wt-status" title="Status" style="flex:0 1 120px"></select>
         <input class="wt-in" id="wt-note" placeholder="Note or link (optional)" style="flex:2 1 180px" onkeydown="if(event.key==='Enter')wtSubmit()">
       </div>
     </div>
@@ -1474,6 +1482,15 @@ function qtToggleAdd(){qtSetAddOpen(document.getElementById('qt-add').style.disp
 try{if(localStorage.getItem('db_qt_add_open')==='1')qtSetAddOpen(true,false);}catch(e){}
 function wtToggleAdd(){wtSetAddOpen(document.getElementById('wt-add').style.display==='none',true);}
 function wtIsUrl(s){return /^https?:\/\//i.test((s||'').trim());}
+const WT_STATUS=[['todo','To do'],['progress','In progress'],['waiting','Waiting'],['review','In review']];
+function wtStatusOpts(cur){return WT_STATUS.map(([k,l])=>`<option value="${k}"${k===(cur||'todo')?' selected':''}>${l}</option>`).join('');}
+async function wtCycleStatus(i,ev){
+  ev.stopPropagation();
+  const keys=WT_STATUS.map(s=>s[0]);
+  WT[i].status=keys[(keys.indexOf(WT[i].status||'todo')+1)%keys.length];
+  renderWorkTasks();await saveWorkTasks();
+}
+(function(){const s=document.getElementById('wt-status');if(s)s.innerHTML=wtStatusOpts('todo');})();
 function renderWorkTasks(){
   const clients=[...new Set(WT.map(t=>(t.client||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
   document.getElementById('wt-clients').innerHTML=clients.map(c=>`<option value="${esc(c)}">`).join('');
@@ -1489,6 +1506,7 @@ function renderWorkTasks(){
         <div class="wt-fields">
           <input class="wt-in" id="wte-client" list="wt-clients" placeholder="Client" value="${esc(t.client||'')}" style="flex:1 1 120px" onkeydown="if(event.key==='Enter')wtSaveEdit(${i})">
           <input class="wt-in" id="wte-due" type="date" value="${esc(t.due||'')}" style="flex:0 1 140px">
+          <select class="wt-in" id="wte-status" style="flex:0 1 120px">${wtStatusOpts(t.status)}</select>
           <input class="wt-in" id="wte-note" placeholder="Note or link" value="${esc(t.note||'')}" style="flex:2 1 180px" onkeydown="if(event.key==='Enter')wtSaveEdit(${i})">
         </div>
         <div style="display:flex;justify-content:space-between">
@@ -1501,12 +1519,13 @@ function renderWorkTasks(){
     const note=(t.note||'').trim(), isUrl=wtIsUrl(note);
     return `<div class="wt-row ${t.done?'done':''}">
       <div class="wt-box ${t.done?'done':''}" onclick="wtToggle(${i})">${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}</div>
+      <div class="wt-client-col">${t.client?`<span class="wt-client" title="${esc(t.client)}">${esc(t.client)}</span>`:''}</div>
       <div class="wt-main" onclick="WT_EDIT=${i};renderWorkTasks()" title="Click to edit">
         <div class="wt-name">${esc(t.text)}</div>
         ${note&&!isUrl?`<div class="wt-note">${esc(note)}</div>`:''}
       </div>
       <div class="wt-right">
-        ${t.client?`<span class="wt-client">${esc(t.client)}</span>`:''}
+        ${t.done?'':(()=>{const st=WT_STATUS.find(s=>s[0]===(t.status||'todo'));return `<button class="wt-status s-${st[0]}" onclick="wtCycleStatus(${i},event)" title="Click to change status">${st[1]}</button>`;})()}
         ${due?`<span class="pill" style="background:${due.color}1f;color:${due.color}">${due.text}</span>`:''}
         ${isUrl?`<a class="wt-link" href="${esc(note)}" target="_blank" rel="noopener">Open ↗</a>`:''}
       </div>
@@ -1516,10 +1535,11 @@ function renderWorkTasks(){
 }
 async function wtSubmit(){
   const v=id=>(document.getElementById(id).value||'').trim();
-  const t={id:wtNewId(),text:v('wt-text'),client:v('wt-client'),due:v('wt-due'),note:v('wt-note'),done:false};
+  const t={id:wtNewId(),text:v('wt-text'),client:v('wt-client'),due:v('wt-due'),note:v('wt-note'),status:v('wt-status')||'todo',done:false};
   if(!t.text){document.getElementById('wt-text').focus();return;}
   WT.push(t);
   ['wt-text','wt-client','wt-due','wt-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('wt-status').value='todo';
   document.getElementById('wt-text').focus();
   renderWorkTasks();
   await saveWorkTasks();
@@ -1528,7 +1548,7 @@ async function wtSaveEdit(i){
   const v=id=>(document.getElementById(id).value||'').trim();
   const text=v('wte-text');
   if(!text)return;
-  WT[i]={...WT[i],text,client:v('wte-client'),due:v('wte-due'),note:v('wte-note')};
+  WT[i]={...WT[i],text,client:v('wte-client'),due:v('wte-due'),note:v('wte-note'),status:v('wte-status')||'todo'};
   WT_EDIT=null;
   renderWorkTasks();
   await saveWorkTasks();
