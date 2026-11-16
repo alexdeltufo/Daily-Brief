@@ -199,6 +199,28 @@
   .ritem:hover .rpick-add-personal, .rpicks:has(.rpick) .rpick-add-personal, .rpicks:has(.rpick-menu) .rpick-add-personal { opacity: 1; }
   @media (hover: none) { .rpick-add-personal { opacity: 1; } }
   .rpicks { margin-top: 6px; display: flex; flex-direction: column; gap: 3px; cursor: default; }
+  .mtel-line { margin-top: 4px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; font-size: 10px; color: var(--im); }
+  .mtel-line:hover { color: var(--ink); }
+  .mtel-chev { font-size: 9px; transition: transform .15s; display: inline-block; }
+  .mtel-bg { position: fixed; inset: 0; background: rgba(31,36,32,.28); display: flex; align-items: center; justify-content: center; padding: 1.5rem; z-index: 1000; animation: mtelFade .15s ease; }
+  .mtel-modal { background: var(--page); border: 0.5px solid var(--ru); border-radius: 14px; width: 100%; max-width: 460px; max-height: 85vh; overflow-y: auto; padding: 1.25rem 1.5rem 1.4rem; font-size: 12px; color: var(--ink); box-shadow: 0 12px 40px rgba(31,36,32,.18); }
+  .mtel-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: .9rem; }
+  .mtel-title { font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
+  .mtel-x { background: none; border: none; font-size: 18px; color: var(--im); cursor: pointer; padding: 0 2px; line-height: 1; }
+  .mtel-x:hover { color: var(--ink); }
+  .mtel-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--im); margin: 1rem 0 .4rem; }
+  .mtel-count { font-family: 'Bricolage Grotesque', sans-serif; font-size: 15px; color: #9C6B52; margin-bottom: .6rem; }
+  @keyframes mtelFade { from { opacity: 0; } to { opacity: 1; } }
+  .mtel-row { display: flex; gap: 10px; padding: 2px 0; }
+  .mtel-k { color: var(--im); min-width: 74px; }
+  .mtel-wk { display: flex; gap: 10px; padding: 6px 0; border-bottom: 0.5px dashed var(--ru); }
+  .mtel-wk:last-child { border-bottom: none; }
+  .mtel-wk.past { opacity: .45; }
+  .mtel-wk.now { font-weight: 500; }
+  .mtel-wk.now .mtel-wd { color: #7A6A8F; }
+  .mtel-wd { color: var(--im); min-width: 46px; font-variant-numeric: tabular-nums; }
+  .mtel-note { color: var(--im); }
+  .mtel-test { color: #9C6B52; font-weight: 500; }
   .rpick { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--ink); }
   .rpick.done .rpick-text { color: var(--if); text-decoration: line-through; }
   .rpick-box { width: 11px; height: 11px; border-radius: 3px; border: 1.2px solid var(--ru); background: var(--p); flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -907,6 +929,35 @@ const MTEL_PLAN=[
   {wk:'2027-02-07', main:'Foundations of Reading', note:'Half practice test'},
   {wk:'2027-02-14', main:'Foundations of Reading', note:'Full practice test Mon–Tue · TEST Fri Feb 19'},
 ];
+// Next upcoming test across the whole plan, with a countdown
+function mtelNextTest(){
+  const today=new Date();today.setHours(0,0,0,0);
+  for(const w of MTEL_PLAN){
+    const m=(w.note||'').match(/TEST (\w+) (\w+) (\d+)/);
+    if(!m)continue;
+    const d=new Date(m[2]+' '+m[3]+', '+w.wk.slice(0,4));
+    if(isNaN(d)||d<today)continue;
+    const days=Math.round((d-today)/864e5);
+    const when=days===0?'today':days===1?'tomorrow':days+' days';
+    return {label:'Test '+m[1]+' '+(d.getMonth()+1)+'/'+d.getDate()+' · '+when};
+  }
+  return null;
+}
+function mtelModalHtml(w,nt){
+  const row=(k,v)=>v?`<div class="mtel-row"><span class="mtel-k">${k}</span><span>${esc(v)}</span></div>`:'';
+  const strip=n=>(n||'').replace(/\s*·?\s*TEST .+$/,'');
+  let h='<div class="mtel-modal" role="dialog" aria-label="MTEL study plan"><div class="mtel-head"><span class="mtel-title">📚 MTEL Study</span><button class="mtel-x" onclick="closeMtel()" aria-label="Close">×</button></div>';
+  if(nt)h+=`<div class="mtel-count">${esc(nt.label)}</div>`;
+  h+='<div class="mtel-label">This week</div>'+row('Focus',w.main)+row('Head start',w.head)+row('Also',strip(w.note));
+  h+='<div class="mtel-label">Full schedule</div>'+MTEL_PLAN.map(x=>{
+    const d=new Date(x.wk+'T00:00');
+    const cls=x.wk===w.wk?'now':(x.wk<w.wk?'past':'');
+    const t=(x.note||'').match(/TEST (.+)$/);
+    const extra=[x.head?'+ '+x.head:'',strip(x.note)].filter(Boolean).join(' · ');
+    return `<div class="mtel-wk ${cls}"><span class="mtel-wd">${d.getMonth()+1}/${d.getDate()}</span><span style="flex:1">${esc(x.main)}${extra?` <span class="mtel-note">· ${esc(extra)}</span>`:''}${t?` <span class="mtel-test">· Test ${esc(t[1])}</span>`:''}</span></div>`;
+  }).join('');
+  return h+'</div>';
+}
 function mtelThisWeek(){
   const d=new Date();d.setDate(d.getDate()-d.getDay());
   const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -915,6 +966,18 @@ function mtelThisWeek(){
 let ROUTINE_MODE='home', ROUTINE=ROUTINES.home, NOW_BLOCKS=[];
 let TODAY_EVENTS=[];
 let RSTATE=null, PICK_OPEN=null;
+function openMtel(){
+  closeMtel();
+  const w=mtelThisWeek(); if(!w)return;
+  const el=document.createElement('div');
+  el.className='mtel-bg';el.id='mtel-bg';
+  el.onclick=e=>{if(e.target===el)closeMtel();};
+  el.innerHTML=mtelModalHtml(w,mtelNextTest());
+  document.body.appendChild(el);
+  document.addEventListener('keydown',mtelEsc);
+}
+function closeMtel(){const el=document.getElementById('mtel-bg');if(el)el.remove();document.removeEventListener('keydown',mtelEsc);}
+function mtelEsc(e){if(e.key==='Escape')closeMtel();}
 function routineTimeToHour(t){
   const[h,m]=t.split(':').map(Number);
   return h+m/60;
@@ -1080,9 +1143,9 @@ function renderRoutine(s,celebrate){
     if(r.id==='study'){
       const w=mtelThisWeek();
       if(w){
-        const test=(w.note||'').match(/TEST (.+)$/);
-        const txt=w.main+(test?' · Test '+test[1]:'');
-        mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#7A6A8F;display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(txt)}</span></div>`;
+        const nt=mtelNextTest();
+        const txt=w.main+(nt?' · '+nt.label:'');
+        mealPill=`<div class="mtel-line" onclick="event.stopPropagation();openMtel()"><span style="width:6px;height:6px;border-radius:50%;background:#7A6A8F;display:inline-block;flex-shrink:0"></span><span>${esc(txt)}</span><span class="mtel-chev">›</span></div>`;
       }
     }
     // Today's workout, surfaced on the Movement block
