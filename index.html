@@ -1080,7 +1080,8 @@ function renderRoutine(s,celebrate){
     if(r.id==='study'){
       const w=mtelThisWeek();
       if(w){
-        const txt=w.main+(w.head?' · Head start: '+w.head:'')+(w.note?' · '+w.note:'');
+        const test=(w.note||'').match(/TEST (.+)$/);
+        const txt=w.main+(test?' · Test '+test[1]:'');
         mealPill=`<div style="margin-top:4px;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#7A6A8F;display:inline-block;flex-shrink:0"></span><span style="font-size:10px;color:var(--im)">${esc(txt)}</span></div>`;
       }
     }
@@ -1097,7 +1098,7 @@ function renderRoutine(s,celebrate){
     }
     const[rh,rm]=r.time.split(':').map(Number);
     const disp=(rh%12||12)+(rm?':'+String(rm).padStart(2,'0'):'')+(rh<12?'am':'pm');
-    return `<div class="ritem${done?' done':''}" id="ri-${r.id}" onclick="toggleItem('${r.id}')"><div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div><div class="rtime">${disp}</div><div class="rcontent"><div class="rlabel">${r.emoji?`<span class="remoji">${r.emoji}</span>`:''}${r.label}</div>${r.sub?`<div class="rsub">${r.sub}</div>`:''}${evPills}${mealPill}${pickHtml(r,s)}</div></div>`;
+    return `<div class="ritem${done?' done':''}" id="ri-${r.id}" onclick="toggleItem('${r.id}')"><div class="check-box"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div><div class="rtime">${disp}</div><div class="rcontent"><div class="rlabel">${r.emoji?`<span class="remoji">${r.emoji}</span>`:''}${r.label}</div>${evPills}${mealPill}${pickHtml(r,s)}</div></div>`;
   }).join('');
   updateProgress(s.checked,celebrate);
 }
