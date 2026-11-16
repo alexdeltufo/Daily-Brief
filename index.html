@@ -282,7 +282,9 @@
   .wt-edit { padding: .65rem 1.5rem; border-bottom: 0.5px solid var(--ru); background: var(--al); display: flex; flex-direction: column; gap: 6px; }
   .wt-btn { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Figtree', sans-serif; color: var(--if); padding: 0; }
   .wt-note { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .wt-subs { font-size: 10px; color: var(--im); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .wt-subs { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--im); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .wt-subs-n { position: relative; top: 1px; }
+  .wt-subs svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
   .wtp-title { width: 100%; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); background: none; border: none; outline: none; padding: 0; }
   .wtp-grid { display: grid; grid-template-columns: 74px 1fr; gap: 6px 10px; align-items: center; }
   .wtp-grid .wt-in { width: 100%; box-sizing: border-box; }
@@ -1608,7 +1610,7 @@ function renderWorkTasks(){
       <div class="wt-right">
         ${t.done?'':(()=>{const st=WT_STATUS.find(s=>s[0]===(t.status||'todo'));return `<button class="wt-status s-${st[0]}" onclick="wtCycleStatus(${i},event)" title="Click to change status">${st[1]}</button>`;})()}
         ${due?`<span class="pill" style="background:${due.color}1f;color:${due.color}">${due.text}</span>`:''}
-        ${subs.length&&!t.done?`<span class="wt-subs">☑ ${subsDone}/${subs.length}</span>`:''}
+        ${subs.length&&!t.done?`<span class="wt-subs"><svg viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" rx="2.5"/><polyline points="3.6,6.2 5.3,7.8 8.4,4.4"/></svg><span class="wt-subs-n">${subsDone}/${subs.length}</span></span>`:''}
         ${link?`<a class="wt-link" href="${esc(link)}" target="_blank" rel="noopener">Open ↗</a>`:''}
       </div>
     </div>`;
