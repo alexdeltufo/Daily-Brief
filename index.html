@@ -281,6 +281,21 @@
   .wt-link:hover { text-decoration: underline; }
   .wt-edit { padding: .65rem 1.5rem; border-bottom: 0.5px solid var(--ru); background: var(--al); display: flex; flex-direction: column; gap: 6px; }
   .wt-btn { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; background: none; border: none; cursor: pointer; font-family: 'Figtree', sans-serif; color: var(--if); padding: 0; }
+  .wt-note { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wt-subs { font-size: 10px; color: var(--im); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .wtp-title { width: 100%; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); background: none; border: none; outline: none; padding: 0; }
+  .wtp-grid { display: grid; grid-template-columns: 74px 1fr; gap: 6px 10px; align-items: center; }
+  .wtp-grid .wt-in { width: 100%; box-sizing: border-box; }
+  .wtp-notes { width: 100%; box-sizing: border-box; min-height: 90px; resize: vertical; font-size: 12px; line-height: 1.5; font-family: 'Figtree', sans-serif; color: var(--ink); background: var(--pd); border: 0.5px solid var(--ru); border-radius: 8px; padding: 8px 10px; outline: none; }
+  .wtp-sub { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; }
+  .wtp-sub.done .wtp-subtext { color: var(--if); text-decoration: line-through; }
+  .wtp-subtext { flex: 1; }
+  .wtp-sub .rpick-x { opacity: 0; cursor: pointer; color: var(--if); font-size: 14px; }
+  .wtp-sub:hover .rpick-x { opacity: 1; }
+  @media (hover: none) { .wtp-sub .rpick-x { opacity: 1; } }
+  .wtp-addsub { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .wtp-addsub input { flex: 1; font-size: 12px; font-family: 'Figtree', sans-serif; background: none; border: none; border-bottom: 0.5px dashed var(--ru); outline: none; padding: 3px 0; color: var(--ink); }
+  .wtp-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; padding-top: .8rem; border-top: 0.5px solid var(--ru); }
   .wt-empty { padding: .75rem 1.5rem; font-size: 11px; color: var(--if); font-style: italic; }
   .qt-tag { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; white-space: nowrap; cursor: pointer; flex-shrink: 0; margin-top: 1px; user-select: none; }
   .qt-tag.empty { color: var(--if); border: 0.5px dashed var(--ru); opacity: 0; transition: opacity .15s; }
@@ -418,7 +433,7 @@
       <button class="tt-tab" data-tt="personal" onclick="switchTaskTab('personal')">Personal <span class="tt-count" id="qt-badge"></span></button>
     </div>
     <div class="tt-pane on" data-pane="work">
-    <button class="wt-add-toggle" id="wt-add-toggle" onclick="wtToggleAdd()"><span id="wt-add-icon">+</span> <span id="wt-add-label">New task</span></button>
+    <button class="wt-add-toggle" id="wt-add-toggle" onclick="wtNewPop()"><span id="wt-add-icon">+</span> <span id="wt-add-label">New task</span></button>
     <div class="wt-add" id="wt-add" style="display:none">
       <div class="wt-add-top">
         <input id="wt-text" class="wt-text" placeholder="Add work task..." onkeydown="if(event.key==='Enter')wtSubmit()">
@@ -1581,17 +1596,20 @@ function renderWorkTasks(){
     }
     const due=t.done?null:wtDueLabel(t.due);
     const note=(t.note||'').trim(), isUrl=wtIsUrl(note);
+    const link=(t.link||'').trim()||(isUrl?note:'');
+    const subs=t.subs||[], subsDone=subs.filter(x=>x.done).length;
     return `<div class="wt-row ${t.done?'done':''}">
       <div class="wt-box ${t.done?'done':''}" onclick="wtToggle(${i})">${t.done?'<svg viewBox="0 0 12 12" style="width:8px;height:8px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round"><polyline points="2,6 5,9 10,3"/></svg>':''}</div>
       <div class="wt-client-col">${t.client?`<span class="wt-client" title="${esc(t.client)}">${esc(t.client)}</span>`:''}</div>
-      <div class="wt-main" onclick="WT_EDIT=${i};renderWorkTasks()" title="Click to edit">
+      <div class="wt-main" onclick="openWtPop('${t.id}')" title="Open details">
         <div class="wt-name">${esc(t.text)}</div>
-        ${note&&!isUrl?`<div class="wt-note">${esc(note)}</div>`:''}
+        ${note&&!isUrl?`<div class="wt-note">${esc(note.split('\n')[0])}</div>`:''}
       </div>
       <div class="wt-right">
         ${t.done?'':(()=>{const st=WT_STATUS.find(s=>s[0]===(t.status||'todo'));return `<button class="wt-status s-${st[0]}" onclick="wtCycleStatus(${i},event)" title="Click to change status">${st[1]}</button>`;})()}
         ${due?`<span class="pill" style="background:${due.color}1f;color:${due.color}">${due.text}</span>`:''}
-        ${isUrl?`<a class="wt-link" href="${esc(note)}" target="_blank" rel="noopener">Open ↗</a>`:''}
+        ${subs.length&&!t.done?`<span class="wt-subs">☑ ${subsDone}/${subs.length}</span>`:''}
+        ${link?`<a class="wt-link" href="${esc(link)}" target="_blank" rel="noopener">Open ↗</a>`:''}
       </div>
     </div>`;
   }).join('');
@@ -1620,6 +1638,79 @@ async function wtSaveEdit(i){
 async function wtDelete(i){WT.splice(i,1);WT_EDIT=null;renderWorkTasks();await saveWorkTasks();}
 async function wtToggle(i){WT[i].done=!WT[i].done;renderWorkTasks();await saveWorkTasks();}
 async function wtClearDone(){WT=WT.filter(t=>!t.done);WT_EDIT=null;renderWorkTasks();await saveWorkTasks();}
+// ── Work task popup: edit details, notes, checklist. Autosaves.
+let WTP_ID=null, wtpSaveTimer=null, wtpDelArm=false;
+function wtpTask(){return WT.find(t=>t.id===WTP_ID);}
+function wtpSaveSoon(){clearTimeout(wtpSaveTimer);wtpSaveTimer=setTimeout(saveWorkTasks,600);}
+function openWtPop(id){
+  closeWtPop(true);
+  const t=WT.find(x=>x.id===id); if(!t)return;
+  // older tasks kept a link in the note field — move it to its own field
+  if(wtIsUrl(t.note)&&!t.link){t.link=t.note.trim();t.note='';wtpSaveSoon();}
+  WTP_ID=id; wtpDelArm=false;
+  const el=document.createElement('div');
+  el.className='mtel-bg';el.id='wtp-bg';
+  el.onclick=e=>{if(e.target===el)closeWtPop();};
+  document.body.appendChild(el);
+  document.addEventListener('keydown',wtpEsc);
+  renderWtPop();
+  if(!t.text)document.getElementById('wtp-title').focus();
+}
+function wtpEsc(e){if(e.key==='Escape')closeWtPop();}
+function closeWtPop(silent){
+  const el=document.getElementById('wtp-bg'); if(!el)return;
+  el.remove();document.removeEventListener('keydown',wtpEsc);
+  const i=WT.findIndex(t=>t.id===WTP_ID), t=WT[i];
+  if(t&&!(t.text||'').trim()){
+    // a brand-new task left blank is discarded; an existing one keeps a placeholder name
+    if(!t.client&&!t.note&&!t.due&&!t.link&&!(t.subs||[]).length)WT.splice(i,1); else t.text='Untitled task';
+  }
+  WTP_ID=null;
+  if(!silent){clearTimeout(wtpSaveTimer);saveWorkTasks();renderWorkTasks();}
+}
+function wtpSet(k,v){const t=wtpTask();if(!t)return;t[k]=v;wtpSaveSoon();if(k==='done')renderWtPop();}
+function renderWtPop(){
+  const el=document.getElementById('wtp-bg'), t=wtpTask(); if(!el||!t)return;
+  const subs=t.subs||[];
+  const box=(done,on)=>`<span class="rpick-box ${done?'done':''}" onclick="${on}" style="cursor:pointer">${done?'<svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>':''}</span>`;
+  el.innerHTML=`<div class="mtel-modal" role="dialog" aria-label="Task details">
+    <div class="mtel-head" style="gap:10px;align-items:flex-start">
+      <input class="wtp-title" id="wtp-title" value="${esc(t.text||'')}" placeholder="Task name" oninput="wtpSet('text',this.value)">
+      <button class="mtel-x" onclick="closeWtPop()" aria-label="Close">×</button>
+    </div>
+    <div class="wtp-grid">
+      <span class="mtel-k">Client</span><input class="wt-in" list="wt-clients" value="${esc(t.client||'')}" placeholder="—" oninput="wtpSet('client',this.value.trim())">
+      <span class="mtel-k">Status</span><select class="wt-in" onchange="wtpSet('status',this.value)">${wtStatusOpts(t.status)}</select>
+      <span class="mtel-k">Due</span><input class="wt-in" type="date" value="${esc(t.due||'')}" onchange="wtpSet('due',this.value)">
+      <span class="mtel-k">Link</span><input class="wt-in" value="${esc(t.link||'')}" placeholder="Site, staging, Figma…" oninput="wtpSet('link',this.value.trim())">
+    </div>
+    <div class="mtel-label">Checklist${subs.length?` · ${subs.filter(x=>x.done).length}/${subs.length}`:''}</div>
+    ${subs.map((x,j)=>`<div class="wtp-sub ${x.done?'done':''}">${box(x.done,`wtpSubToggle(${j})`)}<span class="wtp-subtext">${esc(x.text)}</span><span class="rpick-x" onclick="wtpSubDel(${j})" title="Remove">×</span></div>`).join('')}
+    <div class="wtp-addsub"><span style="color:var(--ac);font-size:14px;width:11px;text-align:center">+</span><input id="wtp-subin" placeholder="Add a step…" onkeydown="if(event.key==='Enter')wtpSubAdd(this.value)"></div>
+    <div class="mtel-label">Notes</div>
+    <textarea class="wtp-notes" placeholder="Running notes, decisions, logins to ask for…" oninput="wtpSet('note',this.value)">${esc(t.note||'')}</textarea>
+    <div class="wtp-foot">
+      <button class="wt-btn" style="color:#B5543C" onclick="wtpDelete()">${wtpDelArm?'Tap again to delete':'Delete'}</button>
+      <button class="wt-btn" style="color:var(--ac)" onclick="wtpSet('done',!wtpTask().done)">${t.done?'Mark not done':'Mark done ✓'}</button>
+    </div>
+  </div>`;
+}
+function wtNewPop(){
+  const t={id:wtNewId(),text:'',client:'',due:'',note:'',link:'',status:'todo',done:false,subs:[]};
+  WT.push(t); openWtPop(t.id);
+}
+function wtpSubAdd(v){
+  v=(v||'').trim(); if(!v)return;
+  const t=wtpTask(); t.subs=t.subs||[]; t.subs.push({text:v,done:false});
+  wtpSaveSoon(); renderWtPop(); document.getElementById('wtp-subin').focus();
+}
+function wtpSubToggle(j){const t=wtpTask();t.subs[j].done=!t.subs[j].done;wtpSaveSoon();renderWtPop();}
+function wtpSubDel(j){const t=wtpTask();t.subs.splice(j,1);wtpSaveSoon();renderWtPop();}
+function wtpDelete(){
+  if(!wtpDelArm){wtpDelArm=true;renderWtPop();return;}
+  const i=WT.findIndex(t=>t.id===WTP_ID); if(i>=0)WT.splice(i,1);
+  closeWtPop();
+}
 // ── THIS WEEK (weekly checklist, resets every Monday) ─
 const WL_DEFAULT=['📚 2-hr MTEL Block','💍 Wedding Planning','🧹 Clean House','🛒 Grocery Shop'];
 let WL=null, wlEditing=false;
